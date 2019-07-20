@@ -15,7 +15,7 @@
       <h1>高阶异步组件</h1>
     </div>
     <!-- 单项按钮 -->
-    <div style="padding-top: 3em">
+    <div style="padding: 3em 0">
       <h1>表单radio group</h1>
       <el-radio-group v-model="radioVal" size="medium" @change="trigger(radioVal)">
         <!-- <el-radio-button label="上海"></el-radio-button>
@@ -26,35 +26,58 @@
         <!-- <el-radio-button v-for="(label, index) in labelArr" :label="label" :key="index"> -->
         <el-radio-button v-for="(label, index) in labelArr" :label="index" :key="index">{{label}}</el-radio-button>
       </el-radio-group>
-    </div>`
-    <!-- 单选按钮radio与table测试 -->
-    <div style="padding-top: 3em" v-for="(item, index) in tableDatas" :key="index">
-      <h1>{{item[0].name}}</h1>
-      <!-- <el-table :key="key" :data="tableData" border style="width: 80%;margin:0 auto"> -->
-      <el-table :key="key" :data="item" border style="width: 80%;margin:0 auto">
-        <el-table-column fixed label="选择" width="60px" class="cell">
-          <template scope="scope">
-            <el-radio v-model="radio" :label="scope.$index">&nbsp;</el-radio>
-          </template>
-        </el-table-column>
-        <el-table-column prop="name" label="姓名" width="120" />>
-        <!-- <el-table-column fixed prop="date" label="日期" width="150"></el-table-column>
-        <el-table-column prop="province" label="省份" width="120"></el-table-column>
-        <el-table-column prop="city" label="市区" width="120"></el-table-column>
-        <el-table-column prop="address" label="地址" width="300"></el-table-column>
-        <el-table-column prop="zip" label="邮编" width="120"></el-table-column>-->
-        <!-- 改良动态表头 -->
-        <el-table-column v-for="(item, index) in formHead" :label="item.value" :key="index">
-          <template scope="scope">{{scope.row[item.key]}}</template>
-        </el-table-column>
-        <el-table-column label="操作">
-          <template slot-scope="scope">
-            <el-button @click="handleClick(scope.row)" type="text" size="medium">查看</el-button>
-            <el-button @click="$message.success('别急,还在开发...')" type="text" size="medium">编辑</el-button>
-          </template>
-        </el-table-column>
-      </el-table>
     </div>
+    <!-- 单选按钮radio与table测试 -->
+    <el-collapse
+      v-model="activeNames[index]"
+      v-for="(item, index) in tableDatas"
+      class="colapse"
+      :key="index"
+      :name="index"
+      @change="collapseChange"
+    >
+      <el-collapse-item :title="item[0].name">
+        <el-select v-model="item[0].name" placeholder="请选择活动区域" clearable>
+          <el-option label="供货商1" value="供货商1"></el-option>
+          <el-option label="供货商2" value="供货商2"></el-option>
+        </el-select>
+
+        <!-- <div style="padding-top: 3em" v-for="(item, index) in tableDatas" :key="index"> -->
+        <!-- <h1>{{item[0].name}}</h1> -->
+        <!-- <el-table :key="key" :data="tableData" border style="width: 80%;margin:0 auto"> -->
+        <el-table
+          ref="dynamicTable"
+          :key="key"
+          :data="item"
+          border
+          style="width: 80%;margin:0 auto"
+        >
+          <el-table-column fixed label="选择" width="60px" class="cell">
+            <template scope="scope">
+              <el-radio v-model="radio" :label="scope.$index">&nbsp;</el-radio>
+            </template>
+          </el-table-column>
+          <el-table-column prop="name" label="姓名" width="120" />>
+          <!-- <el-table-column fixed prop="date" label="日期" width="150"></el-table-column>
+                  <el-table-column prop="province" label="省份" width="120"></el-table-column>
+                  <el-table-column prop="city" label="市区" width="120"></el-table-column>
+                  <el-table-column prop="address" label="地址" width="300"></el-table-column>
+          <el-table-column prop="zip" label="邮编" width="120"></el-table-column>-->
+          <!-- 改良动态表头 -->
+          <el-table-column v-for="(item, index) in formHead" :label="item.value" :key="index">
+            <template scope="scope">{{scope.row[item.key]}}</template>
+          </el-table-column>
+          <el-table-column label="操作">
+            <template slot-scope="scope">
+              <el-button @click="handleClick(scope.row)" type="text" size="medium">查看</el-button>
+              <el-button @click="$message.success('别急,还在开发...')" type="text" size="medium">编辑</el-button>
+            </template>
+          </el-table-column>
+        </el-table>
+      </el-collapse-item>
+    </el-collapse>
+
+    <!-- </div> -->
     <!-- 失败消息封装 -->
     <div style="padding-top: 3em">
       <h1>
@@ -115,42 +138,53 @@ const defaultFormHead = [
   { key: "zip", value: "邮编" }
 ];
 const tableData = [
-        {
-          date: "2016-05-02",
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1518 弄",
-          zip: 200332
-        },
-        {
-          date: "2016-05-04",
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1517 弄",
-          zip: 200333
-        },
-        {
-          date: "2016-05-01",
-          name: "王小虎",
-          province: "上海",
-          city: "普陀区",
-          address: "上海市普陀区金沙江路 1519 弄",
-          zip: 200334
-        }
-      ]
+  {
+    date: "2016-05-02",
+    name: "王小虎",
+    province: "上海",
+    city: "普陀区",
+    address: "上海市普陀区金沙江路 1518 弄",
+    zip: 200332
+  },
+  {
+    date: "2016-05-04",
+    name: "王小虎",
+    province: "上海",
+    city: "普陀区",
+    address: "上海市普陀区金沙江路 1517 弄",
+    zip: 200333
+  }
+];
+const tableData2 = [
+  {
+    date: "2016-05-02",
+    name: "飞云无名",
+    province: "上海",
+    city: "普陀区",
+    address: "上海市普陀区金沙江路 1518 弄",
+    zip: 200332
+  },
+  {
+    date: "2016-05-04",
+    name: "无极而生",
+    province: "上海",
+    city: "普陀区",
+    address: "上海市普陀区金沙江路 1517 弄",
+    zip: 200333
+  }
+];
 
 export default {
   data() {
     return {
+      activeNames: [],
       key: 1, // table key
       labelArr: ["上海", "北京", "广州", "深圳", "成都"], // radio-group 数据
       formHead: defaultFormHead, // default header
       radio: "",
       radioVal: "",
       show: false,
-      tableDatas:[tableData,tableData],
+      tableDatas: [tableData, tableData2]
       // tableData: [
       //   {
       //     date: "2016-05-02",
@@ -180,19 +214,29 @@ export default {
     };
   },
   methods: {
+    collapseChange(val) {
+      console.log(val);
+    },
     // 实际当中,已经做了封装
     fetchAvatar() {
-      return new Promise((resolve, reject) => {
-        setTimeout(() => {
-          // resolve("https://avatars3.githubusercontent.com/u/16317354?s=88&v=4");
-          reject("https://avatars3.githubusercontent.com/u/16317354?s=88&v=4");
-        }, 2000);
-      },(err)=>{reject('wrong')});
+      return new Promise(
+        (resolve, reject) => {
+          setTimeout(() => {
+            // resolve("https://avatars3.githubusercontent.com/u/16317354?s=88&v=4");
+            reject(
+              "https://avatars3.githubusercontent.com/u/16317354?s=88&v=4"
+            );
+          }, 2000);
+        },
+        err => {
+          reject("wrong");
+        }
+      );
     },
     async fetchList() {
-      const result = await this.fetchAvatar().catch(err => console.error(err))
-      console.log('result')
-      console.log(result)
+      const result = await this.fetchAvatar().catch(err => console.error(err));
+      console.log("result");
+      console.log(result);
     },
     handleClick(row) {
       console.log("row");
@@ -234,11 +278,21 @@ export default {
     later2
   },
   created() {},
-  mounted() {},
+  mounted() {
+    this.tableDatas = []
+   this.$refs.dynamicTable.forEach((ele => {
+     this.tableDatas.push(ele['data'])
+   }));
+   this.tableDatas
+  },
   computed: {}
 };
 </script>
 <style>
+.colapse {
+  width: 50%;
+  margin: 0 auto;
+}
 .cell {
   text-align: center;
 }
