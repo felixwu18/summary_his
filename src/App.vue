@@ -261,12 +261,10 @@ export default {
     handleIndex(){
       var objArr = [{name:'felix',age : 28},{name:'张三',age:'18'}]
       var arr = [1,2,3,'f']
-      var str = 'q122f9'
+      var str = 'q122f9e'
     //  var index = this.$utils.getIndex(objArr, objArr[1],'age')
      var index = this.$utils.getIndex(arr, 'f')
     //  var index = this.$utils.getIndex(str, 9)
-     console.log('index')
-     console.log(index)
     },
 // ------索引end-------
 
@@ -319,6 +317,7 @@ export default {
     },
 //-----------导出end----------
 
+//-----------session封装start----------
     //封装存储
     // getSession(key) {
     //   let value = sessionStorage.getItem(key);
@@ -341,6 +340,7 @@ export default {
         ? console.table(this.session.get("defaultHead"))
         : this.session.set("defaultHead", defaultFormHead);
     },
+//-----------session封装end----------
 
     addRow(index) {
       const params = {
