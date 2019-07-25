@@ -105,5 +105,15 @@ module.exports = (options = {}) => ({
       index: url.parse(options.dev ? "/assets/" : publicPath).pathname
     }
   },
-  devtool: options.dev ? "#eval-source-map" : "#source-map"
+  devtool: options.dev ? "#eval-source-map" : "#source-map",
+  configureWebpack: {
+    // provide the app's title in webpack's name field, so that
+    // it can be accessed in index.html to inject the correct title.
+    name: name,
+    resolve: {
+      alias: {
+        '@': resolve('src')
+      }
+    }
+  },
 });

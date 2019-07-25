@@ -51,6 +51,7 @@
           :data="item"
           border
           style="width: 80%;margin:0 auto"
+          @row-click="rowClick"
         >
           <el-table-column fixed label="选择" width="60px" class="cell">
             <template scope="scope">
@@ -69,8 +70,8 @@
           </el-table-column>
           <el-table-column label="操作">
             <template slot-scope="scope">
-              <el-button @click="handleClick(scope.row)" type="text" size="medium">查看</el-button>
-              <el-button @click="$message.success('别急,还在开发...')" type="text" size="medium">编辑</el-button>
+              <el-button @click="handleClick(scope,index)" type="text" size="medium">查看</el-button>
+              <el-button @click="addRow(index)" type="text" size="medium">添加</el-button>
             </template>
           </el-table-column>
         </el-table>
@@ -92,6 +93,48 @@
         <el-button @click="ConfirmCallback">输入确定</el-button>
         <el-button @click="fetchList">发送请求</el-button>
       </h1>
+    </div>
+    <div style="padding-top: 3em">
+      <h1>时间设置</h1>
+      <el-date-picker
+        v-model="timeValue"
+        type="daterange"
+        range-separator="至"
+        start-placeholder="开始日期"
+        end-placeholder="结束日期"
+        value-format="yyyy-MM-dd"
+      ></el-date-picker>
+    </div>
+    <div style="padding-top: 3em">
+      <h1>session存储</h1>
+      <el-button @click="save">点击缓存</el-button>
+    </div>
+    <div style="padding-top: 3em">
+      <h1>JSON导出excel</h1>
+      <el-input
+        v-model="textValue"
+        placeholder="请输入对象数组的JSON格式(或对象数组)"
+        type="textarea"
+        cols="30"
+        rows="10"
+      ></el-input>
+      <el-button :loading="downloadLoading" @click="exportExcel">导出</el-button>
+      <!--
+         npm i script-loader -D
+         npm i file-saver --save
+         npm i xlsx --save
+         加入src/vendor/Export2Excel.js(./vendor/Export2Excel.js)
+      -->
+    </div>
+    <div style="padding-top: 3em">
+      <h1>索引查找</h1>
+      <el-button @click="handleIndex">查找索引</el-button>
+      <!--
+         npm i script-loader -D
+         npm i file-saver --save
+         npm i xlsx --save
+         加入src/vendor/Export2Excel.js(./vendor/Export2Excel.js)
+      -->
     </div>
   </div>
 </template>
@@ -140,19 +183,19 @@ const defaultFormHead = [
 const tableData = [
   {
     date: "2016-05-02",
-    name: "王小虎",
-    province: "上海",
-    city: "普陀区",
-    address: "上海市普陀区金沙江路 1518 弄",
-    zip: 200332
+    name: "张三",
+    province: "四川",
+    city: "成都",
+    address: "春熙路",
+    zip: 999
   },
   {
     date: "2016-05-04",
-    name: "王小虎",
+    name: "李四",
     province: "上海",
     city: "普陀区",
     address: "上海市普陀区金沙江路 1517 弄",
-    zip: 200333
+    zip: 666
   }
 ];
 const tableData2 = [
@@ -177,6 +220,14 @@ const tableData2 = [
 export default {
   data() {
     return {
+      //----导出start-------
+      bookType: "xlsx",
+      autoWidth: true,
+      filename: "excel表名",
+      downloadLoading: false,
+      // ---导出end-------
+      textValue: "",
+      timeValue: [], //时间测试
       activeNames: [],
       key: 1, // table key
       labelArr: ["上海", "北京", "广州", "深圳", "成都"], // radio-group 数据
@@ -184,36 +235,129 @@ export default {
       radio: "",
       radioVal: "",
       show: false,
-      tableDatas: [tableData, tableData2]
-      // tableData: [
-      //   {
-      //     date: "2016-05-02",
-      //     name: "王小虎",
-      //     province: "上海",
-      //     city: "普陀区",
-      //     address: "上海市普陀区金沙江路 1518 弄",
-      //     zip: 200332
-      //   },
-      //   {
-      //     date: "2016-05-04",
-      //     name: "王小虎",
-      //     province: "上海",
-      //     city: "普陀区",
-      //     address: "上海市普陀区金沙江路 1517 弄",
-      //     zip: 200333
-      //   },
-      //   {
-      //     date: "2016-05-01",
-      //     name: "王小虎",
-      //     province: "上海",
-      //     city: "普陀区",
-      //     address: "上海市普陀区金沙江路 1519 弄",
-      //     zip: 200334
-      //   }
-      // ]
+      tableDatas: [tableData, tableData2],
+      //封装的session存储
+      session: {
+        get(key) {
+          let value = sessionStorage.getItem(key);
+          if (value === null || value === "" || value === "undefined") {
+            value = "";
+          } else {
+            value = JSON.parse(value);
+          }
+          return value;
+        },
+        set(key, value) {
+          if (value === undefined) {
+            return;
+          }
+          sessionStorage.setItem(key, JSON.stringify(value));
+        }
+      }
     };
   },
   methods: {
+    // ------索引start-------
+    handleIndex(){
+      var objArr = [{name:'felix',age : 28},{name:'张三',age:'18'}]
+      var arr = [1,2,3,'f']
+      var str = 'q122f9'
+    //  var index = this.$utils.getIndex(objArr, objArr[1],'age')
+     var index = this.$utils.getIndex(arr, 'f')
+    //  var index = this.$utils.getIndex(str, 9)
+     console.log('index')
+     console.log(index)
+    },
+// ------索引end-------
+
+// ------导出start-------
+    exportExcel() {
+      if (!this.textValue.trim()) {
+        this.$message.error('请输入......!!!');
+        return;
+      }
+      // 处理输入
+      //  const objArr = typeof this.textValue === 'string' ? JSON.parse(this.textValue):this.textValue
+      if(this.textValue.trim().slice(0,1) !== "[" || this.textValue.trim().slice(-1,this.textValue.trim().length) !== "]"){this.$message.error('请输入对象数组');return}
+      let objArr
+      try {
+        objArr = eval(this.textValue.trim());
+      } catch (error) {
+        console.error(error)
+      } 
+      if(!Array.isArray(objArr) || (this.$utils.isType(objArr[0]) !== "Object")){this.$message.error('请输入对象数组');return}
+      this.downloadLoading = true;
+      import("./vendor/Export2Excel").then(excel => {
+        // const tHeader = ['日期', '省份', '姓名'] //导出表头名
+        // const filterVal = ['date', 'province', 'name'] //过滤要导出的数据字段
+        // const list = this.tableDatas[0]
+        const tHeader = Object.keys(objArr[0]);
+        const filterVal = Object.keys(objArr[0]);
+        const list = objArr;
+        const data = this.formatJson(filterVal, list);
+        excel.export_json_to_excel({
+          header: tHeader,
+          data,
+          filename: this.filename,
+          autoWidth: this.autoWidth,
+          bookType: this.bookType
+        });
+        this.downloadLoading = false;
+      });
+    },
+    // 筛选所需
+    formatJson(filterVal, jsonData) {
+      return jsonData.map(v =>
+        filterVal.map(j => {
+          if (j === "timestamp") {
+            return parseTime(v[j]);
+          } else {
+            return v[j];
+          }
+        })
+      );
+    },
+//-----------导出end----------
+
+    //封装存储
+    // getSession(key) {
+    //   let value = sessionStorage.getItem(key);
+    //   if (value === null || value === "" || value === "undefined") {
+    //     value = "";
+    //   } else {
+    //     value = JSON.parse(value);
+    //   }
+    //   return value;
+    // },
+    // setSession(key, value) {
+    //   if (value === undefined) {
+    //     return;
+    //   }
+    //   sessionStorage.setItem(key, JSON.stringify(value));
+    // },
+    //session存储
+    save() {
+      this.session.get("defaultHead")
+        ? console.table(this.session.get("defaultHead"))
+        : this.session.set("defaultHead", defaultFormHead);
+    },
+
+    addRow(index) {
+      const params = {
+        address: "",
+        city: "",
+        date: "",
+        name: "",
+        province: "",
+        zip: ""
+      };
+      this.$refs.dynamicTable[index].data.push(params);
+      // 此新增行,row-click可触发
+    },
+    rowClick(row) {
+      console.log("row");
+      console.log(row);
+    },
     collapseChange(val) {
       console.log(val);
     },
@@ -238,9 +382,9 @@ export default {
       console.log("result");
       console.log(result);
     },
-    handleClick(row) {
-      console.log("row");
-      console.log(row);
+    handleClick(row, index) {
+      console.log("row-index");
+      console.log(row, "---", index);
     },
     toggle() {
       this.show = !this.show;
@@ -277,13 +421,15 @@ export default {
     later,
     later2
   },
-  created() {},
+  created() {
+    this.timeValue = ["2009-07-01", "2019-07-24"]; //时间组件显示,随后可代码调用
+  },
   mounted() {
-    this.tableDatas = []
-   this.$refs.dynamicTable.forEach((ele => {
-     this.tableDatas.push(ele['data'])
-   }));
-   this.tableDatas
+    this.tableDatas = [];
+    this.$refs.dynamicTable.forEach(ele => {
+      this.tableDatas.push(ele["data"]);
+    });
+    this.tableDatas;
   },
   computed: {}
 };
