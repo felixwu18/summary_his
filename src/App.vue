@@ -265,6 +265,8 @@ export default {
     //  var index = this.$utils.getIndex(objArr, objArr[1],'age')
      var index = this.$utils.getIndex(arr, 'f')
     //  var index = this.$utils.getIndex(str, 9)
+     console.log('index')
+     console.log(index)
     },
 // ------索引end-------
 
