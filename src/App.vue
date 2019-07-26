@@ -136,6 +136,16 @@
          加入src/vendor/Export2Excel.js(./vendor/Export2Excel.js)
       -->
     </div>
+    <div style="padding-top: 3em">
+      <h1>对象数组删对象,或对象集合</h1>
+      <el-button @click="handleDelete">查找索引</el-button>
+      <!--
+         npm i script-loader -D
+         npm i file-saver --save
+         npm i xlsx --save
+         加入src/vendor/Export2Excel.js(./vendor/Export2Excel.js)
+      -->
+    </div>
   </div>
 </template>
 <script>
@@ -257,35 +267,68 @@ export default {
     };
   },
   methods: {
-    // ------索引start-------
-    handleIndex(){
-      var objArr = [{name:'felix',age : 28},{name:'张三',age:'18'}]
-      var arr = [1,2,3,'f']
-      var str = 'q122f9e'
-    //  var index = this.$utils.getIndex(objArr, objArr[1],'age')
-     var index = this.$utils.getIndex(arr, 'f')
-    //  var index = this.$utils.getIndex(str, 9)
-     console.log('index')
-     console.log(index)
+    // ------删对象start-------
+    // 暂时未考虑深拷贝
+    handleDelete() {
+      const objArr = [
+        { name: "felix", sex: "female" },
+        { name: "张三", sex: "female" },
+        { name: "李四", sex: "male" }
+      ];
+      // const target = { name: "felix", sex: "female" };
+      const target = [
+        { name: "felix", sex: "female" },
+        { name: "张三", sex: "female" }
+      ];
+      console.log("objArr-before");
+      console.log(objArr);
+      this.$utils.deleteItem(objArr, target, "name");
+      console.log("objArr-after");
+      console.log(objArr);
     },
-// ------索引end-------
+    // ------删对象end---------
 
-// ------导出start-------
+    // ------索引start-------
+    handleIndex() {
+      var objArr = [{ name: "felix", age: 28 }, { name: "张三", age: "18" }];
+      var arr = [1, 2, 3, "f"];
+      var str = "q122f9e";
+      //  var index = this.$utils.getIndex(objArr, objArr[1],'age')
+      var index = this.$utils.getIndex(arr, "f");
+      //  var index = this.$utils.getIndex(str, 9)
+      console.log("index");
+      console.log(index);
+    },
+    // ------索引end-------
+
+    // ------导出start-------
     exportExcel() {
       if (!this.textValue.trim()) {
-        this.$message.error('请输入......!!!');
+        this.$message.error("请输入......!!!");
         return;
       }
       // 处理输入
       //  const objArr = typeof this.textValue === 'string' ? JSON.parse(this.textValue):this.textValue
-      if(this.textValue.trim().slice(0,1) !== "[" || this.textValue.trim().slice(-1,this.textValue.trim().length) !== "]"){this.$message.error('请输入对象数组');return}
-      let objArr
+      if (
+        this.textValue.trim().slice(0, 1) !== "[" ||
+        this.textValue.trim().slice(-1, this.textValue.trim().length) !== "]"
+      ) {
+        this.$message.error("请输入对象数组");
+        return;
+      }
+      let objArr;
       try {
         objArr = eval(this.textValue.trim());
       } catch (error) {
-        console.error(error)
-      } 
-      if(!Array.isArray(objArr) || (this.$utils.isType(objArr[0]) !== "Object")){this.$message.error('请输入对象数组');return}
+        console.error(error);
+      }
+      if (
+        !Array.isArray(objArr) ||
+        this.$utils.isType(objArr[0]) !== "Object"
+      ) {
+        this.$message.error("请输入对象数组");
+        return;
+      }
       this.downloadLoading = true;
       import("./vendor/Export2Excel").then(excel => {
         // const tHeader = ['日期', '省份', '姓名'] //导出表头名
@@ -317,9 +360,9 @@ export default {
         })
       );
     },
-//-----------导出end----------
+    //-----------导出end----------
 
-//-----------session封装start----------
+    //-----------session封装start----------
     //封装存储
     // getSession(key) {
     //   let value = sessionStorage.getItem(key);
@@ -342,7 +385,7 @@ export default {
         ? console.table(this.session.get("defaultHead"))
         : this.session.set("defaultHead", defaultFormHead);
     },
-//-----------session封装end----------
+    //-----------session封装end----------
 
     addRow(index) {
       const params = {
