@@ -1,4 +1,5 @@
 import { Message, Notification } from "element-ui";
+import { log } from "util";
 // 失败消息的提示
 export function showError(message) {
   Message({
@@ -78,9 +79,34 @@ export function deleteItem(Obj, target, key) {
     isType(target[0]) === "Object"
   ) {
     // 遍历待删数组
-    target.forEach((item => {
-     const index = getIndex(Obj, item, key)
-     Obj.splice(index, 1)
-    }))
+    target.forEach(item => {
+      const index = getIndex(Obj, item, key);
+      Obj.splice(index, 1);
+    });
   }
+}
+
+/**
+ * 过滤对象数组
+ *  @return {objArray} ObjArr 查找的对象数组
+ *  @return {Sting} valInput 输入值
+ *  @return {StrArray} keyMap 需要过滤的字段数组
+ *  返回包含在字段内的所有对象数组
+ */
+export function filterObjArray(ObjArr, valInput, keyMap) {
+  console.log('valInput')
+  console.log(typeof valInput)
+  return ObjArr.filter(filterItem(valInput, keyMap));
+}
+// 字段过滤
+function filterItem(valInput, keyMap) {
+  return item => {
+    for (let i = 0; i < keyMap.length; i++) {
+      if (
+         String(item[keyMap[i]]).toLowerCase().indexOf(valInput.toLowerCase()) !== -1
+      ) {
+        return true;
+      }
+    }
+  };
 }

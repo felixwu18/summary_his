@@ -146,6 +146,17 @@
          加入src/vendor/Export2Excel.js(./vendor/Export2Excel.js)
       -->
     </div>
+    <div style="padding-top: 3em">
+      <h1>对象数组过滤出对象集合(不同字段)</h1>
+      <el-input type="textarea" rows="6" v-model="valInput" />
+      <el-button @click="handleFilter">对象数组过滤</el-button>
+      <!--
+         npm i script-loader -D
+         npm i file-saver --save
+         npm i xlsx --save
+         加入src/vendor/Export2Excel.js(./vendor/Export2Excel.js)
+      -->
+    </div>
   </div>
 </template>
 <script>
@@ -230,13 +241,14 @@ const tableData2 = [
 export default {
   data() {
     return {
+      valInput: "",
       //----导出start-------
       bookType: "xlsx",
       autoWidth: true,
       filename: "excel表名",
       downloadLoading: false,
-      // ---导出end-------
       textValue: "",
+      // ---导出end-------
       timeValue: [], //时间测试
       activeNames: [],
       key: 1, // table key
@@ -267,6 +279,21 @@ export default {
     };
   },
   methods: {
+    // ------过滤对象数组start-------
+
+    handleFilter() {
+      const objArr = [
+        { name: "felix", sex: "female", age: 18 },
+        { name: "张三", sex: "female", age: 25 },
+        { name: "李四", sex: "male", age: 19 }
+      ];
+      const lastArr = this.$utils.filterObjArray(objArr, this.valInput, ["name", "sex","age"]);
+      console.log('lastArr')
+      console.log(lastArr)
+    },
+
+    // ------过滤对象数组end---------
+
     // ------删对象start-------
     // 暂时未考虑深拷贝
     handleDelete() {
@@ -338,6 +365,7 @@ export default {
         const filterVal = Object.keys(objArr[0]);
         const list = objArr;
         const data = this.formatJson(filterVal, list);
+        debugger;
         excel.export_json_to_excel({
           header: tHeader,
           data,
@@ -348,7 +376,7 @@ export default {
         this.downloadLoading = false;
       });
     },
-    // 筛选所需
+    // 筛选所需(导出部分字段)return [[],[]]
     formatJson(filterVal, jsonData) {
       return jsonData.map(v =>
         filterVal.map(j => {
@@ -406,15 +434,17 @@ export default {
     collapseChange(val) {
       console.log(val);
     },
-    // 实际当中,已经做了封装
+    // 实际开发当中,已经做了封装
     fetchAvatar() {
       return new Promise(
         (resolve, reject) => {
           setTimeout(() => {
-            // resolve("https://avatars3.githubusercontent.com/u/16317354?s=88&v=4");
-            reject(
+            resolve(
               "https://avatars3.githubusercontent.com/u/16317354?s=88&v=4"
             );
+            // reject(
+            //   "https://avatars3.githubusercontent.com/u/16317354?s=88&v=4"
+            // );
           }, 2000);
         },
         err => {
