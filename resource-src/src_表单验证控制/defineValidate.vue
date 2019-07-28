@@ -15,7 +15,7 @@
         <el-form-item label="活动区域" prop="region">
           <el-select
             v-model="ruleForm.region"
-            :disabled="isDisable('ruleForm.region', ruleForm.name)"
+            :disabled="isDisable('region', ruleForm.name)"
             clearable
             placeholder="请选择活动区域"
           >
@@ -27,7 +27,7 @@
         <el-form-item label="只能数字" prop="input">
           <el-input
             v-model="ruleForm.input"
-            :disabled="isDisable('ruleForm.input_notNumber', ruleForm.region)"
+            :disabled="isDisable('input_notNumber', ruleForm.region)"
             @blur="ruleForm.input = isInput(ruleForm.input, numberReg, 1)"
             clearable
           ></el-input>
@@ -35,7 +35,7 @@
         <el-form-item label="不能数字" prop="notNumber">
           <el-input
             v-model="ruleForm.notNumber"
-            :disabled="isDisable('ruleForm.input_notNumber', ruleForm.region)"
+            :disabled="isDisable('input_notNumber', ruleForm.region)"
             @blur="ruleForm.notNumber = isInput(ruleForm.notNumber, numberReg, 0)"
           ></el-input>
         </el-form-item>
@@ -132,9 +132,9 @@ export default {
     isDisable(controlObj, val) {
       switch (controlObj) {
         case undefined:
-        case "ruleForm.region":  // 活动区域
+        case "region":  // 活动区域
           return val ? false : true;
-        case "ruleForm.input_notNumber":   // 只能数字, 不能数字
+        case "input_notNumber":   // 只能数字, 不能数字
           return !val ? true : val === '1' ? false : true;
         default:
           return;
