@@ -1,0 +1,119 @@
+<template>
+  <div :class="{'hidden':hidden}" class="pagination-container">
+    <h1>分页器</h1>
+    <el-pagination
+      :background="background"
+      :current-page.sync="currentPage"
+      :page-size.sync="pageSize"
+      :layout="layout"
+      :page-sizes="pageSizes"
+      :total="total"
+      v-bind="$attrs"
+      @size-change="handleSizeChange"
+      @current-change="handleCurrentChange"
+    />
+  </div>
+</template>
+
+<script>
+// import { scrollTo } from '@/tools/scroll-to'
+
+export default {
+  name: "Pagination",
+  props: {
+    total: {
+      required: true,
+      type: Number
+    },
+    page: {
+      type: Number,
+      default: 1
+    },
+    limit: {
+      type: Number,
+      default: 20
+    },
+    pageSizes: {
+      type: Array,
+      default() {
+        return [15, 25, 35, 50, 70];
+      }
+    },
+    layout: {
+      type: String,
+      default: "total, sizes, prev, pager, next, jumper"
+    },
+    background: {
+      type: Boolean,
+      default: true
+    },
+    autoScroll: {
+      type: Boolean,
+      default: true
+    },
+    hidden: {
+      type: Boolean,
+      default: false
+    }
+  },
+  computed: {
+    currentPage: {
+      get() {
+        return this.page;
+      },
+      set(val) {
+        this.$emit("update:page", val);
+      }
+    },
+    pageSize: {
+      get() {
+        return this.limit;
+      },
+      set(val) {
+        this.$emit("update:limit", val);
+      }
+    }
+  },
+  methods: {
+    handleSizeChange(val) {
+      this.$emit("pagination", { page: this.currentPage, limit: val });
+
+      // 解决正常方法无法滚动
+      // let main = document.getElementsByClassName("el-table")[0];
+      // main.parentNode.style.position = "absolute";
+      // setTimeout(() => {
+      //   main.parentNode.style.position = "static";
+      // }, 0);
+
+      // if (this.autoScroll) {
+      //   scrollTo(0, 1000);
+      // }
+    },
+    handleCurrentChange(val) {
+      this.$emit("pagination", { page: val, limit: this.pageSize });
+
+      // 解决正常方法无法滚动
+      // let main = document.getElementsByClassName("el-table")[0];
+      // main.parentNode.style.position = "absolute";
+      // setTimeout(() => {
+      //   main.parentNode.style.position = "static";
+      // }, 300);
+
+      // if (this.autoScroll) {
+      //   scrollTo(-20, 1000);
+      // }
+      // window.scrollTo(0,0);
+    }
+  }
+};
+</script>
+
+<style scoped>
+.pagination-container {
+  background: #fff;
+  padding: 32px 16px;
+}
+.pagination-container.hidden {
+  display: none;
+}
+</style>
