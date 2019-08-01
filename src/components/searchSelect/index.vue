@@ -2,7 +2,7 @@
     <div>
     <h1>输入框、选择框等</h1>
         <searchInput :title='title' :width='width'>
-            <el-select @change='changeSelect' v-model='value' :clearable="clearable" :disabled="disabled" placeholder="请选择" size='medium'>
+            <el-select @change='changeSelect' v-model='value' clearable :disabled="disabled" placeholder="请选择" size='medium'>
                 <!-- <el-option v-for="(item,key) in configure_obj?configure_obj[config_name]:{}" :key="key" :label="item" :value="key">
                 </el-option> -->
                 <el-option v-for="(item,index) in configure.length ? configure:[]" :key="index" :label="item.label" :value="item.prop">

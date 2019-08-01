@@ -14,8 +14,10 @@
     <collapse />
     <dynamicTable
       :formHead="formHead"
+      :configure="formHead"
       :data="tableData"
       :editArr="['name','zip']"
+      :selectArr="['name','zip']"
       :RegObj="{zip:numberReg}"
       :handleArr="['查看','新增','删除','审核','点我啊','果然']"
       @newRow="addRow"

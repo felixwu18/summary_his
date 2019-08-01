@@ -17,17 +17,58 @@
           <el-radio v-model="radioVal" :label="scope.$index">&nbsp;</el-radio>
         </template>
       </el-table-column>
-      <el-table-column  v-if="selection" label="选择" type="selection" width="60px" class="cell"></el-table-column>
+      <el-table-column v-if="selection" label="选择" type="selection" width="60px" class="cell"></el-table-column>
       <!-- 列 -->
-      <el-table-column style="color:red" show-overflow-tooltip v-for="(formHeadItem, index) in formHead" :label="formHeadItem.label" :key="index">
+      <el-table-column
+        style="color:red"
+        show-overflow-tooltip
+        v-for="(formHeadItem, index) in formHead"
+        :label="formHeadItem.label"
+        :key="index"
+      >
         <!-- <template scope="scope">{{scope.row[formHeadItem.prop]}}</template> -->
         <!-- 输入控制 -->
         <template slot-scope="scope">
-          <template v-if="scope.$index===(data.length-1) ? editArr.includes(formHeadItem.prop) : false">
-            <el-input ref="ginput" :key="index" v-model="scope.row[formHeadItem.prop]" @keydown.native.13="downChang" @blur="scope.row[formHeadItem.prop] = isInput(scope.row[formHeadItem.prop], formHeadItem.prop, RegObj, 1)" class="edit-input" size="small" />
+          <!-- 输入框 -->
+          <template
+            v-if="scope.$index===(data.length-1) ? editArr.includes(formHeadItem.prop) : false"
+          >
+            <el-input
+              ref="ginput"
+              :key="index"
+              v-model="scope.row[formHeadItem.prop]"
+              @keydown.native.13="downChang"
+              @blur="scope.row[formHeadItem.prop] = isInput(scope.row[formHeadItem.prop], formHeadItem.prop, RegObj, 1)"
+              class="edit-input"
+              size="small"
+            />
           </template>
-          <span v-else-if="formHeadItem.prop === 'zip'" style="color:red; font-weight: bold">{{ scope.row[formHeadItem.prop] }}</span>
-          <span v-else>{{ scope.row[formHeadItem.prop] }}</span>
+          <!-- 下拉框 -->
+          <template
+            v-if="scope.$index!==(data.length-1) ? selectArr.includes(formHeadItem.prop) : false"
+          >
+            <el-select
+              @change="changeSelect"
+              v-model="scope.row[formHeadItem.prop]"
+              clearable
+              placeholder="请选择"
+              size="medium"
+            >
+              <el-option
+                v-for="(item,index) in configure.length ? configure:[]"
+                :key="index"
+                :label="item.label"
+                :value="item.prop"
+              ></el-option>
+            </el-select>
+          </template>
+          <!-- 带状态显示 -->
+          <span
+            v-else-if="formHeadItem.prop === 'province'&&scope.$index!==(data.length-1)"
+            style="color:red; font-weight: bold"
+          >{{ scope.row[formHeadItem.prop] }}</span>
+          <!-- 正常显示 -->
+          <span v-else-if="!editArr.includes(formHeadItem.prop)">{{ scope.row[formHeadItem.prop] }}</span>
         </template>
       </el-table-column>
       <el-table-column v-if="handleArr.length" label="操作">
@@ -52,13 +93,13 @@
             size="medium"
           >删除</el-button>
           <!-- 动态事件 -->
-         <!-- v-if = "!['查看','新增','删除'].includes(handleName)" -->
+          <!-- v-if = "!['查看','新增','删除'].includes(handleName)" -->
           <el-button
             v-for="(handleName, index) in _handleArr"
             @click.stop="dynamicHandle(scope.row, handleName)"
             type="text"
             size="medium"
-            :key ="index"
+            :key="index"
           >{{handleName}}</el-button>
         </template>
       </el-table-column>
@@ -66,8 +107,9 @@
   </div>
 </template>
 <script>
-console.log('thia')
-console.log(this)
+// import searchSelect from "../searchSelect/index";
+console.log("thia");
+console.log(this);
 // const defaultFormHead = [
 //   { prop: "name", label: "姓名" },
 //   { prop: "date", label: "日期" },
@@ -76,48 +118,58 @@ console.log(this)
 //   { prop: "address", label: "地址" },
 //   { prop: "zip", label: "邮编" }
 // ];
-let flag = 0
+let flag = 0;
 export default {
   data() {
     return {
       radioVal: "",
+      // selectVal: "" //直接选中数据加入tableData
     };
   },
   props: {
     data: Array,
-    RegObj:  Object,
+    RegObj: Object,
     formHead: { type: Array, default: _ => [] },
     radio: { type: Boolean, default: false },
     selection: { type: Boolean, default: false },
     editArr: { type: Array, default: _ => [] },
+    selectArr: { type: Array, default: _ => [] },
+    configure: { type: Array, default: _ => [] },
     handleArr: { type: Array, default: _ => [] }
   },
   methods: {
-    downChang(val){
-    //  enter键事件核心代码
-    if(flag<1){
-      if(!this.$refs.ginput[0].value){return}
-      flag++;this.$refs.ginput[1].focus()
-     }else{
-      let status = this.$refs.newAddRef.$listeners.click()
-     if(status){
-
-        this.$nextTick(_=>{
-      this.$refs.ginput[0].focus()
-         })
-       flag = 0
+    // 选择框
+    changeSelect(val) {
+      console.log("val");
+      console.log(val);
+    },
+    downChang(val) {
+      //  enter键事件核心代码
+      if (flag < 1) {
+        if (!this.$refs.ginput[0].value) {
+          return;
+        }
+        flag++;
+        this.$refs.ginput[1].focus();
+      } else {
+        let status = this.$refs.newAddRef.$listeners.click();
+        if (status) {
+          this.$nextTick(_ => {
+            this.$refs.ginput[0].focus();
+          });
+          flag = 0;
         }
       }
     },
-    selectedHighlight({row, rowIndex}){
-      if(row.zip === 999){
-      return {
-     "background-color": "rgb(250, 195, 100)"
-          }
-      }else{
+    selectedHighlight({ row, rowIndex }) {
+      if (row.zip === 999) {
+        return {
+          "background-color": "rgb(250, 195, 100)"
+        };
+      } else {
         return {
           "background-color": "lightBlue"
-        }
+        };
       }
     },
     rowClick(row) {
@@ -129,38 +181,40 @@ export default {
     addRow(row) {
       const newRow = {};
       // 动态添加新行
-      Object.keys(row).forEach(ele => newRow[ele] = '' )
-            if (row.name && row.zip) {
+      Object.keys(row).forEach(ele => (newRow[ele] = ""));
+      if (row.name && row.zip) {
         // this.$refs.dynamicTable.data.push(params);
         this.data.push(newRow);
-        return true
-      }else{
-        return false
+        return true;
+      } else {
+        return false;
       }
       this.$emit("newRow", row, newRow);
       // 此新增行,row-click可触发
     },
-    dynamicHandle(row, handleName){
-     console.log('row---handleName')
-     console.log(row, handleName)
-     this.$emit("dynamicEvent", row, handleName);
+    dynamicHandle(row, handleName) {
+      console.log("row---handleName");
+      console.log(row, handleName);
+      this.$emit("dynamicEvent", row, handleName);
     },
     deleteRow(scope) {
       this.data.splice(scope.$index, 1);
       this.$emit("deleteRow");
     },
-    selectionChange(val){
+    selectionChange(val) {
       // console.log('val')
       // console.log(val)
-       this.$emit("multipleSelection", val);
+      this.$emit("multipleSelection", val);
     },
-    keyEvent(v){
-     console.log('v')
-     console.log(v)
+    keyEvent(v) {
+      console.log("v");
+      console.log(v);
     },
-        // 表单过滤输入(输入值, 正则, 匹配后输入与否)
-    isInput(val, prop, RegObj={}, flag) {
-      if(!RegObj[prop]){RegObj[prop] = /.*/} // 设置默认验证
+    // 表单过滤输入(输入值, 正则, 匹配后输入与否)
+    isInput(val, prop, RegObj = {}, flag) {
+      if (!RegObj[prop]) {
+        RegObj[prop] = /.*/;
+      } // 设置默认验证
       if (!val) {
         return;
       } else if (flag === 0) {
@@ -174,15 +228,16 @@ export default {
       }
     },
     // 拿到scope
-    get(scope) {
-    }
+    get(scope) {}
   },
   components: {},
   created() {},
   mounted() {},
   computed: {
-    _handleArr(){
-      return this.handleArr.filter(ele => !['查看','新增','删除'].includes(ele))
+    _handleArr() {
+      return this.handleArr.filter(
+        ele => !["查看", "新增", "删除"].includes(ele)
+      );
     }
   }
 };
