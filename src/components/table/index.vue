@@ -52,9 +52,9 @@
             size="medium"
           >删除</el-button>
           <!-- 动态事件 -->
+         <!-- v-if = "!['查看','新增','删除'].includes(handleName)" -->
           <el-button
-            v-if = "!['查看','新增','删除'].includes(handleName)"
-            v-for="(handleName, index) in handleArr"
+            v-for="(handleName, index) in _handleArr"
             @click.stop="dynamicHandle(scope.row, handleName)"
             type="text"
             size="medium"
@@ -101,6 +101,7 @@ export default {
      }else{
       let status = this.$refs.newAddRef.$listeners.click()
      if(status){
+
         this.$nextTick(_=>{
       this.$refs.ginput[0].focus()
          })
@@ -142,6 +143,7 @@ export default {
     dynamicHandle(row, handleName){
      console.log('row---handleName')
      console.log(row, handleName)
+     this.$emit("dynamicEvent", row, handleName);
     },
     deleteRow(scope) {
       this.data.splice(scope.$index, 1);
@@ -179,14 +181,9 @@ export default {
   created() {},
   mounted() {},
   computed: {
-    //     getheight(){
-    //       if(this.data.length){
-    //        return 'auto'
-    //       }else{
-    //         return 300
-    //       }
-    // // data.length ? auto : 300
-    //     }
+    _handleArr(){
+      return this.handleArr.filter(ele => !['查看','新增','删除'].includes(ele))
+    }
   }
 };
 </script>
