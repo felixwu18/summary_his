@@ -11,12 +11,13 @@
       @selection-change="selectionChange"
       @keydown.13="keyEvent"
     >
-      <!-- 前置操作框 -->
+      <!-- 单选 -->
       <el-table-column v-if="radio" fixed label="选择" width="60px" class="cell">
         <template scope="scope">
           <el-radio v-model="radioVal" :label="scope.$index">&nbsp;</el-radio>
         </template>
       </el-table-column>
+      <!-- 多选 -->
       <el-table-column v-if="selection" label="选择" type="selection" width="60px" class="cell"></el-table-column>
       <!-- 列 -->
       <el-table-column
@@ -55,14 +56,14 @@
               size="medium"
             >
               <el-option
-                v-for="(item,index) in configure.length ? configure:[]"
+                v-for="(item,index) in Object.keys(configureSet).length ? configureSet[formHeadItem.prop]:[]"
                 :key="index"
                 :label="item.label"
                 :value="item.prop"
               ></el-option>
             </el-select>
           </template>
-          <!-- 带状态显示 -->
+          <!-- 带状态显示 暂时是死的 -->
           <span
             v-else-if="formHeadItem.prop === 'province'&&scope.$index!==(data.length-1)"
             style="color:red; font-weight: bold"
@@ -134,7 +135,7 @@ export default {
     selection: { type: Boolean, default: false },
     editArr: { type: Array, default: _ => [] },
     selectArr: { type: Array, default: _ => [] },
-    configure: { type: Array, default: _ => [] },
+    configureSet: { type: Object, default: _ => {} },
     handleArr: { type: Array, default: _ => [] }
   },
   methods: {

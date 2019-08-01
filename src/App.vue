@@ -14,7 +14,7 @@
     <collapse />
     <dynamicTable
       :formHead="formHead"
-      :configure="formHead"
+      :configureSet="configureSet"
       :data="tableData"
       :editArr="['name','zip']"
       :selectArr="['name','zip']"
@@ -88,6 +88,16 @@ const formHead = [
   { prop: "address", label: "地址" },
   { prop: "zip", label: "邮编" }
 ];
+//测试select 配数据
+const selcet = [
+  { prop: "name", label: "姓名-selcet" },
+  { prop: "date", label: "日期-selcet" },
+  { prop: "province", label: "省份-selcet" },
+  { prop: "city", label: "市区-selcet" },
+  { prop: "address", label: "地址-selcet" },
+  { prop: "zip", label: "邮编-selcet" }
+];
+
 const tableData = [
   {
     date: "2016-05-02",
@@ -149,6 +159,7 @@ export default {
   },
   data() {
     return {
+      configureSet:{name: formHead, zip: selcet}, //测试selet
       selectVal:'',
       formHead, // 配置标头
       tableData,

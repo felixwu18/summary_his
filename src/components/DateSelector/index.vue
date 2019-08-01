@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>table</h1>
+    <h1>日期</h1>
     <el-date-picker
       v-model="time"
       @change="monitorTime(time)"
@@ -18,7 +18,7 @@ export default {
   name: "toDateSelector",
   data() {
     return {
-      time: this.timeDefault,
+      time: [], 
       start: "",
       end: ""
     };
@@ -44,7 +44,7 @@ export default {
     }
   },
   watch: {
-    timeDefault: function(newValue, oldValue) {
+    timeDefault(newValue, oldValue) {
       // console.log('timeDefault change', newValue, oldValue);
       this.time = newValue;
     }
