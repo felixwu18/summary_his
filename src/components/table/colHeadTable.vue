@@ -9,21 +9,22 @@
       cellpadding="10"
     >
       <tr v-for="index in rowCount" :key="index">
-        <th class="column">{{tableData[index*2-2].key}}</th>
-        <td>{{tableData[index*2-2].value}}</td>
-        <th class="column">{{tableData[index*2-1] !== undefined ? tableData[index*2-1].key : ''}}</th>
-        <td>{{tableData[index*2-1] !== undefined ? tableData[index*2-1].value : ''}}</td>
+        <th class="columnHead">{{getColHead(index) !== undefined ? getColHead(index) : ''}}</th>
+        <td class="cell">{{getCellVal(index) !== undefined ? getCellVal(index) : ''}}</td>
       </tr>
     </table>
 
     <table class="mailTable" :style="styleObject" v-else>
-      <tr v-for="index in rowCount" :key="index">
-        <th class="column">{{tableData[index-1].key}}</th>
-        <td>{{tableData[index-1].value}}</td>
+      <tr>
         <th
-          class="column"
-        >{{tableData[rowCount+index-1] !== undefined ? tableData[rowCount+index-1].key : ''}}</th>
-        <td>{{tableData[rowCount+index-1] !== undefined ? tableData[rowCount+index-1].value : ''}}</td>
+          v-for="(rowHead, index) in rowHeadArr"
+          :key="index"
+          class="rowHead"
+        >{{rowHead !== undefined ? rowHead : '-'}}</th>
+      </tr>
+      <tr v-for="index in rowCount" :key="index">
+        <th class="columnHeadHead">{{getColHead(index) !== undefined ? getColHead(index) : '-'}}</th>
+        <td class="cell">{{getCellVal(index) !== undefined ? getCellVal(index) : '-'}}</td>
       </tr>
     </table>
   </div>
@@ -33,11 +34,32 @@ export default {
   data() {
     return {
       styleObject: {},
-      s_showByRow: true
+      s_showByRow: false
     };
   },
-  props: ["tableData", "tableStyle", "showByRow"],
-  methods: {},
+  props: ["tableData", "tableStyle", "showByRow", "rowHeadArr"],
+  methods: {
+    // 获取属性, params 标识属性--值
+    getProp(obj = {}, params) {
+      if (params === "key") {
+        return Object.keys(obj)[0];
+      }
+      if (params == "value") {
+        return Object.keys(obj)[1];
+      }
+    },
+    // 暂时未实现
+    getColHead(index = 1) {
+      return this.tableData[index - 1][
+        this.getProp(this.tableData[index - 1], "key")
+      ];
+    },
+    getCellVal(index = 1) {
+      return this.tableData[index - 1][
+        this.getProp(this.tableData[index - 1], "value")
+      ];
+    }
+  },
   components: {},
   created() {
     this.styleObject = this.tableStyle;
@@ -48,12 +70,23 @@ export default {
   mounted() {},
   computed: {
     rowCount: function() {
-      return Math.ceil(this.tableData.length / 2);
+      // return Math.ceil(this.tableData.length / 2);
+      return this.tableData.length;
     }
   }
 };
 </script>
 <style scoped>
+/* 控制列标题样式 */
+/* .rowHead{
+  color: purple;
+} */
+/* .columnHead{
+  color: red;
+} */
+/* .cell{
+  background: yellowgreen
+} */
 .mailTable {
   border: solid 1px lightgreen;
 }

@@ -39,24 +39,42 @@
       @deleteRow="deleteRow"
     @row-click="rowClick"-->
 
-    <!-- 列标头 -->
-    <colHeadTable :tableData="tableData2" :tableStyle="{ width:'80%',margin:'0 auto' }" />
+    <!-- 列标头 通过外层div样式控制布局-->
+    <div style="width:50%">
+    <colHeadTable :tableData="tableData2" :rowHeadArr="rowHeadArr" :tableStyle="{ width:'80%',margin:'0 auto' }" />
+    </div>
     <!-- 时间组件 -->
-   <dataSelector :timeDefault="['2019-6-8','2019-7-8']"/>
+    <dataSelector :timeDefault="['2019-6-8','2019-7-8']" />
     <!-- 分页器 -->
-    <Pagination :total="30"/>
+    <Pagination :total="30" />
     <!-- 选择器 -->
     <searchSelect title="选择器" :insertValue.sync="selectVal" :configure="formHead" />
     {{selectVal}}
     <button @click="ceshi">ceshi</button>
-    <!-- 上传组件 -->   
+    <!-- 上传组件 -->
     <!-- <UploadExcel /> -->
-
+    <!-- 测试v-for -->
+    <h1>测试v-for</h1>
+    <!-- <label for>count:</label>
+    <button v-for="(item,index) in test.count" :key="index">{{item}}--{{index}}</button>
+    <br /> -->
+    <label for>obj:</label>
+    <button v-for="(item,index) in test.obj" :key="index">{{item}}--{{index}}</button>
+    <br />
+    <label for>arr:</label>
+    <button v-for="(item,index) in test.arr" :key="index">{{item}}-{{index}}</button>
+    <br />
+        <h1>一个对象从另一个对象中找属性值</h1>
+     <button @click="handleFind">查找</button>
   </div>
 </template>
 <script>
 /**
- * v-for 不仅遍历数组, 还可遍历对象
+ * v-for 不仅遍历数组, 还可遍历对象,数字(需要变量转数字对象)
+ * 遍历数字,item--依次从1到数字值大小  
+ * 遍历对象, item--依次为对象值,index为属性, 
+ * 遍历数组, item--依次为数组元素
+ * 
  * 一个优雅的实现前端模块化、并能按权重的优先级顺序异步加载的实现方案 --- vue的异步组件
  * 将页面核心功能（音、视频播放、文章、商品等等）打包成一个核心模块，通过框架优先加载。
  * 其他的一些周边功能打包后，通过服务器异步加载，从而解决业务需求越来越多导致的系统难维护、访问慢问题。
@@ -125,7 +143,7 @@ const tableData2 = [
   { key: "付款方式", value: "在线支付" },
   { key: "收货地址", value: "北京市海淀区西北旺镇" }
 ];
-
+const rowHeadArr = ['rowHead1','rowHead2']
 // const AsyncComponent = () => ({
 //   // 需要加载的组件 (应该是一个 `Promise` 对象)
 //   component: import('./later.vue'),
@@ -159,8 +177,14 @@ export default {
   },
   data() {
     return {
-      configureSet:{name: formHead, zip: selcet}, //测试selet
-      selectVal:'',
+      rowHeadArr,
+      test: {
+        count: 3,
+        arr: [2, 5, 9],
+        obj: { n: 11, age: 31, name: "felix" }
+      },
+      configureSet: { name: formHead, zip: selcet }, //测试selet
+      selectVal: "",
       formHead, // 配置标头
       tableData,
       tableData2,
@@ -169,18 +193,46 @@ export default {
     };
   },
   methods: {
-    ceshi(){
-      console.log('this.selectval')
-      console.log(this.selectVal)
-      this.selectVal= 'zip'
-      
-      setTimeout(_=>{this.selectVal = 'date'},1000)
-      setTimeout(_=>{this.selectVal = 'address'},2000)
+    ceshi() {
+      console.log("this.selectval");
+      console.log(this.selectVal);
+      this.selectVal = "zip";
+
+      setTimeout(_ => {
+        this.selectVal = "date";
+      }, 1000);
+      setTimeout(_ => {
+        this.selectVal = "address";
+      }, 2000);
+    },
+handleFind() {
+  const toObj = {
+    name: '',
+    height: '',
+    sex: ''
+  }
+  const fromObj = {
+    name: 'auli',
+    age: '18',
+    hobby: 'sing',
+    sex: 'girl'
+  }
+  this.findPropVal(fromObj, toObj)
+  console.log('toObj')
+  console.log(toObj)
+},
+    // 赋值属性值
+    findPropVal(fromObj, toObj) {
+      Object.keys(toObj).forEach((ele => {
+        if(ele in fromObj){
+          toObj[ele] = fromObj[ele]
+        }
+      }))
     },
     //动态事件
-    eventTrigger(row, eventName){
-       console.log('row--eventName')
-       console.log(row, eventName)
+    eventTrigger(row, eventName) {
+      console.log("row--eventName");
+      console.log(row, eventName);
     },
     addRow(row, newRow) {
       // if (row.name && row.zip) {
