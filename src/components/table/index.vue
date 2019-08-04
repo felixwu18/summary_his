@@ -204,12 +204,14 @@ export default {
       //     return; // 解决正常移动光标边界位置报错
       //   }
       // }
-      this.checkEnd(index);
-      // this.checkImmediately(index);
+      // 最后验证
+      // this.checkEnd(index);
+      // 即时验证
+      this.checkImmediately(index);
       // this.$refs.ginput[index + 1].focus();
     },
     checkImmediately(index) {
-      if (!this.checkInput(this.$refs.ginput, [0, (this.$refs.ginput.length - 1)])) {
+      if ([0, (this.$refs.ginput.length - 1)].includes(index)&&!this.$refs.ginput[index].value) {
         this.$message.success("为输入第一和最后一个值!");
         return; // 解决正常移动光标边界位置报错
       }
