@@ -1,5 +1,5 @@
 <template>
-  <div style="text-align: center;padding-bottom: 3em">
+  <div class="container">
     <div>
       <h1>异步组件测试</h1>点击按钮后
       第一个延迟300毫秒，从服务器加载
@@ -8,7 +8,7 @@
         <later></later>
         <later2></later2>
       </template>
-      <button @click="toggle">加载</button>
+      <button @click="toggle" :class="{classSelectorA: show,classSelectorB: !show}">加载</button>
     </div>
 
     <collapse />
@@ -16,7 +16,7 @@
       :formHead="formHead"
       :configureSet="configureSet"
       :data="tableData"
-      :editArr="['name','zip']"
+      :editArr="['name','zip', 'province']"
       :selectArr="['name','zip']"
       :RegObj="{zip:numberReg}"
       :handleArr="['查看','新增','删除','审核','点我啊','果然']"
@@ -41,10 +41,14 @@
 
     <!-- 列标头 通过外层div样式控制布局-->
     <div style="width:50%">
-    <colHeadTable :tableData="tableData2" :rowHeadArr="rowHeadArr" :tableStyle="{ width:'80%',margin:'0 auto' }" />
+      <colHeadTable
+        :tableData="tableData2"
+        :rowHeadArr="rowHeadArr"
+        :tableStyle="{ width:'80%',margin:'0 auto' }"
+      />
     </div>
     <!-- 时间组件 -->
-    <dataSelector :timeDefault="['2019-6-8','2019-7-8']" />
+    <dataSelector :timeDefault="timeDefault" :start.sync="search.start" :end.sync="search.end" />
     <!-- 分页器 -->
     <Pagination :total="30" />
     <!-- 选择器 -->
@@ -57,24 +61,28 @@
     <h1>测试v-for</h1>
     <!-- <label for>count:</label>
     <button v-for="(item,index) in test.count" :key="index">{{item}}--{{index}}</button>
-    <br /> -->
+    <br />-->
     <label for>obj:</label>
     <button v-for="(item,index) in test.obj" :key="index">{{item}}--{{index}}</button>
     <br />
     <label for>arr:</label>
     <button v-for="(item,index) in test.arr" :key="index">{{item}}-{{index}}</button>
     <br />
-        <h1>一个对象从另一个对象中找属性值</h1>
-     <button @click="handleFind">查找</button>
+    <h1>一个对象从另一个对象中找属性值</h1>
+    <button @click="handleFind">查找</button>
+    <!-- 输入框带搜索 -->
+    <inputSearch />
+    <!-- 输入框带建议 -->
+    <inputSuggestion />
   </div>
 </template>
 <script>
 /**
  * v-for 不仅遍历数组, 还可遍历对象,数字(需要变量转数字对象)
- * 遍历数字,item--依次从1到数字值大小  
- * 遍历对象, item--依次为对象值,index为属性, 
+ * 遍历数字,item--依次从1到数字值大小
+ * 遍历对象, item--依次为对象值,index为属性,
  * 遍历数组, item--依次为数组元素
- * 
+ *
  * 一个优雅的实现前端模块化、并能按权重的优先级顺序异步加载的实现方案 --- vue的异步组件
  * 将页面核心功能（音、视频播放、文章、商品等等）打包成一个核心模块，通过框架优先加载。
  * 其他的一些周边功能打包后，通过服务器异步加载，从而解决业务需求越来越多导致的系统难维护、访问慢问题。
@@ -86,6 +94,9 @@ import colHeadTable from "./components/table/colHeadTable";
 import dataSelector from "./components/DateSelector/index";
 import Pagination from "./components/Pagination/index";
 import searchSelect from "./components/searchSelect/index";
+import inputSearch from "./components/inputSearch/index";
+import inputSuggestion from "./components/inputSuggestion/index";
+
 // import UploadExcel from "./components/UploadExcel/index";
 // 服务器异步组件1：
 const later = Vue.component("later", function(resolve) {
@@ -143,7 +154,7 @@ const tableData2 = [
   { key: "付款方式", value: "在线支付" },
   { key: "收货地址", value: "北京市海淀区西北旺镇" }
 ];
-const rowHeadArr = ['rowHead1','rowHead2']
+const rowHeadArr = ["rowHead1", "rowHead2"];
 // const AsyncComponent = () => ({
 //   // 需要加载的组件 (应该是一个 `Promise` 对象)
 //   component: import('./later.vue'),
@@ -171,12 +182,19 @@ export default {
     dataSelector,
     Pagination,
     searchSelect,
+    inputSearch,
+    inputSuggestion,
     // UploadExcel,
     later,
     later2
   },
   data() {
     return {
+      search: {
+        start: "",
+        end: ""
+      },
+      timeDefault: [],
       rowHeadArr,
       test: {
         count: 3,
@@ -194,8 +212,9 @@ export default {
   },
   methods: {
     ceshi() {
-      console.log("this.selectval");
-      console.log(this.selectVal);
+      this.timeDefault = ["2019-6-8", "2019-7-8"];
+      console.log("this.search start end");
+      console.log(this.search);
       this.selectVal = "zip";
 
       setTimeout(_ => {
@@ -205,29 +224,29 @@ export default {
         this.selectVal = "address";
       }, 2000);
     },
-handleFind() {
-  const toObj = {
-    name: '',
-    height: '',
-    sex: ''
-  }
-  const fromObj = {
-    name: 'auli',
-    age: '18',
-    hobby: 'sing',
-    sex: 'girl'
-  }
-  this.findPropVal(fromObj, toObj)
-  console.log('toObj')
-  console.log(toObj)
-},
+    handleFind() {
+      const toObj = {
+        name: "",
+        height: "",
+        sex: ""
+      };
+      const fromObj = {
+        name: "auli",
+        age: "18",
+        hobby: "sing",
+        sex: "girl"
+      };
+      this.findPropVal(fromObj, toObj);
+      console.log("toObj");
+      console.log(toObj);
+    },
     // 赋值属性值
     findPropVal(fromObj, toObj) {
-      Object.keys(toObj).forEach((ele => {
-        if(ele in fromObj){
-          toObj[ele] = fromObj[ele]
+      Object.keys(toObj).forEach(ele => {
+        if (ele in fromObj && fromObj[ele]) {
+          toObj[ele] = fromObj[ele];
         }
-      }))
+      });
     },
     //动态事件
     eventTrigger(row, eventName) {
@@ -267,7 +286,21 @@ handleFind() {
   computed: {}
 };
 </script>
-<style>
+<style lang="less" scoped>
+/* 动态class*/
+.classSelectorA{
+    padding: .5em 2em;
+    background: lightgreen
+}
+.classSelectorB{
+    padding: .5em 2em;
+    background: lightblue
+}
+
+.container {
+  text-align: center;
+  padding-bottom: 3em;
+}
 .colapse {
   width: 50%;
   margin: 0 auto;
@@ -278,4 +311,7 @@ handleFind() {
 .el-radio__label {
   display: none;
 }
+</style>
+<style lang="less">
+  // @import "../common/less/mixin.less";
 </style>

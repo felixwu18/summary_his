@@ -9,7 +9,6 @@
       :row-style="selectedHighlight"
       @row-click="rowClick"
       @selection-change="selectionChange"
-      @keydown.13="keyEvent"
     >
       <!-- 单选 -->
       <el-table-column v-if="radio" fixed label="选择" width="60px" class="cell">
@@ -34,6 +33,17 @@
           <template
             v-if="scope.$index===(data.length-1) ? editArr.includes(formHeadItem.prop) : false"
           >
+            <!-- 焦点事件的间接拿row -->
+            <!-- <el-input
+              ref="ginput"
+              :key="index"
+              v-model="scope.row[formHeadItem.prop]"
+              @blur="ele => handleBlur(ele, scope.row)"
+              @focus="ele => handleFocus(ele, scope.row)"
+              @input="val => handleInput(val, scope.row)"
+              class="edit-input"
+              size="small"
+            />-->
             <el-input
               ref="ginput"
               :key="index"
@@ -119,11 +129,11 @@ console.log(this);
 //   { prop: "address", label: "地址" },
 //   { prop: "zip", label: "邮编" }
 // ];
-let flag = 0;
+// let flag = 0;
 export default {
   data() {
     return {
-      radioVal: "",
+      radioVal: ""
       // selectVal: "" //直接选中数据加入tableData
     };
   },
@@ -139,27 +149,107 @@ export default {
     handleArr: { type: Array, default: _ => [] }
   },
   methods: {
+    // 实时输入监控
+    handleInput(inputVal, row) {
+      console.log("evetn-row-input");
+      console.log(inputVal, Object.assign({}, row), row.zip); // 实时传输独立的row对象
+      row.city = inputVal;
+    },
+    // 失焦事件
+    handleBlur(event, row) {
+      console.log("evetn-row-blur");
+      console.log(event, row, row.zip);
+    },
+    // 聚焦事件
+    handleFocus(event, row) {
+      console.log("evetn-row-focus");
+      console.log(event, Object.assign({}, row), row.zip);
+    },
     // 选择框
     changeSelect(val) {
       console.log("val");
       console.log(val);
     },
-    downChang(val) {
+    downChang(event) {
       //  enter键事件核心代码
-      if (flag < 1) {
-        if (!this.$refs.ginput[0].value) {
-          return;
-        }
-        flag++;
-        this.$refs.ginput[1].focus();
-      } else {
-        let status = this.$refs.newAddRef.$listeners.click();
-        if (status) {
+      // if (flag < 1) {
+      //   if (!this.$refs.ginput[0].value) {
+      //     return;
+      //   }
+      //   flag++;
+      //   this.$refs.ginput[1].focus();
+      // } else {
+      //   let status = this.$refs.newAddRef.$listeners.click();
+      //   if (status) {
+      //     this.$nextTick(_ => {
+      //       this.$refs.ginput[0].focus();
+      //     });
+      //     flag = 0;
+      //   }
+      // }
+      // this.$refs.ginput[0].focused
+      if (event.keyCode != 13) {
+        return false;
+      }
+      const index = this.$refs.ginput.findIndex(ele => ele.focused);
+      // if (index === this.$refs.ginput.length - 1) {
+      //   if (this.checkInput(this.$refs.ginput, [0, this.$refs.length - 1])) {
+      //     this.$refs.newAddRef.$listeners.click();
+      //     this.$nextTick(_ => {
+      //       this.$refs.ginput[0].focus();
+      //     });
+      //     return // 解决正常移动光标边界位置报错
+      //   } else {
+      //     this.$message.success("为输入第一和最后一个值!");
+      //     return; // 解决正常移动光标边界位置报错
+      //   }
+      // }
+      this.checkEnd(index);
+      // this.checkImmediately(index);
+      // this.$refs.ginput[index + 1].focus();
+    },
+    checkImmediately(index) {
+      if (!this.checkInput(this.$refs.ginput, [0, (this.$refs.ginput.length - 1)])) {
+        this.$message.success("为输入第一和最后一个值!");
+        return; // 解决正常移动光标边界位置报错
+      }
+      if (index === this.$refs.ginput.length - 1) {
+        this.$refs.newAddRef.$listeners.click();
+        this.$nextTick(_ => {
+          this.$refs.ginput[0].focus();
+        });
+        return;
+      }
+      this.$refs.ginput[index + 1].focus();
+    },
+    checkEnd(index) {
+      if (index === this.$refs.ginput.length - 1) {
+        if (this.checkInput(this.$refs.ginput, [0, this.$refs.ginput.length - 1])) {
+          this.$refs.newAddRef.$listeners.click();
           this.$nextTick(_ => {
             this.$refs.ginput[0].focus();
           });
-          flag = 0;
+          return; // 解决正常移动光标边界位置报错
+        } else {
+          this.$message.success("为输入第一和最后一个值!");
+          return; // 解决正常移动光标边界位置报错
         }
+      }
+      this.$refs.ginput[index + 1].focus();
+    },
+    // checkArr is checked fields array
+    checkInput(objArr, checkArr) {
+      const checkFlag = []
+      for (let i = 0; i < checkArr.length; i++) {
+        // if (!objArr[checkArr[i]].value) {
+        //   return false;
+        // } else {
+        //   return true;
+        // }
+        if(objArr[checkArr[i]].value){checkFlag.push(true)}
+      }
+      if(checkFlag.length === checkArr.length){
+        return true
       }
     },
     selectedHighlight({ row, rowIndex }) {
@@ -207,10 +297,6 @@ export default {
       // console.log(val)
       this.$emit("multipleSelection", val);
     },
-    keyEvent(v) {
-      console.log("v");
-      console.log(v);
-    },
     // 表单过滤输入(输入值, 正则, 匹配后输入与否)
     isInput(val, prop, RegObj = {}, flag) {
       if (!RegObj[prop]) {
@@ -233,7 +319,14 @@ export default {
   },
   components: {},
   created() {},
-  mounted() {},
+  mounted() {
+    // 全局禁用tab
+    document.onkeydown = function(event) {
+      if (event.keyCode === 9) {
+        return false;
+      }
+    }
+  },
   computed: {
     _handleArr() {
       return this.handleArr.filter(
