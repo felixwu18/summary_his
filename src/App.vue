@@ -78,6 +78,9 @@
     <!-- 对象去重 -->
     <h1>对象的去重,去空</h1>
     <button @click="handleTest">去空,去重</button>
+    <!-- async 测试 -->
+    <h1>async wait 测试</h1>
+    <button @click="handleAsync">点击测试</button>
   </div>
 </template>
 <script>
@@ -218,7 +221,10 @@ export default {
       },
       timeDefault: [],
       rowHeadArr,
-      codeToLabel: [{prop: "level",configue: configue_level},{prop: "airQuality",configue: configue_airQuality}], // 转换的字段及配置对象数组
+      codeToLabel: [
+        { prop: "level", configue: configue_level },
+        { prop: "airQuality", configue: configue_airQuality }
+      ], // 转换的字段及配置对象数组
       test: {
         count: 3,
         arr: [2, 5, 9],
@@ -246,6 +252,22 @@ export default {
       setTimeout(_ => {
         this.selectVal = "address";
       }, 2000);
+    },
+    handleAsync() {
+      this.asyncFn().then((res) => {
+        // 要有返回就得在 async function里 return
+         console.log('res----')
+         console.log(res)
+        // res()
+      });
+    },
+    async asyncFn() {
+      // return _ => {  // return function
+          // setTimeout(_ => {
+          // console.log('async test -- print delay about 1 s')
+          return "async test -- print delay about 1s";
+        // },1000)
+      // };
     },
     handleTest() {
       var objArr = [
