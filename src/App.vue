@@ -20,6 +20,7 @@
       :selectArr="['name','zip']"
       :RegObj="{zip:numberReg}"
       :handleArr="['查看','新增','删除','审核','点我啊','果然']"
+      :codeToLabel="codeToLabel"
       @newRow="addRow"
       @enterDetail="handleDetail"
       @deleteRow="deleteRow"
@@ -74,6 +75,9 @@
     <inputSearch />
     <!-- 输入框带建议 -->
     <inputSuggestion />
+    <!-- 对象去重 -->
+    <h1>对象的去重,去空</h1>
+    <button @click="handleTest">去空,去重</button>
   </div>
 </template>
 <script>
@@ -110,6 +114,8 @@ const later2 = Vue.component("later2", function(resolve) {
 });
 // 先配标头
 const formHead = [
+  { prop: "airQuality", label: "空气质量" },
+  { prop: "level", label: "等级" },
   { prop: "name", label: "姓名" },
   { prop: "date", label: "日期" },
   { prop: "province", label: "省份" },
@@ -129,6 +135,8 @@ const selcet = [
 
 const tableData = [
   {
+    airQuality: 1,
+    level: 1,
     date: "2016-05-02",
     name: "",
     province: "四川",
@@ -137,6 +145,8 @@ const tableData = [
     zip: 999
   },
   {
+    airQuality: 3,
+    level: 3,
     date: "2016-05-04",
     name: "李四",
     province: "上海",
@@ -145,6 +155,18 @@ const tableData = [
     zip: 666
   }
 ];
+// 配置测试
+const configue_level = [
+  { key: 1, value: "一级城市" },
+  { key: 2, value: "二级城市" },
+  { key: 3, value: "三级城市" }
+];
+const configue_airQuality = [
+  { key: 1, value: "优" },
+  { key: 2, value: "良" },
+  { key: 3, value: "差" }
+];
+
 // 第一列表头
 const tableData2 = [
   { key: "单号", value: "1001" },
@@ -196,6 +218,7 @@ export default {
       },
       timeDefault: [],
       rowHeadArr,
+      codeToLabel: [{prop: "level",configue: configue_level},{prop: "airQuality",configue: configue_airQuality}], // 转换的字段及配置对象数组
       test: {
         count: 3,
         arr: [2, 5, 9],
@@ -223,6 +246,43 @@ export default {
       setTimeout(_ => {
         this.selectVal = "address";
       }, 2000);
+    },
+    handleTest() {
+      var objArr = [
+        { id: 1, age: 18 },
+        { id: 6, age: 19 },
+        { id: 6, age: 66 },
+        {}
+      ];
+      // const obj = {id: 1, age: 18}
+      objArr = this.noSame(objArr, "id");
+      // objArr =this.noBlank(objArr, "id")
+      console.log("去重");
+      console.log(objArr);
+    },
+    //去重
+    noSame(objArr, propStr) {
+      var obj = {};
+      return objArr.reduce(function(acc, cur) {
+        obj[cur[propStr]] ? "" : (obj[cur[propStr]] = true && acc.push(cur));
+        return acc;
+      }, []);
+    },
+    //去空
+    noBlank(objArr, propStr) {
+      const tempArr = [];
+      if (!objArr || !objArr.length) {
+        return;
+      }
+      // 去空
+      objArr.forEach(ele => {
+        console.log("ele");
+        console.log(ele);
+        if (ele[propStr]) {
+          tempArr.push(ele);
+        }
+      });
+      return tempArr;
     },
     handleFind() {
       const toObj = {
@@ -288,13 +348,13 @@ export default {
 </script>
 <style lang="less" scoped>
 /* 动态class*/
-.classSelectorA{
-    padding: .5em 2em;
-    background: lightgreen
+.classSelectorA {
+  padding: 0.5em 2em;
+  background: lightgreen;
 }
-.classSelectorB{
-    padding: .5em 2em;
-    background: lightblue
+.classSelectorB {
+  padding: 0.5em 2em;
+  background: lightblue;
 }
 
 .container {
@@ -313,5 +373,5 @@ export default {
 }
 </style>
 <style lang="less">
-  // @import "../common/less/mixin.less";
+// @import "../common/less/mixin.less";
 </style>

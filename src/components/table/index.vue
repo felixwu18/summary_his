@@ -79,7 +79,10 @@
             style="color:red; font-weight: bold"
           >{{ scope.row[formHeadItem.prop] }}</span>
           <!-- 正常显示 -->
-          <span v-else-if="!editArr.includes(formHeadItem.prop)">{{ scope.row[formHeadItem.prop] }}</span>
+          <!-- <span v-else-if="!editArr.includes(formHeadItem.prop)">{{ scope.row[formHeadItem.prop] }}</span> -->
+          <span
+            v-else-if="!editArr.includes(formHeadItem.prop)"
+          >{{ codeTransform(scope.row[formHeadItem.prop], formHeadItem.prop) }}</span>
         </template>
       </el-table-column>
       <el-table-column v-if="handleArr.length" label="操作">
@@ -146,9 +149,42 @@ export default {
     editArr: { type: Array, default: _ => [] },
     selectArr: { type: Array, default: _ => [] },
     configureSet: { type: Object, default: _ => {} },
-    handleArr: { type: Array, default: _ => [] }
+    handleArr: { type: Array, default: _ => [] },
+    codeToLabel: { type: Array, default: _ => [] }
   },
   methods: {
+    // 配置转换
+    codeTransform(propVal, prop) { // prop表头字段
+        for (let i = 0; i < this.codeToLabel.length; i++) {
+          // debugger
+          if (this.codeToLabel[i][this.getProp(this.codeToLabel[i], "key")] === prop) { // 拿到对象数组对象的prop值 即 表头字段
+            return this.confugureFormatter(
+              this.codeToLabel[i][this.getProp(this.codeToLabel[i], "value")], // 配置对象数组
+              propVal // code
+            )
+          } else {
+            return propVal
+          }
+        }
+    },
+    // 获取动态属性, 不限制于一个对应关系的属性名及值
+    getProp(obj, param) {
+      if (param === "key") {
+        return Object.keys(obj)[0];
+      }
+      if (param == "value") {
+        return Object.keys(obj)[1];
+      }
+    },
+    confugureFormatter(configure, key) {
+      // key对应code, value对应转换后的值
+      if (configure) {
+        let matchObj = configure.filter(e => e.key === key);
+        if (matchObj[0]) {
+          return matchObj[0].value;
+        }
+      }
+    },
     // 实时输入监控
     handleInput(inputVal, row) {
       console.log("evetn-row-input");
@@ -211,7 +247,10 @@ export default {
       // this.$refs.ginput[index + 1].focus();
     },
     checkImmediately(index) {
-      if ([0, (this.$refs.ginput.length - 1)].includes(index)&&!this.$refs.ginput[index].value) {
+      if (
+        [0, this.$refs.ginput.length - 1].includes(index) &&
+        !this.$refs.ginput[index].value
+      ) {
         this.$message.success("为输入第一和最后一个值!");
         return; // 解决正常移动光标边界位置报错
       }
@@ -226,7 +265,9 @@ export default {
     },
     checkEnd(index) {
       if (index === this.$refs.ginput.length - 1) {
-        if (this.checkInput(this.$refs.ginput, [0, this.$refs.ginput.length - 1])) {
+        if (
+          this.checkInput(this.$refs.ginput, [0, this.$refs.ginput.length - 1])
+        ) {
           this.$refs.newAddRef.$listeners.click();
           this.$nextTick(_ => {
             this.$refs.ginput[0].focus();
@@ -241,17 +282,19 @@ export default {
     },
     // checkArr is checked fields array
     checkInput(objArr, checkArr) {
-      const checkFlag = []
+      const checkFlag = [];
       for (let i = 0; i < checkArr.length; i++) {
         // if (!objArr[checkArr[i]].value) {
         //   return false;
         // } else {
         //   return true;
         // }
-        if(objArr[checkArr[i]].value){checkFlag.push(true)}
+        if (objArr[checkArr[i]].value) {
+          checkFlag.push(true);
+        }
       }
-      if(checkFlag.length === checkArr.length){
-        return true
+      if (checkFlag.length === checkArr.length) {
+        return true;
       }
     },
     selectedHighlight({ row, rowIndex }) {
@@ -327,7 +370,7 @@ export default {
       if (event.keyCode === 9) {
         return false;
       }
-    }
+    };
   },
   computed: {
     _handleArr() {
