@@ -154,18 +154,29 @@ export default {
   },
   methods: {
     // 配置转换
-    codeTransform(propVal, prop) { // prop表头字段
-        for (let i = 0; i < this.codeToLabel.length; i++) {
-          // debugger
-          if (this.codeToLabel[i][this.getProp(this.codeToLabel[i], "key")] === prop) { // 拿到对象数组对象的prop值 即 表头字段
-            return this.confugureFormatter(
-              this.codeToLabel[i][this.getProp(this.codeToLabel[i], "value")], // 配置对象数组
-              propVal // code
-            )
-          } else {
-            return propVal
-          }
+    codeTransform(propVal, prop) {
+      // 没有转换
+      if (!this.codeToLabel.length) {
+        return propVal;
+      }
+      // 返回不需要转换值
+      const temp = []
+      this.codeToLabel.forEach(ele => {
+        temp.push(ele[this.getProp(ele, "key")])
+      })
+      if(!temp.includes(prop)){return propVal}
+      // 转换, prop表头字段
+      for (let i = 0; i < this.codeToLabel.length; i++) {
+        if (
+          this.codeToLabel[i][this.getProp(this.codeToLabel[i], "key")] === prop
+        ) {
+          // 拿到对象数组对象的prop值 即 表头字段
+          return this.confugureFormatter(
+            this.codeToLabel[i][this.getProp(this.codeToLabel[i], "value")], // 配置对象数组
+            propVal // code
+          );
         }
+      }
     },
     // 获取动态属性, 不限制于一个对应关系的属性名及值
     getProp(obj, param) {
