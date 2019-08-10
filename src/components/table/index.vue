@@ -190,7 +190,6 @@ export default {
     configureSet: { type: Object, default: _ => {} },
     handleArr: { type: Array, default: _ => [] },
     codeToLabel: { type: Array, default: _ => [] }
-    // multipleHead:
   },
   methods: {
     // 配置转换

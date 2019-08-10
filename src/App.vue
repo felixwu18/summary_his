@@ -134,15 +134,23 @@ const later = Vue.component("later", function(resolve) {
 const later2 = Vue.component("later2", function(resolve) {
   require(["./later2.vue"], resolve);
 });
-// 先配标头
+// 先配标头(非叶子节点表头-没有children的对象,用不着prop)
 const formHead = [
   { prop: "airQuality", label: "空气质量" },
   { prop: "level", label: "等级" },
   { prop: "name", label: "姓名" },
   {
-    // prop: "date",
     label: "日期",
-    children:[{ prop: "date", label: "日期"}, { prop: 'time', label: "时间",children:[{prop: 'hour', label: "小时"},{prop: 'minite', label: "分钟"}] }]
+    children: [
+      { prop: "date", label: "日期" },
+      {
+        label: "时间",
+        children: [
+          { prop: "hour", label: "小时" },
+          { prop: "minite", label: "分钟" }
+        ]
+      }
+    ]
   },
   { prop: "province", label: "省份" },
   { prop: "city", label: "市区" },
@@ -185,7 +193,7 @@ const tableData = [
     zip: 666
   }
 ];
-// 配置测试
+// 配置转换测试
 const configue_level = [
   { key: 1, value: "一级城市" },
   { key: 2, value: "二级城市" },
@@ -243,9 +251,9 @@ export default {
   data() {
     return {
       // 设置列宽(包括多级表列宽)
-      fieldsWidth:{
-        address : 200,
-        date:100,
+      fieldsWidth: {
+        address: 200,
+        date: 100,
         minite: 150
       },
       className: [],
