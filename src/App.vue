@@ -81,14 +81,24 @@
     <!-- async 测试 -->
     <h1>async wait 测试</h1>
     <button @click="handleAsync">点击测试</button>
-    <!-- 动态切换class -->
-    <h1 ref="waitToggle" class="default toggleAdd">动态切换class | isAdd:{{addClassflag}} <br> skinColor is now: {{changColor}} </h1>
+    <!-- 动态切换class ref实现-->
+    <h1 ref="waitToggle" class="default toggleAdd">
+      动态切换class | isAdd:{{addClassflag}}
+      <br />
+      skinColor is now: {{changColor}}
+    </h1>
     <button @click="switchSkin" class="marginLeft fontBold padding">切换皮肤</button>
     <button @click="ToggleClass" class="marginLeft fontBold padding">切换class</button>
     <button @click="addClass" class="marginLeft">添加class</button>
     <button @click="removeClass" class="marginLeft">删除class</button>
-    <!-- 动态切换style color -->
-    <h1 ref="waitStyleChange" :style="[]">动态切换class | isAdd:{{addClassflag}} <br> skinColor is now: {{changColor}} </h1>
+    <!-- 动态切换class and style color  数据驱动实现-->
+    <h1
+      ref="waitStyleChange"
+      :style="{background: styleColor, padding: '1em 0'}"
+      :class="[...className]"
+    >skinColor is now: {{styleColor}}</h1>
+    <button @click="changStyle" class="marginLeft fontBold padding">style切换</button>
+    <button @click="changClassVal" class="marginLeft fontBold padding">class 数据切换</button>
   </div>
 </template>
 <script>
@@ -128,7 +138,11 @@ const formHead = [
   { prop: "airQuality", label: "空气质量" },
   { prop: "level", label: "等级" },
   { prop: "name", label: "姓名" },
-  { prop: "date", label: "日期" },
+  {
+    // prop: "date",
+    label: "日期",
+    children:[{ prop: "date", label: "日期"}, { prop: 'time', label: "时间",children:[{prop: 'hour', label: "小时"},{prop: 'minite', label: "分钟"}] }]
+  },
   { prop: "province", label: "省份" },
   { prop: "city", label: "市区" },
   { prop: "address", label: "地址" },
@@ -137,7 +151,7 @@ const formHead = [
 //测试select 配数据
 const selcet = [
   { prop: "name", label: "姓名-selcet" },
-  { prop: "date", label: "日期-selcet" },
+  { prop: "time", label: "日期-selcet" },
   { prop: "province", label: "省份-selcet" },
   { prop: "city", label: "市区-selcet" },
   { prop: "address", label: "地址-selcet" },
@@ -149,6 +163,8 @@ const tableData = [
     airQuality: 1,
     level: 1,
     date: "2016-05-02",
+    hour: "8小时",
+    minite: "90分钟",
     name: "",
     province: "四川",
     city: "成都",
@@ -159,6 +175,8 @@ const tableData = [
     airQuality: 3,
     level: 3,
     date: "2016-05-04",
+    hour: "10小时",
+    minite: "30分钟",
     name: "李四",
     province: "上海",
     city: "",
@@ -223,7 +241,9 @@ export default {
   },
   data() {
     return {
-      changColor: 'switch not yet',
+      className: [],
+      styleColor: "switch not yet",
+      changColor: "switch not yet",
       addClassflag: false,
       search: {
         start: "",
@@ -261,15 +281,61 @@ export default {
         this.selectVal = "address";
       }, 2000);
     },
-    // 更好皮肤
+    changClassVal() {
+      const waitSelectClasses = ["skin1", "skin2", "skin3"];
+      const skinsMap = {
+        skin1: "lawngreen",
+        skin2: "lightseagreen",
+        skin3: "lightsalmon"
+      };
+      const others = ["border"];
+      if (!this.className.length) {
+        this.className.push(waitSelectClasses[0]);
+        // this.className[0] = waitSelectClasses[0];
+        return;
+      }
+      const curIndex = this.$utils.getIndex(
+        waitSelectClasses,
+        this.className[0]
+      );
+      const selectedClass =
+        curIndex === waitSelectClasses.length - 1
+          ? waitSelectClasses[0]
+          : waitSelectClasses[curIndex + 1];
+      this.className = [];
+      this.className.push(selectedClass);
+      // 加其他class
+      curIndex + 1 === waitSelectClasses.length - 1
+        ? this.className.push(others[0])
+        : "";
+      // 提示
+      this.styleColor = skinsMap[selectedClass];
+    },
+    changStyle() {
+      const colors = ["lawngreen", "lightseagreen", "lightsalmon"];
+      if (!this.styleColor) {
+        this.styleColor = colors[0];
+        return;
+      }
+      const curIndex = this.$utils.getIndex(colors, this.styleColor);
+      this.styleColor =
+        curIndex === colors.length - 1 ? colors[0] : colors[curIndex + 1];
+    },
+    // 更换皮肤
     switchSkin() {
       const skins = ["skin1", "skin2", "skin3"];
-      const skinsMap = {skin1:'lawngreen', skin2:'lightseagreen', skin3:'lightsalmon'}
+      const skinsMap = {
+        skin1: "lawngreen",
+        skin2: "lightseagreen",
+        skin3: "lightsalmon"
+      };
       // 检测元素添加的皮肤
       // const targetClassNames = this.$utils.cleanArray(this.$refs.waitToggle.className.trim().split(" "));
-      const targetClassNames = this.$refs.waitToggle.className.trim().split(" ");
+      const targetClassNames = this.$refs.waitToggle.className
+        .trim()
+        .split(" ");
       // 删除元素中间含有skins里的的皮肤
-      this.removeMiddleSkin(skins, targetClassNames)
+      this.removeMiddleSkin(skins, targetClassNames);
       // debugger
       var curSkin = targetClassNames[targetClassNames.length - 1];
       skins.includes(curSkin) ? "" : (curSkin = skins[0]); // 不删除非皮肤的class
@@ -286,9 +352,9 @@ export default {
       } else {
         this.$utils.addClass(this.$refs.waitToggle, curSkin);
       }
-      this.changColor = skinsMap[curSkin]
+      this.changColor = skinsMap[curSkin];
     },
-    removeMiddleSkin(skins, targetClassNames){
+    removeMiddleSkin(skins, targetClassNames) {
       // 删除元素中间含有skins里的的皮肤
       skins.forEach(str => {
         if (
@@ -298,7 +364,7 @@ export default {
           // debugger
           this.$utils.removeClass(this.$refs.waitToggle, str);
         }
-      })
+      });
     },
     ToggleClass() {
       this.addClassflag = this.$utils.hasClass(
@@ -313,11 +379,11 @@ export default {
     },
     addClass() {
       this.$utils.addClass(this.$refs.waitToggle, "toggleAdd");
-      this.addClassflag = true
+      this.addClassflag = true;
     },
     removeClass() {
       this.$utils.removeClass(this.$refs.waitToggle, "toggleAdd");
-      this.addClassflag = false
+      this.addClassflag = false;
     },
     // 异步
     handleAsync() {
@@ -425,6 +491,10 @@ export default {
   padding: 0.5em 1em;
 }
 /* 动态class*/
+.border {
+  border-radius: 10px 50%;
+  border: solid 2px;
+}
 .default {
   background: lightgreen;
 }

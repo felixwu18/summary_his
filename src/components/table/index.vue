@@ -5,8 +5,9 @@
       ref="dynamicTable"
       :data="data"
       border
-      style="width: 95%;margin:0 auto"
+      style="width: 95%;margin:0 auto;"
       :row-style="selectedHighlight"
+      :header-cell-style="headerCellStyle"
       @row-click="rowClick"
       @selection-change="selectionChange"
     >
@@ -19,22 +20,22 @@
       <!-- 多选 -->
       <el-table-column v-if="selection" label="选择" type="selection" width="60px" class="cell"></el-table-column>
       <!-- 列 -->
-      <el-table-column
-        style="color:red"
-        show-overflow-tooltip
-        v-for="(formHeadItem, index) in formHead"
-        :label="formHeadItem.label"
-        :key="index"
-      >
-        <!-- <template scope="scope">{{scope.row[formHeadItem.prop]}}</template> -->
-        <!-- 输入控制 -->
-        <template slot-scope="scope">
-          <!-- 输入框 -->
-          <template
-            v-if="scope.$index===(data.length-1) ? editArr.includes(formHeadItem.prop) : false"
-          >
-            <!-- 焦点事件的间接拿row -->
-            <!-- <el-input
+      <div v-for="(formHeadItem, index) in formHead" :key="index">
+        <!-- 单表头 -->
+        <el-table-column
+          show-overflow-tooltip
+          :label="formHeadItem.label"
+          v-if="!formHeadItem.children"
+        >
+          <!-- <template scope="scope">{{scope.row[formHeadItem.prop]}}</template> -->
+          <!-- 输入控制 -->
+          <template slot-scope="scope">
+            <!-- 输入框 -->
+            <template
+              v-if="scope.$index===(data.length-1) ? editArr.includes(formHeadItem.prop) : false"
+            >
+              <!-- 焦点事件的间接拿row -->
+              <!-- <el-input
               ref="ginput"
               :key="index"
               v-model="scope.row[formHeadItem.prop]"
@@ -43,48 +44,75 @@
               @input="val => handleInput(val, scope.row)"
               class="edit-input"
               size="small"
-            />-->
-            <el-input
-              ref="ginput"
-              :key="index"
-              v-model="scope.row[formHeadItem.prop]"
-              @keydown.native.13="downChang"
-              @blur="scope.row[formHeadItem.prop] = isInput(scope.row[formHeadItem.prop], formHeadItem.prop, RegObj, 1)"
-              class="edit-input"
-              size="small"
-            />
-          </template>
-          <!-- 下拉框 -->
-          <template
-            v-if="scope.$index!==(data.length-1) ? selectArr.includes(formHeadItem.prop) : false"
-          >
-            <el-select
-              @change="changeSelect"
-              v-model="scope.row[formHeadItem.prop]"
-              clearable
-              placeholder="请选择"
-              size="medium"
-            >
-              <el-option
-                v-for="(item,index) in Object.keys(configureSet).length ? configureSet[formHeadItem.prop]:[]"
+              />-->
+              <el-input
+                ref="ginput"
                 :key="index"
-                :label="item.label"
-                :value="item.prop"
-              ></el-option>
-            </el-select>
+                v-model="scope.row[formHeadItem.prop]"
+                @keydown.native.13="downChang"
+                @blur="scope.row[formHeadItem.prop] = isInput(scope.row[formHeadItem.prop], formHeadItem.prop, RegObj, 1)"
+                class="edit-input"
+                size="small"
+              />
+            </template>
+            <!-- 下拉框 -->
+            <template
+              v-if="scope.$index!==(data.length-1) ? selectArr.includes(formHeadItem.prop) : false"
+            >
+              <el-select
+                @change="changeSelect"
+                v-model="scope.row[formHeadItem.prop]"
+                clearable
+                placeholder="请选择"
+                size="medium"
+              >
+                <el-option
+                  v-for="(item,index) in Object.keys(configureSet).length ? configureSet[formHeadItem.prop]:[]"
+                  :key="index"
+                  :label="item.label"
+                  :value="item.prop"
+                ></el-option>
+              </el-select>
+            </template>
+            <!-- 带状态显示 暂时是死的 -->
+            <span
+              v-else-if="formHeadItem.prop === 'province'&&scope.$index!==(data.length-1)"
+              style="color:red; font-weight: bold"
+            >{{ scope.row[formHeadItem.prop] }}</span>
+            <!-- 正常显示 -->
+            <!-- <span v-else-if="!editArr.includes(formHeadItem.prop)">{{ scope.row[formHeadItem.prop] }}</span> -->
+            <span
+              v-else-if="!editArr.includes(formHeadItem.prop)"
+            >{{ codeTransform(scope.row[formHeadItem.prop], formHeadItem.prop) }}</span>
           </template>
-          <!-- 带状态显示 暂时是死的 -->
-          <span
-            v-else-if="formHeadItem.prop === 'province'&&scope.$index!==(data.length-1)"
-            style="color:red; font-weight: bold"
-          >{{ scope.row[formHeadItem.prop] }}</span>
-          <!-- 正常显示 -->
-          <!-- <span v-else-if="!editArr.includes(formHeadItem.prop)">{{ scope.row[formHeadItem.prop] }}</span> -->
-          <span
-            v-else-if="!editArr.includes(formHeadItem.prop)"
-          >{{ codeTransform(scope.row[formHeadItem.prop], formHeadItem.prop) }}</span>
-        </template>
-      </el-table-column>
+        </el-table-column>
+        <!-- 多表头 -->
+        <!-- 一级 -->
+        <el-table-column show-overflow-tooltip :label="formHeadItem.label" v-else>
+          <!-- 二级 -->
+          <el-table-column
+           show-overflow-tooltip 
+            v-for="(sonItem, index) in formHeadItem.children"
+            :label="sonItem.label"
+            :key="index"
+          >
+            <!-- 三级 -->
+            <el-table-column
+             show-overflow-tooltip 
+              v-for="(grandsonItem, index) in sonItem.children"
+              :label="grandsonItem.label"
+              :key="index"
+            >
+              <!-- 渲染三级标头对应数据 -->
+              <template
+                slot-scope="scope"
+              >{{codeTransform(scope.row[grandsonItem.prop], grandsonItem.prop)}}</template>
+            </el-table-column>
+            <!-- 渲染二级标头对应数据 -->
+            <template slot-scope="scope">{{codeTransform(scope.row[sonItem.prop], sonItem.prop)}}</template>
+          </el-table-column>
+        </el-table-column>
+      </div>
       <el-table-column :fixed="fixed" style="width: 300px" v-if="handleArr.length" label="操作">
         <template slot-scope="scope">
           <el-button
@@ -136,6 +164,10 @@ console.log(this);
 export default {
   data() {
     return {
+      // 居中头部
+      headerCellStyle: {
+        "text-align": "center"
+      },
       radioVal: ""
       // selectVal: "" //直接选中数据加入tableData
     };
@@ -143,7 +175,7 @@ export default {
   props: {
     data: Array,
     RegObj: Object,
-    fixed:{type: String, default: 'right'},
+    fixed: { type: String, default: "right" },
     formHead: { type: Array, default: _ => [] },
     radio: { type: Boolean, default: false },
     selection: { type: Boolean, default: false },
@@ -152,6 +184,7 @@ export default {
     configureSet: { type: Object, default: _ => {} },
     handleArr: { type: Array, default: _ => [] },
     codeToLabel: { type: Array, default: _ => [] }
+    // multipleHead:
   },
   methods: {
     // 配置转换
@@ -161,11 +194,13 @@ export default {
         return propVal;
       }
       // 返回不需要转换值
-      const temp = []
+      const temp = [];
       this.codeToLabel.forEach(ele => {
-        temp.push(ele[this.getProp(ele, "key")])
-      })
-      if(!temp.includes(prop)){return propVal}
+        temp.push(ele[this.getProp(ele, "key")]);
+      });
+      if (!temp.includes(prop)) {
+        return propVal;
+      }
       // 转换, prop表头字段
       for (let i = 0; i < this.codeToLabel.length; i++) {
         if (
@@ -287,7 +322,7 @@ export default {
           return; // 解决正常移动光标边界位置报错
         } else {
           this.$message.success("为输入第一和最后一个值!");
-          return; // 解决正常移动光标边界位置报错
+          return;
         }
       }
       this.$refs.ginput[index + 1].focus();
