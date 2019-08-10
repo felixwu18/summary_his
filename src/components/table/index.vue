@@ -8,6 +8,7 @@
       style="width: 95%;margin:0 auto;"
       :row-style="selectedHighlight"
       :header-cell-style="headerCellStyle"
+      :max-height="maxHeight"
       @row-click="rowClick"
       @selection-change="selectionChange"
     >
@@ -23,6 +24,7 @@
       <div v-for="(formHeadItem, index) in formHead" :key="index">
         <!-- 单表头 -->
         <el-table-column
+          :width="fieldsWidth[formHeadItem.prop]"
           show-overflow-tooltip
           :label="formHeadItem.label"
           v-if="!formHeadItem.children"
@@ -176,6 +178,8 @@ export default {
     data: Array,
     RegObj: Object,
     fixed: { type: String, default: "right" },
+    maxHeight:{ type: Number, default: 600},
+    fieldsWidth:{ type: Number, default: 600},
     formHead: { type: Array, default: _ => [] },
     radio: { type: Boolean, default: false },
     selection: { type: Boolean, default: false },
