@@ -110,3 +110,13 @@ function filterItem(valInput, keyMap) {
     }
   };
 }
+
+// 返回符号和字符串 默认两位小数 四舍五入
+export function currency(value, currency, decimals) {
+  value = parseFloat(value)
+  if (!isFinite(value) || (!value && value !== 0)) return '';
+  currency = currency !== null ? currency : '';
+  decimals = decimals !== null ? decimals : 2;
+  let stringified = value.toFixed(decimals);
+  return currency + stringified
+}

@@ -85,7 +85,7 @@
           >{{ codeTransform(scope.row[formHeadItem.prop], formHeadItem.prop) }}</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="handleArr.length" label="操作">
+      <el-table-column :fixed="fixed" style="width: 300px" v-if="handleArr.length" label="操作">
         <template slot-scope="scope">
           <el-button
             v-if="handleArr.includes('查看')"
@@ -143,6 +143,7 @@ export default {
   props: {
     data: Array,
     RegObj: Object,
+    fixed:{type: String, default: 'right'},
     formHead: { type: Array, default: _ => [] },
     radio: { type: Boolean, default: false },
     selection: { type: Boolean, default: false },
