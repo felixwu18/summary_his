@@ -24,7 +24,7 @@
       <div v-for="(formHeadItem, index) in formHead" :key="index">
         <!-- 单表头 -->
         <el-table-column
-          :width="fieldsWidth[formHeadItem.prop]"
+          :width="formHeadItem.prop in fieldsWidth ? fieldsWidth[formHeadItem.prop] : ''"
           show-overflow-tooltip
           :label="formHeadItem.label"
           v-if="!formHeadItem.children"
@@ -96,6 +96,7 @@
            show-overflow-tooltip 
             v-for="(sonItem, index) in formHeadItem.children"
             :label="sonItem.label"
+            :width="sonItem.prop in fieldsWidth ? fieldsWidth[sonItem.prop] : ''"
             :key="index"
           >
             <!-- 三级 -->
@@ -103,6 +104,7 @@
              show-overflow-tooltip 
               v-for="(grandsonItem, index) in sonItem.children"
               :label="grandsonItem.label"
+              :width="grandsonItem.prop in fieldsWidth ? fieldsWidth[grandsonItem.prop] : ''"
               :key="index"
             >
               <!-- 渲染三级标头对应数据 -->
@@ -115,7 +117,7 @@
           </el-table-column>
         </el-table-column>
       </div>
-      <el-table-column :fixed="fixed" style="width: 300px" v-if="handleArr.length" label="操作">
+      <el-table-column  :width="150" :fixed="fixed" style="width: 300px" v-if="handleArr.length" label="操作">
         <template slot-scope="scope">
           <el-button
             v-if="handleArr.includes('查看')"
@@ -178,8 +180,8 @@ export default {
     data: Array,
     RegObj: Object,
     fixed: { type: String, default: "right" },
-    maxHeight:{ type: Number, default: 600},
-    fieldsWidth:{ type: Number, default: 600},
+    maxHeight:{ type: Number, default: 1200},
+    fieldsWidth:{ type: Object, default: _ => {} },
     formHead: { type: Array, default: _ => [] },
     radio: { type: Boolean, default: false },
     selection: { type: Boolean, default: false },

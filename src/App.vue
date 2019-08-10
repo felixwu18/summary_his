@@ -21,6 +21,7 @@
       :RegObj="{zip:numberReg}"
       :handleArr="['查看','新增','删除','审核','点我啊','果然']"
       :codeToLabel="codeToLabel"
+      :fieldsWidth="fieldsWidth"
       @newRow="addRow"
       @enterDetail="handleDetail"
       @deleteRow="deleteRow"
@@ -241,6 +242,12 @@ export default {
   },
   data() {
     return {
+      // 设置列宽(包括多级表列宽)
+      fieldsWidth:{
+        address : 200,
+        date:100,
+        minite: 150
+      },
       className: [],
       styleColor: "switch not yet",
       changColor: "switch not yet",
