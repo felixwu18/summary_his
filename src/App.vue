@@ -81,6 +81,14 @@
     <!-- async 测试 -->
     <h1>async wait 测试</h1>
     <button @click="handleAsync">点击测试</button>
+    <!-- 动态切换class -->
+    <h1 ref="waitToggle" class="default toggleAdd">动态切换class | isAdd:{{addClassflag}} <br> skinColor is now: {{changColor}} </h1>
+    <button @click="switchSkin" class="marginLeft fontBold padding">切换皮肤</button>
+    <button @click="ToggleClass" class="marginLeft fontBold padding">切换class</button>
+    <button @click="addClass" class="marginLeft">添加class</button>
+    <button @click="removeClass" class="marginLeft">删除class</button>
+    <!-- 动态切换style color -->
+    <h1 ref="waitStyleChange" :style="[]">动态切换class | isAdd:{{addClassflag}} <br> skinColor is now: {{changColor}} </h1>
   </div>
 </template>
 <script>
@@ -215,6 +223,8 @@ export default {
   },
   data() {
     return {
+      changColor: 'switch not yet',
+      addClassflag: false,
       search: {
         start: "",
         end: ""
@@ -242,8 +252,6 @@ export default {
   methods: {
     ceshi() {
       this.timeDefault = ["2019-6-8", "2019-7-8"];
-      console.log("this.search start end");
-      console.log(this.search);
       this.selectVal = "zip";
 
       setTimeout(_ => {
@@ -253,20 +261,79 @@ export default {
         this.selectVal = "address";
       }, 2000);
     },
+    // 更好皮肤
+    switchSkin() {
+      const skins = ["skin1", "skin2", "skin3"];
+      const skinsMap = {skin1:'lawngreen', skin2:'lightseagreen', skin3:'lightsalmon'}
+      // 检测元素添加的皮肤
+      // const targetClassNames = this.$utils.cleanArray(this.$refs.waitToggle.className.trim().split(" "));
+      const targetClassNames = this.$refs.waitToggle.className.trim().split(" ");
+      // 删除元素中间含有skins里的的皮肤
+      this.removeMiddleSkin(skins, targetClassNames)
+      // debugger
+      var curSkin = targetClassNames[targetClassNames.length - 1];
+      skins.includes(curSkin) ? "" : (curSkin = skins[0]); // 不删除非皮肤的class
+      const flag = this.$utils.hasClass(this.$refs.waitToggle, curSkin);
+      if (flag) {
+        // 获取皮肤index
+        const curIndex = this.$utils.getIndex(skins, curSkin);
+        this.$utils.removeClass(this.$refs.waitToggle, curSkin);
+        this.$utils.addClass(
+          this.$refs.waitToggle,
+          (curSkin =
+            curIndex === skins.length - 1 ? skins[0] : skins[curIndex + 1])
+        );
+      } else {
+        this.$utils.addClass(this.$refs.waitToggle, curSkin);
+      }
+      this.changColor = skinsMap[curSkin]
+    },
+    removeMiddleSkin(skins, targetClassNames){
+      // 删除元素中间含有skins里的的皮肤
+      skins.forEach(str => {
+        if (
+          targetClassNames.includes(str) &&
+          targetClassNames[targetClassNames.length - 1] !== str
+        ) {
+          // debugger
+          this.$utils.removeClass(this.$refs.waitToggle, str);
+        }
+      })
+    },
+    ToggleClass() {
+      this.addClassflag = this.$utils.hasClass(
+        this.$refs.waitToggle,
+        "toggleAdd"
+      );
+      this.$utils.toggleClass(this.$refs.waitToggle, "toggleAdd"); // 正反切换
+      this.addClassflag = this.$utils.hasClass(
+        this.$refs.waitToggle,
+        "toggleAdd"
+      );
+    },
+    addClass() {
+      this.$utils.addClass(this.$refs.waitToggle, "toggleAdd");
+      this.addClassflag = true
+    },
+    removeClass() {
+      this.$utils.removeClass(this.$refs.waitToggle, "toggleAdd");
+      this.addClassflag = false
+    },
+    // 异步
     handleAsync() {
-      this.asyncFn().then((res) => {
+      this.asyncFn().then(res => {
         // 要有返回就得在 async function里 return
-         console.log('res----')
-         console.log(res)
+        console.log("res----");
+        console.log(res);
         // res()
       });
     },
     async asyncFn() {
       // return _ => {  // return function
-          // setTimeout(_ => {
-          // console.log('async test -- print delay about 1 s')
-          return "async test -- print delay about 1s";
-        // },1000)
+      // setTimeout(_ => {
+      // console.log('async test -- print delay about 1 s')
+      return "async test -- print delay about 1s";
+      // },1000)
       // };
     },
     handleTest() {
@@ -277,34 +344,12 @@ export default {
         {}
       ];
       // const obj = {id: 1, age: 18}
-      objArr = this.noSame(objArr, "id");
-      // objArr =this.noBlank(objArr, "id")
+      // objArr = this.noSame(objArr, "id");
       console.log("去重");
       console.log(objArr);
-    },
-    //去重
-    noSame(objArr, propStr) {
-      var obj = {};
-      return objArr.reduce(function(acc, cur) {
-        obj[cur[propStr]] ? "" : (obj[cur[propStr]] = true && acc.push(cur));
-        return acc;
-      }, []);
-    },
-    //去空
-    noBlank(objArr, propStr) {
-      const tempArr = [];
-      if (!objArr || !objArr.length) {
-        return;
-      }
-      // 去空
-      objArr.forEach(ele => {
-        console.log("ele");
-        console.log(ele);
-        if (ele[propStr]) {
-          tempArr.push(ele);
-        }
-      });
-      return tempArr;
+      objArr = this.$utils.uniqueObjArr(objArr, "id");
+      objArr = this.$utils.removeUnexpectObj(objArr, "id");
+      console.log(objArr);
     },
     handleFind() {
       const toObj = {
@@ -318,8 +363,9 @@ export default {
         hobby: "sing",
         sex: "girl"
       };
-      this.findPropVal(fromObj, toObj);
       console.log("toObj");
+      console.log(toObj);
+      this.$utils.copyPropVal(fromObj, toObj);
       console.log(toObj);
     },
     // 赋值属性值
@@ -369,7 +415,33 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+.marginLeft {
+  margin-left: 1em;
+}
+.fontBold {
+  font-weight: bold;
+}
+.padding {
+  padding: 0.5em 1em;
+}
 /* 动态class*/
+.default {
+  background: lightgreen;
+}
+.toggleAdd {
+  color: red;
+  padding: 1em 0;
+}
+.skin1 {
+  background: lawngreen;
+}
+.skin2 {
+  background: lightseagreen;
+}
+.skin3 {
+  background: lightsalmon;
+}
+
 .classSelectorA {
   padding: 0.5em 2em;
   background: lightgreen;

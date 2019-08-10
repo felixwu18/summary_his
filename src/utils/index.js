@@ -41,17 +41,17 @@ export function isType(value = null) {
  * 查找索引index
  *  @return {Array,Sting} Obj 查找的对象
  *  @return {Object,Sting,Number} target 查找的值
- *  @return {String,Number} key 对象数组里找对象时 字段
+ *  @return {String,Number} field 对象数组里找对象时 字段
  * 格式: 1. String-String(Number) 2. Array-String(Number) 3. Array-Object
  */
-export function getIndex(Obj, target, key) {
+export function getIndex(Obj, target, field) {
   if (!target) return;
   if (isType(Obj) === "Array" && isType(Obj[0]) !== "Object") {
     return Obj.indexOf(target);
   } else if (isType(Obj) === "String" && isType(Obj[0]) !== "Object") {
     return Obj.indexOf(target);
   } else if (isType(Obj) === "Array" && isType(Obj[0]) === "Object") {
-    return Obj.findIndex(ele => ele[key] === target[key]);
+    return Obj.findIndex(ele => ele[field] === target[field]);
   }
 }
 
@@ -94,8 +94,8 @@ export function deleteItem(Obj, target, key) {
  *  返回包含在字段内的所有对象数组
  */
 export function filterObjArray(ObjArr, valInput, keyMap) {
-  console.log('valInput')
-  console.log(typeof valInput)
+  console.log("valInput");
+  console.log(typeof valInput);
   return ObjArr.filter(filterItem(valInput, keyMap));
 }
 // 字段过滤
@@ -103,7 +103,9 @@ function filterItem(valInput, keyMap) {
   return item => {
     for (let i = 0; i < keyMap.length; i++) {
       if (
-         String(item[keyMap[i]]).toLowerCase().indexOf(valInput.toLowerCase()) !== -1
+        String(item[keyMap[i]])
+          .toLowerCase()
+          .indexOf(valInput.toLowerCase()) !== -1
       ) {
         return true;
       }
@@ -113,10 +115,156 @@ function filterItem(valInput, keyMap) {
 
 // 返回符号和字符串 默认两位小数 四舍五入
 export function currency(value, currency, decimals) {
-  value = parseFloat(value)
-  if (!isFinite(value) || (!value && value !== 0)) return '';
-  currency = currency !== null ? currency : '';
+  value = parseFloat(value);
+  if (!isFinite(value) || (!value && value !== 0)) return "";
+  currency = currency !== null ? currency : "";
   decimals = decimals !== null ? decimals : 2;
   let stringified = value.toFixed(decimals);
-  return currency + stringified
+  return currency + stringified;
+}
+
+/**
+ * @param {HTMLElement} element
+ * @param {string} className
+ */
+export function toggleClass(element, className) {
+  if (!element || !className) {
+    return;
+  }
+  let classString = element.className.trim();
+  const nameIndex = classString.indexOf(className);
+  if (nameIndex === -1) {
+    // classString += " " + className;
+    addClass(element, className);
+  } else {
+    // classString =
+    //   classString.substr(0, nameIndex) +
+    //   classString.substr(nameIndex + className.length);
+    removeClass(element, className);
+  }
+  // element.className = classString;
+}
+
+/**
+ * Check if an element has a class
+ * @param {HTMLElement} elm
+ * @param {string} cls
+ * @returns {boolean}
+ */
+export function hasClass(ele, cls) {
+  return !!ele.className.match(new RegExp("(\\s|^)" + cls + "(\\s|$)"));
+}
+
+/**
+ * Add class to element
+ * @param {HTMLElement} elm
+ * @param {string} cls
+ */
+export function addClass(ele, cls) {
+  if (!hasClass(ele, cls)) ele.className += " " + cls;
+}
+
+/**
+ * Remove class from element
+ * @param {HTMLElement} elm
+ * @param {string} cls
+ */
+export function removeClass(ele, cls) {
+  if (hasClass(ele, cls)) {
+    const reg = new RegExp("(\\s|^)" + cls + "(\\s|$)");
+    const clearArr = cleanArray(ele.className.split(" "));
+    // debugger
+    ele.className = clearArr.join(" ");
+    const replace = clearArr[clearArr.length - 1] === cls ? "" : " "; // 排除中间移除,影响后者
+    ele.className = ele.className.replace(reg, replace);
+  }
+}
+
+/**
+ * 对象数组去重
+ * @param {ObjArr} objArr
+ * @param {string} propStr
+ */
+export function uniqueObjArr(objArr, propStr) {
+  var obj = {};
+  return objArr.reduce(function(acc, cur) {
+    obj[cur[propStr]] ? "" : (obj[cur[propStr]] = true && acc.push(cur));
+    return acc;
+  }, []);
+}
+
+/**
+ * 对象数组去除对象(根据字段是否有值去除对象)
+ * @param {ObjArr} objArr
+ * @param {string} propStr
+ */
+export function removeUnexpectObj(objArr, propStr) {
+  const tempArr = [];
+  if (!objArr || !objArr.length) {
+    return;
+  }
+  objArr.forEach(ele => {
+    if (ele[propStr]) {
+      tempArr.push(ele);
+    }
+  });
+  return tempArr;
+}
+
+/**
+ * 去重数组的' ', undefined, null等
+ * @param {Array} actual
+ * @returns {Array}
+ */
+export function cleanArray(actual) {
+  const newArray = [];
+  for (let i = 0; i < actual.length; i++) {
+    if (actual[i] || actual[i] === 0) {
+      newArray.push(actual[i]);
+    }
+  }
+  return newArray;
+}
+
+/**
+ * 从一个对象拷贝与另一对象同名属性的值
+ * @param {Object} fromObj
+ * @param {Object} toObj
+ */
+export function copyPropVal(fromObj, toObj) {
+  Object.keys(toObj).forEach(ele => {
+    if (ele in fromObj && fromObj[ele]) {
+      toObj[ele] = fromObj[ele];
+    }
+  });
+}
+
+/**
+ * @param {Array} arr
+ * @returns {Array}
+ */
+export function uniqueArr(arr) {
+  return Array.from(new Set(arr));
+}
+
+/**
+ * This is just a simple version of deep copy
+ * Has a lot of edge cases bug
+ * If you want to use a perfect deep copy, use lodash's _.cloneDeep
+ * @param {Object} source
+ * @returns {Object}
+ */
+export function deepClone(source) {
+  if (!source && typeof source !== "object") {
+    throw new Error("error arguments", "deepClone");
+  }
+  const targetObj = source.constructor === Array ? [] : {};
+  Object.keys(source).forEach(keys => {
+    if (source[keys] && typeof source[keys] === "object") {
+      targetObj[keys] = deepClone(source[keys]);
+    } else {
+      targetObj[keys] = source[keys];
+    }
+  });
+  return targetObj;
 }
