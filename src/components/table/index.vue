@@ -63,6 +63,7 @@
             >
               <el-select
                 @change="changeSelect"
+                ref="refSelect"
                 v-model="scope.row[formHeadItem.prop]"
                 clearable
                 placeholder="请选择"
@@ -76,12 +77,22 @@
                 ></el-option>
               </el-select>
             </template>
+            <!-- 远程搜索 -->
+            <template v-else-if="scope.$index===(data.length-1) ? ['city'].includes(formHeadItem.prop) : false">
+              <el-autocomplete
+                v-model="autoSearchVal"
+                ref="autocomplete"
+                :fetch-suggestions="querySearchAsync"
+                placeholder="请输入内容"
+                @select="handleSelect"
+              ></el-autocomplete>
+            </template>
             <!-- 带状态显示 暂时是死的 -->
             <span
               v-else-if="formHeadItem.prop === 'province'&&scope.$index!==(data.length-1)"
               style="color:red; font-weight: bold"
             >{{ scope.row[formHeadItem.prop] }}</span>
-            <!-- 正常显示 -->
+            <!-- 正常显示(经过配置转换) -->
             <!-- <span v-else-if="!editArr.includes(formHeadItem.prop)">{{ scope.row[formHeadItem.prop] }}</span> -->
             <span
               v-else-if="!editArr.includes(formHeadItem.prop)"
@@ -93,7 +104,7 @@
         <el-table-column show-overflow-tooltip :label="formHeadItem.label" v-else>
           <!-- 二级 -->
           <el-table-column
-           show-overflow-tooltip 
+            show-overflow-tooltip
             v-for="(sonItem, index) in formHeadItem.children"
             :label="sonItem.label"
             :width="sonItem.prop in fieldsWidth ? fieldsWidth[sonItem.prop] : ''"
@@ -101,7 +112,7 @@
           >
             <!-- 三级 -->
             <el-table-column
-             show-overflow-tooltip 
+              show-overflow-tooltip
               v-for="(grandsonItem, index) in sonItem.children"
               :label="grandsonItem.label"
               :width="grandsonItem.prop in fieldsWidth ? fieldsWidth[grandsonItem.prop] : ''"
@@ -117,7 +128,13 @@
           </el-table-column>
         </el-table-column>
       </div>
-      <el-table-column  :width="150" :fixed="fixed" style="width: 300px" v-if="handleArr.length" label="操作">
+      <el-table-column
+        :width="150"
+        :fixed="fixed"
+        style="width: 300px"
+        v-if="handleArr.length"
+        label="操作"
+      >
         <template slot-scope="scope">
           <el-button
             v-if="handleArr.includes('查看')"
@@ -172,7 +189,8 @@ export default {
       headerCellStyle: {
         "text-align": "center"
       },
-      radioVal: ""
+      radioVal: "",
+      autoSearchVal: '' // 远程搜索输入值
       // selectVal: "" //直接选中数据加入tableData
     };
   },
@@ -180,8 +198,8 @@ export default {
     data: Array,
     RegObj: Object,
     fixed: { type: String, default: "right" },
-    maxHeight:{ type: Number, default: 1200},
-    fieldsWidth:{ type: Object, default: _ => {} },
+    maxHeight: { type: Number, default: 1200 },
+    fieldsWidth: { type: Object, default: _ => {} },
     formHead: { type: Array, default: _ => [] },
     radio: { type: Boolean, default: false },
     selection: { type: Boolean, default: false },
@@ -236,6 +254,17 @@ export default {
           return matchObj[0].value;
         }
       }
+    },
+    // 远程搜索
+    querySearchAsync(val) {
+      this.$refs.autocomplete
+      console.log('val')
+      console.log(val)
+    },
+    // 搜索选择
+    handleSelect() {
+      console.log('selct')
+      // console.log()
     },
     // 实时输入监控
     handleInput(inputVal, row) {
@@ -361,6 +390,9 @@ export default {
       }
     },
     rowClick(row) {
+      this.$refs.refSelect;
+      this.$refs.ginput;
+      // debugger;
       this.$emit("row-click", row);
     },
     handleLook(row) {

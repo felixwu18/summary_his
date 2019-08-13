@@ -100,6 +100,25 @@
     >skinColor is now: {{styleColor}}</h1>
     <button @click="changStyle" class="marginLeft fontBold padding">style切换</button>
     <button @click="changClassVal" class="marginLeft fontBold padding">class 数据切换</button>
+    <!-- 对象去重 -->
+    <h1>测试v-for 和 v-if 对页面渲染的影响</h1>
+    <div v-for="(item, index) in configue_level" :key="index+6">
+      <span ref="vifInner" v-if="item.key === 1">{{item.key}}---{{item.value}}</span>
+    </div>
+    <div>
+      <!-- {{item.value}} -->
+      <span ref="VforInner" v-for="(item, index) in configue_level" :key="index+6" >{{item.key}}---{{item.value}}</span>
+    </div>
+    <button @click="tryVifAndVfor">测试渲染</button>
+    <!-- 固定周期内不可触发事件 -->
+    <h1>防抖debounce and 节流throttle</h1>
+    <!-- 当前周期第一次触发才有效(周期内第一次触发记时开始) -->
+    <span class="fontBold red padding border">{{deSeconds}}</span>
+    <!-- <button @click="handleThrottle(startCouter,10)()">节流测试</button> -->
+    <button ref="testThrottle" @click="handleThrottle(startCouter,10)()" >节流测试</button>
+    <!-- 事件触发间的时间间隔超过预设时间间隔delay, 方有事件触发(因每次触发,起始时间都会被初始当前时间,重新计算时间) -->
+    <!-- <button @click="handleDebounce">防抖测试</button> -->
+    <button @click="$message.success('暂未开放')">防抖测试</button>
   </div>
 </template>
 <script>
@@ -174,7 +193,19 @@ const tableData = [
     date: "2016-05-02",
     hour: "8小时",
     minite: "90分钟",
-    name: "",
+    name: "feichang",
+    province: "四川",
+    city: "成都",
+    address: "春熙路",
+    zip: 999
+  },
+  {
+    airQuality: 1,
+    level: 1,
+    date: "2016-05-02",
+    hour: "8小时",
+    minite: "90分钟",
+    name: "felix",
     province: "四川",
     city: "成都",
     address: "春熙路",
@@ -250,6 +281,8 @@ export default {
   },
   data() {
     return {
+      deSeconds: 0, // 倒计时
+      configue_level, // 测试v-for and v-if
       // 设置列宽(包括多级表列宽)
       fieldsWidth: {
         address: 200,
@@ -295,6 +328,77 @@ export default {
       setTimeout(_ => {
         this.selectVal = "address";
       }, 2000);
+      this.$utils.handleSave.set("try", "this time may ok-session");
+      this.$utils.handleSave.set(
+        "try",
+        "this time may ok-localStorage",
+        "localStorage"
+      );
+      console.log("get---");
+      console.log(this.$utils.handleSave.get("try"));
+      console.log(this.$utils.handleSave.get("try", "localStorage"));
+    },
+    // 节流
+    handleThrottle(fn, delay) {
+      // 启动验证
+      // (function phoneValidate(fn = startCouter, delay = 10) {
+      console.log("this---");
+      console.log(this);
+      // 记录上一次函数触发的时间
+      var lastTime = 0;
+      return function() {
+        // 记录当前函数触发的时间
+        var nowTime = Date.now();
+        if (nowTime - lastTime > delay) {
+          // debugger
+          fn();
+          // 同步时间, 重新计算
+          lastTime = nowTime;
+          console.log('lastTime')
+          console.log(lastTime)
+        }
+      };
+      // })()
+    },
+    // 验证倒计时
+    startCouter() {
+      // 预定时间
+      var now = Date.now();
+      var endTime = now + 10 * 1000;
+      var endDate = new Date(endTime);
+      var end = endDate.getTime();
+      var _this = this;
+      (function countTime() {
+        now = Date.now();
+        //时间差
+        var leftTime = end - now;
+        var s;
+        if (leftTime >= 0) {
+          s = Math.ceil(leftTime / 1000);
+          _this.deSeconds = s;
+
+          // var value = document.getElementById("_s").value*1;
+          // var type_of = typeof value
+          // console.log(value*1,type_of);
+        } else {
+          // document.getElementById("_s").value = '重新获取验证码';
+          _this.deSeconds = "重新获取验证码";
+
+          // var type_of = typeof document.getElementById("_s").value
+          // console.log(type_of);
+
+          clearTimeout(timeId);
+        }
+        //递归每秒调用countTime方法，显示动态时间效果
+        let timeId = setTimeout(countTime, 1000);
+      })();
+    },
+    // 防抖
+    handleDebounce() {},
+    tryVifAndVfor() {
+      console.log("this.$refs.vifInner.length");
+      console.log(this.$refs.vifInner.length);
+      // this.$refs.vforInner
     },
     changClassVal() {
       const waitSelectClasses = ["skin1", "skin2", "skin3"];
@@ -351,7 +455,6 @@ export default {
         .split(" ");
       // 删除元素中间含有skins里的的皮肤
       this.removeMiddleSkin(skins, targetClassNames);
-      // debugger
       var curSkin = targetClassNames[targetClassNames.length - 1];
       skins.includes(curSkin) ? "" : (curSkin = skins[0]); // 不删除非皮肤的class
       const flag = this.$utils.hasClass(this.$refs.waitToggle, curSkin);
@@ -376,7 +479,6 @@ export default {
           targetClassNames.includes(str) &&
           targetClassNames[targetClassNames.length - 1] !== str
         ) {
-          // debugger
           this.$utils.removeClass(this.$refs.waitToggle, str);
         }
       });
@@ -501,6 +603,9 @@ export default {
 }
 .fontBold {
   font-weight: bold;
+}
+.red {
+  color: red;
 }
 .padding {
   padding: 0.5em 1em;

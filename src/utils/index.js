@@ -268,3 +268,69 @@ export function deepClone(source) {
   });
   return targetObj;
 }
+
+// //封装的session存储
+// export const session = {
+//   get: function(key) {
+//     let value = sessionStorage.getItem(key);
+//     if (value === null || value === "" || value === "undefined") {
+//       value = "";
+//     } else {
+//       value = JSON.parse(value);
+//     }
+//     return value;
+//   },
+//   set: function(key, value) {
+//     if (value === undefined) {
+//       return;
+//     }
+//     sessionStorage.setItem(key, JSON.stringify(value));
+//   }
+// };
+// // 封装的localStorage存储
+// export const storage = {
+//   get: function(key) {
+//     let value = localStorage.getItem(key);
+//     if (value === null || value === "" || value === "undefined") {
+//       value = "";
+//     } else {
+//       value = JSON.parse(value);
+//     }
+//     return value;
+//   },
+//   set: function(key, value) {
+//     if (value === undefined) {
+//       return;
+//     }
+//     localStorage.setItem(key, JSON.stringify(value));
+//   }
+// };
+
+/**
+ * 存储对象的封装
+ * @param {String} key
+ * @param {Array, Object, Number, String} value
+ * @param {String} storeName(sessionStorage or localStorage)
+ */
+export const handleSave = (function() {
+  const storeApiName = {sessionStorage, localStorage};
+  function get(key, storeName = 'sessionStorage') {
+    let value = storeApiName[storeName].getItem(key);
+    if (value === null || value === "" || value === "undefined") {
+      value = "";
+    } else {
+      value = JSON.parse(value);
+    }
+    return value;
+  }
+  function set(key, value, storeName = 'sessionStorage') {
+    if (value === undefined) {
+      return;
+    }
+    storeApiName[storeName].setItem(key, JSON.stringify(value));
+  }
+  return {
+    get,
+    set
+  };
+})()
