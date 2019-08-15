@@ -15,6 +15,7 @@
     <dynamicTable
       :formHead="formHead"
       :configureSet="configureSet"
+      :btnConfigure = "btnConfigure"
       :data="tableData"
       :editArr="['name','zip', 'province']"
       :selectArr="['name','zip']"
@@ -214,7 +215,7 @@ const tableData = [
   },
   {
     airQuality: 1,
-    level: 1,
+    level: 2,
     date: "2016-05-02",
     hour: "8小时",
     minite: "90分钟",
@@ -226,7 +227,7 @@ const tableData = [
   },
   {
     airQuality: 3,
-    level: 3,
+    level: 4,
     date: "2016-05-04",
     hour: "10小时",
     minite: "30分钟",
@@ -297,6 +298,11 @@ export default {
   },
   data() {
     return {
+      // 测试按钮配置
+      btnConfigure: {
+        prop: 'level',
+        btnStates: [{case: [1],btnArr: ['测试1']},{case: [2,3],btnArr: ['测试2','测试3']},{case: [4],btnArr: ['测试2','测试4']}]
+      },
       inputVal: "",
       deSeconds: 0, // 倒计时
       configue_level, // 测试v-for and v-if

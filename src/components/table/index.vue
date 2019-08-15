@@ -78,7 +78,9 @@
               </el-select>
             </template>
             <!-- 远程搜索 -->
-            <template v-else-if="scope.$index===(data.length-1) ? ['city'].includes(formHeadItem.prop) : false">
+            <template
+              v-else-if="scope.$index===(data.length-1) ? ['city'].includes(formHeadItem.prop) : false"
+            >
               <el-autocomplete
                 v-model="autoSearchVal"
                 ref="autocomplete"
@@ -136,7 +138,7 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <el-button
+          <!-- <el-button
             v-if="handleArr.includes('查看')"
             @click.stop="handleLook(scope.row)"
             type="text"
@@ -154,11 +156,11 @@
             @click.stop="deleteRow(scope)"
             type="text"
             size="medium"
-          >删除</el-button>
+          >删除</el-button>-->
           <!-- 动态事件 -->
           <!-- v-if = "!['查看','新增','删除'].includes(handleName)" -->
           <el-button
-            v-for="(handleName, index) in _handleArr"
+            v-for="(handleName, index) in _handleArr(scope.row)"
             @click.stop="dynamicHandle(scope.row, handleName)"
             type="text"
             size="medium"
@@ -190,7 +192,7 @@ export default {
         "text-align": "center"
       },
       radioVal: "",
-      autoSearchVal: '' // 远程搜索输入值
+      autoSearchVal: "" // 远程搜索输入值
       // selectVal: "" //直接选中数据加入tableData
     };
   },
@@ -207,7 +209,8 @@ export default {
     selectArr: { type: Array, default: _ => [] },
     configureSet: { type: Object, default: _ => {} },
     handleArr: { type: Array, default: _ => [] },
-    codeToLabel: { type: Array, default: _ => [] }
+    codeToLabel: { type: Array, default: _ => [] },
+    btnConfigure: { type: Object, default: _ => {} }
   },
   methods: {
     // 配置转换
@@ -257,13 +260,13 @@ export default {
     },
     // 远程搜索
     querySearchAsync(val) {
-      this.$refs.autocomplete
-      console.log('val')
-      console.log(val)
+      this.$refs.autocomplete;
+      console.log("val");
+      console.log(val);
     },
     // 搜索选择
     handleSelect() {
-      console.log('selct')
+      console.log("selct");
       // console.log()
     },
     // 实时输入监控
@@ -443,8 +446,17 @@ export default {
         console.log("isInput can not work");
       }
     },
-    // 拿到scope
-    get(scope) {}
+    _handleArr(row) {
+      // 字段的case组合里, 状态不重合
+      const dependFieldVal = row[this.btnConfigure.prop];
+      const btnShowArr = [];
+      this.btnConfigure.btnStates.forEach(ele => {
+        if (ele.case.includes(dependFieldVal)) {
+          btnShowArr.push(...ele.btnArr);
+        }
+      });
+      return btnShowArr;
+    }
   },
   components: {},
   created() {},
@@ -457,11 +469,11 @@ export default {
     };
   },
   computed: {
-    _handleArr() {
-      return this.handleArr.filter(
-        ele => !["查看", "新增", "删除"].includes(ele)
-      );
-    }
+    // _handleArr() {
+    //   // return this.handleArr.filter(
+    //   //   ele => !["查看", "新增", "删除"].includes(ele)
+    //   // );
+    // }
   }
 };
 </script>

@@ -42,10 +42,10 @@ export default {
       get() {
         return this.insertValue;
       },
-      set(val) {
+      set(key) {
         const value = this.$utils.confugureFormatter(this.configure, key);
         this.$emit(`change`, { key, value }); // 传编码及值
-        this.$emit("update:insertValue", val); // 编码
+        this.$emit("update:insertValue", key); // 编码
       }
     }
   },
