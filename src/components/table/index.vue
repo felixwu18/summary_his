@@ -134,7 +134,7 @@
         :width="150"
         :fixed="fixed"
         style="width: 300px"
-        v-if="handleArr.length"
+        v-if="btnConfigure ? Object.keys(btnConfigure).length : false"
         label="操作"
       >
         <template slot-scope="scope">
