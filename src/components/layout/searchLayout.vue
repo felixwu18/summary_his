@@ -6,7 +6,7 @@
 </template>
 <script>
 export default {
-  name: "searchInput",
+  name: "searchLayout",
   props: { title: { type: String }, width: { type: Number, default: 295 } },
   data() {
     return {};
@@ -17,8 +17,10 @@ export default {
 
 <style scoped>
 .layout {
+  overflow: hidden;
   margin: 0 10px 10px 0;
-  float: left;
+  /* float: left; */
+  display: inline-block;
   font-size: 14px;
   /* border: 1px solid black; */
 }
@@ -34,10 +36,9 @@ export default {
 .el-date-editor--datetimerange {
   width: 220px;
 }
-.layout span {
+.layout span:nth-child(1) {
   font-size: 1.1em;
   display: inline-block;
-  /* float: left; */
   /* line-height: 40px; */
   /* width: 50%; */
   vertical-align: middle;

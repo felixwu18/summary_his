@@ -50,11 +50,19 @@
       />
     </div>
     <!-- 时间组件 -->
-    <dataSelector :timeDefault="timeDefault" :start.sync="search.start" :end.sync="search.end" />
+    <dataSelector
+      title="日期"
+      :timeDefault="timeDefault"
+      :start.sync="search.start"
+      :end.sync="search.end"
+    />
     <!-- 分页器 -->
     <Pagination :total="30" />
     <!-- 选择器 -->
-    <searchSelect title="选择器" :insertValue.sync="selectVal" :configure="formHead" />
+    <searchSelect title="选择器" :insertValue.sync="selectVal" :configure="configue_level" />
+    <searchLayout title="选择器实现2" :width="350">
+      <setGetEnable :insertValue.sync="selectVal" :configure="configue_level" />
+    </searchLayout>
     {{selectVal}}
     <button @click="ceshi">ceshi</button>
     <!-- 上传组件 -->
@@ -107,7 +115,11 @@
     </div>
     <div>
       <!-- {{item.value}} -->
-      <span ref="VforInner" v-for="(item, index) in configue_level" :key="index+6" >{{item.key}}---{{item.value}}</span>
+      <span
+        ref="VforInner"
+        v-for="(item, index) in configue_level"
+        :key="index+6"
+      >{{item.key}}---{{item.value}}</span>
     </div>
     <button @click="tryVifAndVfor">测试渲染</button>
     <!-- 固定周期内不可触发事件 -->
@@ -115,7 +127,7 @@
     <!-- 当前周期第一次触发才有效(周期内第一次触发记时开始) -->
     <span class="fontBold red padding border">{{deSeconds}}</span>
     <!-- <button @click="handleThrottle(startCouter,10)()">节流测试</button> -->
-    <button ref="testThrottle" @click="handleThrottle(startCouter,10)()" >节流测试</button>
+    <button ref="testThrottle" @click="handleThrottle(startCouter,10)()">节流测试</button>
     <!-- 事件触发间的时间间隔超过预设时间间隔delay, 方有事件触发(因每次触发,起始时间都会被初始当前时间,重新计算时间) -->
     <!-- <button @click="handleDebounce">防抖测试</button> -->
     <button @click="$message.success('暂未开放')">防抖测试</button>
@@ -139,9 +151,10 @@ import colHeadTable from "./components/table/colHeadTable";
 import dataSelector from "./components/DateSelector/index";
 import Pagination from "./components/Pagination/index";
 import searchSelect from "./components/searchSelect/index";
+import setGetEnable from "./components/searchSelect/setGetEnable";
 import inputSearch from "./components/inputSearch/index";
 import inputSuggestion from "./components/inputSuggestion/index";
-
+import searchLayout from "./components/layout/searchLayout";
 // import UploadExcel from "./components/UploadExcel/index";
 // 服务器异步组件1：
 const later = Vue.component("later", function(resolve) {
@@ -230,6 +243,7 @@ const configue_level = [
   { key: 2, value: "二级城市" },
   { key: 3, value: "三级城市" }
 ];
+
 const configue_airQuality = [
   { key: 1, value: "优" },
   { key: 2, value: "良" },
@@ -273,14 +287,17 @@ export default {
     dataSelector,
     Pagination,
     searchSelect,
+    setGetEnable,
     inputSearch,
     inputSuggestion,
+    searchLayout,
     // UploadExcel,
     later,
     later2
   },
   data() {
     return {
+      inputVal: "",
       deSeconds: 0, // 倒计时
       configue_level, // 测试v-for and v-if
       // 设置列宽(包括多级表列宽)
@@ -309,7 +326,7 @@ export default {
         obj: { n: 11, age: 31, name: "felix" }
       },
       configureSet: { name: formHead, zip: selcet }, //测试selet
-      selectVal: "",
+      selectVal: null,
       formHead, // 配置标头
       tableData,
       tableData2,
@@ -320,14 +337,18 @@ export default {
   methods: {
     ceshi() {
       this.timeDefault = ["2019-6-8", "2019-7-8"];
-      this.selectVal = "zip";
+      // this.selectVal = "三级城市";
+      this.selectVal = 3;
 
       setTimeout(_ => {
-        this.selectVal = "date";
+        // this.selectVal = "二级城市";
+        this.selectVal = 2;
       }, 1000);
       setTimeout(_ => {
-        this.selectVal = "address";
+        // this.selectVal = "一级城市";
+        this.selectVal = 1;
       }, 2000);
+      //测试封装的存储
       this.$utils.handleSave.set("try", "this time may ok-session");
       this.$utils.handleSave.set(
         "try",
@@ -354,8 +375,8 @@ export default {
           fn();
           // 同步时间, 重新计算
           lastTime = nowTime;
-          console.log('lastTime')
-          console.log(lastTime)
+          console.log("lastTime");
+          console.log(lastTime);
         }
       };
       // })()
@@ -592,7 +613,9 @@ export default {
     //  console.log('watch-val',val)
     // }
   },
-  created() {},
+  created() {
+    this.timeDefault = ["2019-6-8", "2019-7-8"];
+  },
   mounted() {},
   computed: {}
 };

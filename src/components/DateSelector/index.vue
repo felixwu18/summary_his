@@ -23,7 +23,11 @@ export default {
       end: ""
     };
   },
-  props: ["timeDefault"],
+  // props: ["timeDefault"],
+  props: {timeDefault: {type: Array, default: _ => []}},
+  created(){
+    // this.time = ["2019-6-8", "2019-7-8"]
+  },
   methods: {
     monitorTime(time) {
       if (time) {
@@ -46,7 +50,8 @@ export default {
   watch: {
     timeDefault(newValue, oldValue) {
       // console.log('timeDefault change', newValue, oldValue);
-      this.time = newValue;
+      // this.time = newValue;
+      this.time = this.timeDefault
     }
   }
 };
