@@ -44,7 +44,8 @@ export default {
       },
       set(key) {
         const value = this.$utils.confugureFormatter(this.configure, key);
-        this.$emit(`change`, { key, value }); // 传编码及值
+        // this.$emit(`change`, { key, value }); // 传编码及值
+        this.$emit(`change`, { [this.itemKey]: key, [this.itemValue]: value }); // 传编码及值
         this.$emit("update:insertValue", key); // 编码
       }
     }

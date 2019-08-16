@@ -61,7 +61,7 @@
     <!-- 选择器 -->
     <searchSelect title="选择器" :insertValue.sync="selectVal" :configure="configue_level" />
     <searchLayout title="选择器实现2" :width="350">
-      <setGetEnable :insertValue.sync="selectVal" :configure="configue_level" />
+      <setGetEnable @change="getObj" :insertValue.sync="selectVal" :configure="configue_level" />
     </searchLayout>
     {{selectVal}}
     <button @click="ceshi">ceshi</button>
@@ -340,6 +340,10 @@ export default {
     };
   },
   methods: {
+    getObj(val){
+      console.log('va---l')
+      console.log(val)
+    },
     ceshi() {
       this.timeDefault = ["2019-6-8", "2019-7-8"];
       // this.selectVal = "三级城市";
