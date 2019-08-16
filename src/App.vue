@@ -10,13 +10,12 @@
       </template>
       <button @click="toggle" :class="{classSelectorA: show,classSelectorB: !show}">加载</button>
     </div>
-
     <collapse />
     <dynamicTable
       :formHead="formHead"
+      :data="tableData"
       :configureSet="configureSet"
       :btnConfigure = "btnConfigure"
-      :data="tableData"
       :editArr="['name','zip', 'province']"
       :selectArr="['name','zip']"
       :RegObj="{zip:numberReg}"

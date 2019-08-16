@@ -24,7 +24,7 @@
       <div v-for="(formHeadItem, index) in formHead" :key="index">
         <!-- 单表头 -->
         <el-table-column
-          :width="formHeadItem.prop in fieldsWidth ? fieldsWidth[formHeadItem.prop] : ''"
+          :width="fieldsWidth ? (formHeadItem.prop in fieldsWidth ? fieldsWidth[formHeadItem.prop] : '') : '' "
           show-overflow-tooltip
           :label="formHeadItem.label"
           v-if="!formHeadItem.children"
@@ -59,7 +59,7 @@
             </template>
             <!-- 下拉框 -->
             <template
-              v-if="scope.$index!==(data.length-1) ? selectArr.includes(formHeadItem.prop) : false"
+              v-if="configureSet ? (scope.$index!==(data.length-1) ? selectArr.includes(formHeadItem.prop) : false) : false "
             >
               <el-select
                 @change="changeSelect"
@@ -109,7 +109,7 @@
             show-overflow-tooltip
             v-for="(sonItem, index) in formHeadItem.children"
             :label="sonItem.label"
-            :width="sonItem.prop in fieldsWidth ? fieldsWidth[sonItem.prop] : ''"
+            :width="fieldsWidth ? (sonItem.prop in fieldsWidth ? fieldsWidth[sonItem.prop] : '') : '' "
             :key="index"
           >
             <!-- 三级 -->
@@ -117,7 +117,7 @@
               show-overflow-tooltip
               v-for="(grandsonItem, index) in sonItem.children"
               :label="grandsonItem.label"
-              :width="grandsonItem.prop in fieldsWidth ? fieldsWidth[grandsonItem.prop] : ''"
+              :width="fieldsWidth ? (grandsonItem.prop in fieldsWidth ? fieldsWidth[grandsonItem.prop] : '') : '' "
               :key="index"
             >
               <!-- 渲染三级标头对应数据 -->
@@ -174,18 +174,6 @@
   </div>
 </template>
 <script>
-// import searchSelect from "../searchSelect/index";
-console.log("thia");
-console.log(this);
-// const defaultFormHead = [
-//   { prop: "name", label: "姓名" },
-//   { prop: "date", label: "日期" },
-//   { prop: "province", label: "省份" },
-//   { prop: "city", label: "市区" },
-//   { prop: "address", label: "地址" },
-//   { prop: "zip", label: "邮编" }
-// ];
-// let flag = 0;
 export default {
   data() {
     return {
@@ -293,39 +281,10 @@ export default {
       console.log(val);
     },
     downChang(event) {
-      //  enter键事件核心代码
-      // if (flag < 1) {
-      //   if (!this.$refs.ginput[0].value) {
-      //     return;
-      //   }
-      //   flag++;
-      //   this.$refs.ginput[1].focus();
-      // } else {
-      //   let status = this.$refs.newAddRef.$listeners.click();
-      //   if (status) {
-      //     this.$nextTick(_ => {
-      //       this.$refs.ginput[0].focus();
-      //     });
-      //     flag = 0;
-      //   }
-      // }
-      // this.$refs.ginput[0].focused
       if (event.keyCode != 13) {
         return false;
       }
       const index = this.$refs.ginput.findIndex(ele => ele.focused);
-      // if (index === this.$refs.ginput.length - 1) {
-      //   if (this.checkInput(this.$refs.ginput, [0, this.$refs.length - 1])) {
-      //     this.$refs.newAddRef.$listeners.click();
-      //     this.$nextTick(_ => {
-      //       this.$refs.ginput[0].focus();
-      //     });
-      //     return // 解决正常移动光标边界位置报错
-      //   } else {
-      //     this.$message.success("为输入第一和最后一个值!");
-      //     return; // 解决正常移动光标边界位置报错
-      //   }
-      // }
       // 最后验证
       // this.checkEnd(index);
       // 即时验证
@@ -395,9 +354,6 @@ export default {
       }
     },
     rowClick(row) {
-      this.$refs.refSelect;
-      this.$refs.ginput;
-      // debugger;
       this.$emit("row-click", row);
     },
     handleLook(row) {
@@ -468,7 +424,9 @@ export default {
     }
   },
   components: {},
-  created() {},
+  created() {
+    this.fieldsWidth
+  },
   mounted() {
     // 全局禁用tab
     document.onkeydown = function(event) {
