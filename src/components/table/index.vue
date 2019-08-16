@@ -52,11 +52,10 @@
                 :key="index"
                 v-model="scope.row[formHeadItem.prop]"
                 @keydown.native.13="downChang"
-                @blur="scope.row[formHeadItem.prop] = isInput(scope.row[formHeadItem.prop], formHeadItem.prop, RegObj, 1)"
+                @input="scope.row[formHeadItem.prop] = isInput(scope.row[formHeadItem.prop], formHeadItem.prop, RegObj, 1)"
                 class="edit-input"
                 size="small"
               />
-              
             </template>
             <!-- 下拉框 -->
             <template
@@ -135,7 +134,7 @@
         :width="150"
         :fixed="fixed"
         style="width: 300px"
-        v-if="btnConfigure ? Object.keys(btnConfigure).length : false"
+        v-if="(btnConfigure ? Object.keys(btnConfigure).length : false) || handleArr.length"
         label="操作"
       >
         <template slot-scope="scope">
@@ -160,13 +159,15 @@
           >删除</el-button>-->
           <!-- 动态事件 -->
           <!-- v-if = "!['查看','新增','删除'].includes(handleName)" -->
-          <el-button
-            v-for="(handleName, index) in _handleArr(scope.row)"
-            @click.stop="dynamicHandle(scope.row, handleName)"
-            type="text"
-            size="medium"
-            :key="index"
-          >{{handleName}}</el-button>
+          <template v-for="(handleName, index) in _handleArr(scope.row)">
+            <el-button
+              v-if="btnConfigure ? Object.keys(btnConfigure).length : false"
+              @click.stop="dynamicHandle(scope.row, handleName)"
+              type="text"
+              size="medium"
+              :key="index"
+            >{{handleName}}</el-button>
+          </template>
         </template>
       </el-table-column>
     </el-table>
@@ -448,14 +449,21 @@ export default {
       }
     },
     _handleArr(row) {
-      // 字段的case组合里, 状态不重合
-      const dependFieldVal = row[this.btnConfigure.prop];
+      if (!this.btnConfigure) {
+        return;
+      }
       const btnShowArr = [];
-      this.btnConfigure.btnStates.forEach(ele => {
-        if (ele.case.includes(dependFieldVal)) {
-          btnShowArr.push(...ele.btnArr);
-        }
-      });
+      if (this.btnConfigure.prop) {
+        // 字段的case组合里, 状态不重合
+        const dependFieldVal = row[this.btnConfigure.prop];
+        this.btnConfigure.btnStates.forEach(ele => {
+          if (ele.case.includes(dependFieldVal)) {
+            btnShowArr.push(...ele.btnArr);
+          }
+        });
+      } else {
+        btnShowArr.push(...this.btnConfigure.btnStates[0].btnArr);
+      }
       return btnShowArr;
     }
   },
