@@ -1,7 +1,7 @@
 <template>
   <el-select
     filterable
-    @change="changeSelect"
+    :filter-method="selectFilterVal"
     v-model="value"
     clearable
     :disabled="disabled"
@@ -9,7 +9,7 @@
     size="medium"
   >
     <el-option
-      v-for="(item,index) in configure.length ? configure:[]"
+      v-for="(item,index) in options"
       :key="index"
       :label="item[itemValue]"
       :value="item[itemKey]"
@@ -22,7 +22,8 @@ export default {
   data() {
     return {
       itemKey: "",
-      itemValue: ""
+      itemValue: "",
+      options: this.configure ? this.configure : [] // 初始化
     };
   },
   props: {
@@ -31,10 +32,24 @@ export default {
     disabled: { type: Boolean, default: false }
   },
   methods: {
-    changeSelect(key) {
-      //   const value = this.$utils.confugureFormatter(this.configure, key);
-      //   this.$emit(`update:insertValue`, key);
-      //   this.$emit(`change`, { key, value });
+    selectFilterVal(val) {
+      if (val.trim()) {
+        //val存在
+        const fieldsArr = Object.keys(this.configure[0]); // 暂时按key,value字段过滤
+
+        this.options = this.$utils.filterObjArray(
+          this.configure,
+          val,
+          fieldsArr
+        );
+        // debugger
+      } else {
+        //val为空时，还原数组
+        this.options = this.configure;
+      }
+      console.log('val---this.options')
+      console.log(val)
+      console.log(this.options)
     }
   },
   computed: {
