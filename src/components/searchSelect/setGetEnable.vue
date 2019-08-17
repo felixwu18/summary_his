@@ -1,5 +1,6 @@
 <template>
   <el-select
+    filterable
     @change="changeSelect"
     v-model="value"
     clearable
@@ -20,7 +21,6 @@ export default {
   name: "searchSelect",
   data() {
     return {
-      //   value: ""
       itemKey: "",
       itemValue: ""
     };

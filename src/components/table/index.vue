@@ -61,7 +61,10 @@
             <template
               v-if="configureSet ? (scope.$index!==(data.length-1) ? selectArr.includes(formHeadItem.prop) : false) : false "
             >
+              <!-- filterable and filter-method make select input filter enabled -->
               <el-select
+                filterable
+                :filter-method="selectFilterVal"
                 @change="changeSelect"
                 ref="refSelect"
                 v-model="scope.row[formHeadItem.prop]"
@@ -70,7 +73,7 @@
                 size="medium"
               >
                 <el-option
-                  v-for="(item,index) in Object.keys(configureSet).length ? configureSet[formHeadItem.prop]:[]"
+                  v-for="(item,index) in options = Object.keys(configureSet).length ? configureSet[formHeadItem.prop]:[]"
                   :key="index"
                   :label="item.label"
                   :value="item.prop"
@@ -182,7 +185,8 @@ export default {
         "text-align": "center"
       },
       radioVal: "",
-      autoSearchVal: "" // 远程搜索输入值
+      autoSearchVal: "", // 远程搜索输入值
+      options: []
       // selectVal: "" //直接选中数据加入tableData
     };
   },
@@ -197,12 +201,31 @@ export default {
     selection: { type: Boolean, default: false },
     editArr: { type: Array, default: _ => [] },
     selectArr: { type: Array, default: _ => [] },
-    configureSet: { type: Object, default: _ => {} },
+    configureSet: { type: Object, default: _ => {} }, // selcet配置数据
     handleArr: { type: Array, default: _ => [] },
     codeToLabel: { type: Array, default: _ => [] },
     btnConfigure: { type: Object, default: _ => {} }
   },
   methods: {
+    selectFilterVal(val) {
+      // this.value = val;
+      const field = 'name'
+      if (val.trim()) {
+        //val存在
+        const fieldsArr = Object.keys(this.configureSet[field][0]);
+        this.options = this.$utils.filterObjArray(
+          this.configureSet[field],
+          val,
+          fieldsArr
+        );
+      } else {
+        //val为空时，还原数组
+        this.options = this.configureSet[field];
+      }
+      console.log("val---temp");
+      console.log(val);
+      console.log(this.options);
+    },
     // 配置转换
     codeTransform(propVal, prop) {
       // 没有转换
@@ -355,6 +378,8 @@ export default {
     },
     rowClick(row) {
       this.$emit("row-click", row);
+      console.log('this.op')
+      console.log(this.options)
     },
     handleLook(row) {
       this.$emit("enterDetail", row);
@@ -425,7 +450,7 @@ export default {
   },
   components: {},
   created() {
-    this.fieldsWidth
+    this.fieldsWidth;
   },
   mounted() {
     // 全局禁用tab
