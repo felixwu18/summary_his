@@ -207,6 +207,7 @@ export default {
     btnConfigure: { type: Object, default: _ => {} }
   },
   methods: {
+    // select自定义搜索方法
     selectFilterVal(val, formHeadItem) {
       const field = formHeadItem.prop; // 对应表头筛选
       if (val.trim()) {
@@ -272,10 +273,32 @@ export default {
       }
     },
     // 远程搜索
-    querySearchAsync(val) {
-      this.$refs.autocomplete;
-      console.log("val");
-      console.log(val);
+    querySearchAsync(val, cb) {
+      // 1. autocomplete只识别value字段并在下拉框中显示=>对象数组中每个对象必须有value字段
+      // 2. 必须将过滤的结果cb回调
+      const configue_level = [
+        { key: 1, value: "一级城市-大" },
+        { key: 2, value: "二级城市-中" },
+        { key: 3, value: "三级城市-小" }
+      ];
+      var result ;
+      if (val.trim()) {
+        //val存在
+        result = this.$utils.filterObjArray(
+         configue_level,
+          val,
+          ['key','value']
+        );
+      } else {
+        //val为空时，还原数组
+        result = configue_level;
+      }
+      console.log('querySearchAsync-val-result')
+      console.log(val)
+      console.log(result)
+      setTimeout(_ => {
+        cb(result);
+      }, 1000);
     },
     // 搜索选择
     handleSelect() {
