@@ -131,6 +131,9 @@
     <!-- 事件触发间的时间间隔超过预设时间间隔delay, 方有事件触发(因每次触发,起始时间都会被初始当前时间,重新计算时间) -->
     <!-- <button @click="handleDebounce">防抖测试</button> -->
     <button @click="$message.success('暂未开放')">防抖测试</button>
+    <h1 class="redBold">测试图标svg组件(未通)</h1>
+    <!-- <svg-icon icon-class="plane" /> -->
+
   </div>
 </template>
 <script>
@@ -145,7 +148,7 @@
  * 其他的一些周边功能打包后，通过服务器异步加载，从而解决业务需求越来越多导致的系统难维护、访问慢问题。
  */
 import Vue from "vue";
-import collapse from "./components/collapse/index";
+import collapse from "@/components/collapse/index";
 import dynamicTable from "./components/table/index";
 import colHeadTable from "./components/table/colHeadTable";
 import dataSelector from "./components/DateSelector/index";
@@ -630,6 +633,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+@import '~@/common/less/mixin.less';
 .marginLeft {
   margin-left: 1em;
 }
@@ -664,15 +668,6 @@ export default {
   background: lightsalmon;
 }
 
-.classSelectorA {
-  padding: 0.5em 2em;
-  background: lightgreen;
-}
-.classSelectorB {
-  padding: 0.5em 2em;
-  background: lightblue;
-}
-
 .container {
   text-align: center;
   padding-bottom: 3em;
@@ -687,7 +682,4 @@ export default {
 .el-radio__label {
   display: none;
 }
-</style>
-<style lang="less">
-// @import "../common/less/mixin.less";
 </style>

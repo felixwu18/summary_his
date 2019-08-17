@@ -29,6 +29,7 @@ export default {
   props: {
     configure: { type: Array, default: _ => [] },
     insertValue: { type: Number, default: null },
+    // insertValue: ['Number','String'],
     disabled: { type: Boolean, default: false }
   },
   methods: {

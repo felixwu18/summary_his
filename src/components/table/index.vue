@@ -102,6 +102,18 @@
             <span
               v-else-if="!editArr.includes(formHeadItem.prop)"
             >{{ codeTransform(scope.row[formHeadItem.prop], formHeadItem.prop) }}</span>
+            <!-- 
+              <el-popover
+              placement="top-start"
+              title="标题"
+              width="200"
+              trigger="hover"
+              content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+            >
+              <span
+                v-if="!editArr.includes(formHeadItem.prop)"
+              >{{ codeTransform(scope.row[formHeadItem.prop], formHeadItem.prop) }}</span>
+            </el-popover>-->
           </template>
         </el-table-column>
         <!-- 多表头 -->
@@ -141,7 +153,7 @@
         label="操作"
       >
         <template slot-scope="scope">
-          <!-- <el-button
+          <el-button
             v-if="handleArr.includes('查看')"
             @click.stop="handleLook(scope.row)"
             type="text"
@@ -159,7 +171,7 @@
             @click.stop="deleteRow(scope)"
             type="text"
             size="medium"
-          >删除</el-button>-->
+          >删除</el-button>
           <!-- 动态事件 -->
           <!-- v-if = "!['查看','新增','删除'].includes(handleName)" -->
           <template v-for="(handleName, index) in _handleArr(scope.row)">
@@ -281,21 +293,20 @@ export default {
         { key: 2, value: "二级城市-中" },
         { key: 3, value: "三级城市-小" }
       ];
-      var result ;
+      var result;
       if (val.trim()) {
         //val存在
-        result = this.$utils.filterObjArray(
-         configue_level,
-          val,
-          ['key','value']
-        );
+        result = this.$utils.filterObjArray(configue_level, val, [
+          "key",
+          "value"
+        ]);
       } else {
         //val为空时，还原数组
         result = configue_level;
       }
-      console.log('querySearchAsync-val-result')
-      console.log(val)
-      console.log(result)
+      console.log("querySearchAsync-val-result");
+      console.log(val);
+      console.log(result);
       setTimeout(_ => {
         cb(result);
       }, 1000);

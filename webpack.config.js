@@ -72,6 +72,16 @@ module.exports = (options = {}) => ({
             }
           }
         ]
+      },
+      {
+        test: /\.svg$/,
+        loader: "svg-sprite-loader",
+        // use: ["svg-sprite-loader"],
+        //使用这个loader需要下载此模块
+        include: [resolve("src/icons")],
+        options: {
+          symbolId: "icon-[name]"
+        }
       }
     ]
   },
@@ -85,7 +95,8 @@ module.exports = (options = {}) => ({
   ],
   resolve: {
     alias: {
-      "~": resolve(__dirname, "src")
+      // "~": resolve(__dirname, "src")
+      "@": resolve(__dirname, "src")
     },
     extensions: [".js", ".vue", ".json", ".css"]
   },
@@ -105,7 +116,7 @@ module.exports = (options = {}) => ({
       index: url.parse(options.dev ? "/assets/" : publicPath).pathname
     }
   },
-  devtool: options.dev ? "#eval-source-map" : "#source-map",
+  devtool: options.dev ? "#eval-source-map" : "#source-map"
   // configureWebpack: {
   //   // provide the app's title in webpack's name field, so that
   //   // it can be accessed in index.html to inject the correct title.
