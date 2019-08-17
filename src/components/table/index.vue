@@ -64,7 +64,7 @@
               <!-- filterable and filter-method make select input filter enabled -->
               <el-select
                 filterable
-                :filter-method="selectFilterVal"
+                :filter-method="val => selectFilterVal(val,formHeadItem)"
                 @change="changeSelect"
                 ref="refSelect"
                 v-model="scope.row[formHeadItem.prop]"
@@ -207,9 +207,8 @@ export default {
     btnConfigure: { type: Object, default: _ => {} }
   },
   methods: {
-    selectFilterVal(val) {
-      // this.value = val;
-      const field = 'name'
+    selectFilterVal(val, formHeadItem) {
+      const field = formHeadItem.prop; // 对应表头筛选
       if (val.trim()) {
         //val存在
         const fieldsArr = Object.keys(this.configureSet[field][0]);
@@ -222,8 +221,9 @@ export default {
         //val为空时，还原数组
         this.options = this.configureSet[field];
       }
-      console.log("val---temp");
+      console.log("val-formHeadItem-options");
       console.log(val);
+      console.log(formHeadItem);
       console.log(this.options);
     },
     // 配置转换
@@ -378,8 +378,6 @@ export default {
     },
     rowClick(row) {
       this.$emit("row-click", row);
-      console.log('this.op')
-      console.log(this.options)
     },
     handleLook(row) {
       this.$emit("enterDetail", row);

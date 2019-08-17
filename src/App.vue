@@ -226,7 +226,7 @@ const tableData = [
   },
   {
     airQuality: 3,
-    level: 4,
+    level: 3,
     date: "2016-05-04",
     hour: "10小时",
     minite: "30分钟",
