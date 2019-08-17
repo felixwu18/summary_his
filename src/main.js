@@ -9,6 +9,10 @@ import App from './App.vue'
 import * as utils from './utils/index'
 Vue.prototype.$utils = utils
 
+// 引入lodash
+import _ from 'lodash'
+Vue.prototype.$lodash = _
+
 
 new Vue({
   el: '#app',

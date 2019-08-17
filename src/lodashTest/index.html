@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/4.17.4/lodash.js"></script>
+    <title>lodash_test</title>
+  </head>
+
+  <body style="text-align: center">
+    <h1>lodash数据测试</h1>
+    <button onclick="test()">测试</button>
+    <script>
+      function test() {
+        // 使用lodash将对象转换为数组
+        var obj = {
+          key1: { id: 1, name: "A" },
+          key2: { id: 2, name: "B" },
+          key3: { id: 3, name: "C" }
+        };
+        var array = _.map(obj, v => v);
+        console.log("before--after");
+        console.log(obj);
+        console.log(array);
+      }
+      function duplicate(n) {
+        return [n];
+      }
+
+    const temp =  _.flatMapDeep([1, 2,[2,[9],3]], duplicate);
+      // => [1, 1, 2, 2]
+      console.log(temp);
+    </script>
+  </body>
+</html>

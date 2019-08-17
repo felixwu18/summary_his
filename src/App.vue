@@ -15,7 +15,7 @@
       :formHead="formHead"
       :data="tableData"
       :configureSet="selectConfigureSet"
-      :btnConfigure = "btnConfigure"
+      :btnConfigure="btnConfigure"
       :editArr="['name','zip', 'province']"
       :selectArr="['name','zip']"
       :RegObj="{zip:numberReg}"
@@ -131,9 +131,12 @@
     <!-- 事件触发间的时间间隔超过预设时间间隔delay, 方有事件触发(因每次触发,起始时间都会被初始当前时间,重新计算时间) -->
     <!-- <button @click="handleDebounce">防抖测试</button> -->
     <button @click="$message.success('暂未开放')">防抖测试</button>
+    <!-- 测试svg组件 -->
     <h1 class="redBold">测试图标svg组件(未通)</h1>
     <!-- <svg-icon icon-class="plane" /> -->
-
+    <!-- 测试lodash -->
+    <h1>测试lodash</h1>
+    <el-button @click="testLodash">click lodash</el-button>
   </div>
 </template>
 <script>
@@ -302,8 +305,12 @@ export default {
     return {
       // 测试按钮配置
       btnConfigure: {
-        prop: 'level',
-        btnStates: [{case: [1],btnArr: ['测试1']},{case: [2,3],btnArr: ['测试2','测试3']},{case: [4],btnArr: ['测试2','测试4']}]
+        prop: "level",
+        btnStates: [
+          { case: [1], btnArr: ["测试1"] },
+          { case: [2, 3], btnArr: ["测试2", "测试3"] },
+          { case: [4], btnArr: ["测试2", "测试4"] }
+        ]
       },
       inputVal: "",
       deSeconds: 0, // 倒计时
@@ -343,15 +350,37 @@ export default {
     };
   },
   methods: {
-    getObj(val){
-      console.log('va---l')
-      console.log(val)
+    testLodash() {
+      // 数据处理
+      const num_before = "3.9";
+      const num = this.$lodash.round(num_before, 0);
+      // 是否为空
+      const obj = { n: 3 };
+      // 是否相同
+      const arr1 = [{ name: "felix", in: { age: 12 } }];
+      const arr2 = [{ name: "felix", in: { age: 11 } }];
+      console.log("before-lodash-after");
+      console.log(num_before);
+      console.log(num);
+      console.log((num-1).toFixed(1));
+      // console.log(this.$lodash.isEmpty(obj));
+      // console.log(this.$lodash.isEqual(arr1, arr2));
+      // const tmp = this.$lodash.cloneDeep(arr1);
+      // tmp.name = "美眉";
+      // console.log(tmp);
+      // console.log(arr1);
+    //  const fn = this.$lodash.once(_ => console.log(arr1))
+    //  const fn = _ => console.log(arr1)
+    // this.$lodash.throttle(_ => console.log(arr1), 1000)
+    },
+    getObj(val) {
+      console.log("va---l");
+      console.log(val);
     },
     ceshi() {
       this.timeDefault = ["2019-6-8", "2019-7-8"];
       // this.selectVal = "三级城市";
       this.selectVal = 3;
-
       setTimeout(_ => {
         // this.selectVal = "二级城市";
         this.selectVal = 2;
@@ -633,7 +662,7 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-@import '~@/common/less/mixin.less';
+@import "~@/common/less/mixin.less";
 .marginLeft {
   margin-left: 1em;
 }
