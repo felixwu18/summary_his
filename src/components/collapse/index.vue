@@ -2,14 +2,14 @@
   <div>
     <h1>collapse</h1>
     <el-collapse
-      v-model="activeNames[index]"
+      v-model="activeNames"
       v-for="(item, index) in tableDatas"
       class="colapse"
       :key="index"
       :name="index"
       @change="collapseChange"
     >
-      <el-collapse-item :title="item[0].name">
+      <el-collapse-item :title="item[0].name" name="1">
         <el-select v-model="item[0].name" placeholder="请选择活动区域" clearable>
           <el-option label="供货商1" value="供货商1"></el-option>
           <el-option label="供货商2" value="供货商2"></el-option>
@@ -77,7 +77,9 @@ export default {
   components: {
     dynamicTable
   },
-  created() {},
+  created() {
+    this.activeNames = '1' // 将折叠版容器value与callapse-item的name值保持一样,可默认展开所有
+  },
   mounted() {},
   computed: {}
 };

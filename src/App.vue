@@ -358,7 +358,7 @@ export default {
       const obj = { n: 3 };
       // 是否相同
       const arr1 = [{ name: "felix", in: { age: 12 } }];
-      const arr2 = [{ name: "felix", in: { age: 11 } }];
+      const arr2 = [{ name: "felix", in: { age: 11 }, arr: [] }];
       console.log("before-lodash-after");
       console.log(num_before);
       console.log(num);
@@ -372,6 +372,7 @@ export default {
     //  const fn = this.$lodash.once(_ => console.log(arr1))
     //  const fn = _ => console.log(arr1)
     // this.$lodash.throttle(_ => console.log(arr1), 1000)
+      this.$lodash.pullAll(arr2, [])  
     },
     getObj(val) {
       console.log("va---l");
