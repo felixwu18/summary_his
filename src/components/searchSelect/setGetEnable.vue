@@ -4,7 +4,6 @@
     :filter-method="selectFilterVal"
     v-model="value"
     clearable
-    :disabled="disabled"
     placeholder="请选择"
     size="medium"
   >
@@ -30,16 +29,16 @@ export default {
   props: {
     configure: { type: Array, default: _ => [] },
     // insertValue: { type: String, default: '' },
-    fields: { type: Object, default: _ => {} },
+    fields: { type: Object, default: _ => {} }, // 动态属性配置
     insertValue: [Number,String],
     disabled: { type: Boolean, default: false }
   },
   methods: {
+    // 自定义搜索
     selectFilterVal(val) {
       if (val.trim()) {
         //val存在
         const fieldsArr = Object.keys(this.configure[0]); // 暂时按key,value字段过滤
-
         this.options = this.$utils.filterObjArray(
           this.configure,
           val,
@@ -50,9 +49,6 @@ export default {
         //val为空时，还原数组
         this.options = this.configure;
       }
-      console.log("val---this.options");
-      console.log(val);
-      console.log(this.options);
     }
   },
   computed: {
@@ -71,19 +67,14 @@ export default {
       }
     },
     _fields() {
-      if (!this.configure || !this.configure.length) {
-        return { key: "key", value: "vlaue" };
+      if (!this.fields || !Object.keys(this.fields).length) {
+        return { key: "key", value: "value" }; // 默认防错处理
       } else {
         return this.fields
       }
     }
   },
   created() {
-    // 属性动态化
-    // if (!this.configure || !this.configure.length) {
-    //   this.itemKey = Object.keys(this.configure[0])[0];
-    //   this.itemValue = Object.keys(this.configure[1])[1];
-    // }
   }
 };
 </script>

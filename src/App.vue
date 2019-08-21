@@ -61,7 +61,7 @@
     <!-- 选择器 -->
     <searchSelect title="选择器" :insertValue.sync="selectVal" :configure="configue_level" />
     <searchLayout title="选择器实现2" :width="350">
-      <setGetEnable @change="getObj" :insertValue.sync="selectVal" :configure="configue_level" :fields="{key: 'key', value: 'value'}" />
+      <setGetEnable @change="getObj" :insertValue.sync="selectVal" :configure="configue_level"  />
     </searchLayout>
     {{selectVal}}
     <button @click="ceshi">ceshi</button>
