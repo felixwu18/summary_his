@@ -61,7 +61,7 @@
     <!-- 选择器 -->
     <searchSelect title="选择器" :insertValue.sync="selectVal" :configure="configue_level" />
     <searchLayout title="选择器实现2" :width="350">
-      <setGetEnable @change="getObj" :insertValue.sync="selectVal" :configure="configue_level" />
+      <setGetEnable @change="getObj" :insertValue.sync="selectVal" :configure="configue_level" :fields="{key: 'key', value: 'value'}" />
     </searchLayout>
     {{selectVal}}
     <button @click="ceshi">ceshi</button>
@@ -341,7 +341,8 @@ export default {
         obj: { n: 11, age: 31, name: "felix" }
       },
       selectConfigureSet: { name: formHead, zip: selcet }, //测试selet
-      selectVal: null,
+      // selectVal: null,
+      selectVal: '',
       formHead, // 配置标头
       tableData,
       tableData2,

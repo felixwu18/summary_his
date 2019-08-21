@@ -2,6 +2,7 @@
   <div>
     <h1>collapse</h1>
     <el-collapse
+      ref="collapse"
       v-model="activeNames"
       v-for="(item, index) in tableDatas"
       class="colapse"
@@ -14,13 +15,13 @@
           <el-option label="供货商1" value="供货商1"></el-option>
           <el-option label="供货商2" value="供货商2"></el-option>
         </el-select>
-        <dynamicTable :data="tableData"/>
+        <dynamicTable :data="tableData" />
       </el-collapse-item>
     </el-collapse>
   </div>
 </template>
 <script>
-import dynamicTable from "../table/index"
+import dynamicTable from "../table/index";
 
 const tableData = [
   {
@@ -65,22 +66,27 @@ export default {
       radio: "",
       activeNames: [],
       tableData,
-      tableDatas: [tableData, tableData2],
+      tableDatas: [tableData, tableData2]
     };
   },
   props: {},
   methods: {
     collapseChange(val) {
       console.log(val);
-    },
+    }
   },
   components: {
     dynamicTable
   },
   created() {
-    this.activeNames = '1' // 将折叠版容器value与callapse-item的name值保持一样,可默认展开所有
+    this.activeNames = "1"; // 将折叠版容器value与callapse-item的name值保持一样,可默认展开所有
   },
-  mounted() {},
+  mounted() {
+    this.$refs.collapse
+    // debugger
+    console.log('this.$refs.collapse')
+    console.log(this.$refs.collapse)
+  },
   computed: {}
 };
 </script>

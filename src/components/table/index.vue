@@ -29,6 +29,7 @@
           :label="formHeadItem.label"
           v-if="!formHeadItem.children"
         >
+                {{getindex(formHeadItem.label)}}
           <!-- <template scope="scope">{{scope.row[formHeadItem.prop]}}</template> -->
           <!-- 输入控制 -->
           <template slot-scope="scope">
@@ -145,6 +146,7 @@
           </el-table-column>
         </el-table-column>
       </div>
+      <!-- 操作 -->
       <el-table-column
         :width="150"
         :fixed="fixed"
@@ -219,6 +221,10 @@ export default {
     btnConfigure: { type: Object, default: _ => {} }
   },
   methods: {
+    getindex(index){
+      console.log('index')
+      console.log(index)
+    },
     // select自定义搜索方法
     selectFilterVal(val, formHeadItem) {
       const field = formHeadItem.prop; // 对应表头筛选
