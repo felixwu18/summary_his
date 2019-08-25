@@ -12,21 +12,22 @@
       @row-click="rowClick"
       @selection-change="selectionChange"
     >
-      <!-- 单选 -->
+      <!-- 单选设置 -->
       <el-table-column v-if="radio" fixed label="选择" width="60px" class="cell">
         <template scope="scope">
           <el-radio v-model="radioVal" :label="scope.$index">&nbsp;</el-radio>
         </template>
       </el-table-column>
-      <!-- 多选 -->
+      <!-- 多选设置 -->
       <el-table-column v-if="selection" label="选择" type="selection" width="60px" class="cell"></el-table-column>
       <!-- 列 -->
-      <div v-for="(formHeadItem, index) in formHead" :key="index">
+      <template v-for="(formHeadItem, index) in formHead">
         <!-- 单表头 -->
         <el-table-column
           :width="fieldsWidth ? (formHeadItem.prop in fieldsWidth ? fieldsWidth[formHeadItem.prop] : '') : '' "
           show-overflow-tooltip
           :label="formHeadItem.label"
+          :key="index"
           v-if="!formHeadItem.children"
         >
                 {{getindex(formHeadItem.label)}}
@@ -119,7 +120,7 @@
         </el-table-column>
         <!-- 多表头 -->
         <!-- 一级 -->
-        <el-table-column show-overflow-tooltip :label="formHeadItem.label" v-else>
+        <el-table-column show-overflow-tooltip :label="formHeadItem.label" :key="index" v-else>
           <!-- 二级 -->
           <el-table-column
             show-overflow-tooltip
@@ -145,7 +146,7 @@
             <template slot-scope="scope">{{codeTransform(scope.row[sonItem.prop], sonItem.prop)}}</template>
           </el-table-column>
         </el-table-column>
-      </div>
+      </template>
       <!-- 操作 -->
       <el-table-column
         :width="150"
