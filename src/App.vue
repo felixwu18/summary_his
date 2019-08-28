@@ -592,7 +592,7 @@ export default {
       ];
       // const obj = {id: 1, age: 18}
       // objArr = this.noSame(objArr, "id");
-      console.log("去重");
+      console.log("去重去空");
       console.log(objArr);
       objArr = this.$utils.uniqueObjArr(objArr, "id");
       objArr = this.$utils.removeUnexpectObj(objArr, "id");

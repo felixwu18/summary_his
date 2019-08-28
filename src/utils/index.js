@@ -189,9 +189,20 @@ export function removeClass(ele, cls) {
 export function uniqueObjArr(objArr, propStr) {
   var obj = {};
   return objArr.reduce(function(acc, cur) {
-    obj[cur[propStr]] ? "" : (obj[cur[propStr]] = true && acc.push(cur));
+    obj[cur[propStr]]
+      ? mergeRefObj(acc, cur, propStr)
+      : (obj[cur[propStr]] = true && acc.push(cur));
     return acc;
   }, []);
+}
+// 合并指定字段相同对象, 指定字段值累加(暂时写死)
+function mergeRefObj(acc, obj, propStr) {
+  //  var temp = acc.find(ele => obj[propStr] === ele[propStr])
+  acc.forEach(ele => {
+    if (obj[propStr] === ele[propStr]) {
+      ele.age = obj.age + ele.age;
+    }
+  });
 }
 
 /**
@@ -314,8 +325,8 @@ export function deepClone(source) {
  * @param {String} storeName(sessionStorage or localStorage)
  */
 export const handleSave = (function() {
-  const storeApiName = {sessionStorage, localStorage};
-  function get(key, storeName = 'sessionStorage') {
+  const storeApiName = { sessionStorage, localStorage };
+  function get(key, storeName = "sessionStorage") {
     let value = storeApiName[storeName].getItem(key);
     if (value === null || value === "" || value === "undefined") {
       value = "";
@@ -324,7 +335,7 @@ export const handleSave = (function() {
     }
     return value;
   }
-  function set(key, value, storeName = 'sessionStorage') {
+  function set(key, value, storeName = "sessionStorage") {
     if (value === undefined) {
       return;
     }
@@ -334,7 +345,7 @@ export const handleSave = (function() {
     get,
     set
   };
-})()
+})();
 
 // 列表获取配置信息
 export function confugureFormatter(configure, key) {
