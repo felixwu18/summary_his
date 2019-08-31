@@ -13,7 +13,6 @@
     <collapse />
     <dynamicTable
       :formHead="formHead"
-      :radio="true"
       :data="tableData"
       :configureSet="selectConfigureSet"
       :btnConfigure="btnConfigure"

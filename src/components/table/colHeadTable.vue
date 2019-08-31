@@ -1,6 +1,7 @@
 <template>
   <div style="margin-top: 2em;">
     <h1>列表头 table</h1>
+    <!-- 仅带行表头 -->
     <table
       class="mailTable"
       :style="styleObject"
@@ -13,7 +14,7 @@
         <td class="cell">{{getCellVal(index) !== undefined ? getCellVal(index) : ''}}</td>
       </tr>
     </table>
-
+   <!-- 带列表头 -->
     <table class="mailTable" :style="styleObject" v-else>
       <tr>
         <th
@@ -23,7 +24,7 @@
         >{{rowHead !== undefined ? rowHead : '-'}}</th>
       </tr>
       <tr v-for="index in rowCount" :key="index">
-        <th class="columnHeadHead">{{getColHead(index) !== undefined ? getColHead(index) : '-'}}</th>
+        <th class="columnHead">{{getColHead(index) !== undefined ? getColHead(index) : '-'}}</th>
         <td class="cell">{{getCellVal(index) !== undefined ? getCellVal(index) : '-'}}</td>
       </tr>
     </table>
@@ -92,6 +93,6 @@ export default {
 }
 th,
 td {
-  border: solid 0.5px lightgreen;
+  border: solid 1px lightgreen;
 }
 </style>
