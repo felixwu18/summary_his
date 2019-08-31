@@ -531,8 +531,9 @@ export default {
   created() {
     const top = 30
     const bottom = 70
-    this.heightInnerSet = window.innerHeight - top - bottom // 表格高
-    const pageSize = this.heightInnerSet ? Math.floor(this.heightInnerSet / 44) : Math.floor(500 / 44)
+    // 表格动态高度
+    this.setTableHeight = window.innerHeight - top - bottom // 表格高
+    const pageSize = this.setTableHeight ? Math.floor(this.setTableHeight / 44) : Math.floor(500 / 44)
     // 表格自适应渲染行数
     this.$emit("update:pageSize",pageSize)
   },
@@ -546,7 +547,7 @@ export default {
   },
   computed: {
     _height(){
-      return this.height ? this.height : this.heightInnerSet
+      return this.height ? this.height : this.setTableHeight
     }
     // _handleArr() {
     //   // return this.handleArr.filter(
