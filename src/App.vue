@@ -29,6 +29,7 @@
       @deleteRow="deleteRow"
       @row-click="rowClick"
       @dynamicEvent="eventTrigger"
+      :pageSize.sync = "pageSize"
     />
     <!-- 
       :formHead="formHead"
@@ -313,6 +314,7 @@ export default {
   },
   data() {
     return {
+      pageSize: 0,
       // 测试按钮配置
       btnConfigure: {
         prop: "level",
@@ -390,6 +392,8 @@ export default {
       console.log(val);
     },
     ceshi() {
+      console.log('pageSize')
+      console.log(this.pageSize)
     // -----------测试变换数据结构通过引用间接操作数据,更新--------------------
     const test = []
     this.tableData.forEach(ele => {

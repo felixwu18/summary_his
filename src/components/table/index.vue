@@ -7,7 +7,7 @@
       :data="data"
       border
       :style="{width: `${persent}%`, margin:'0 auto'}"
-      :height="height"
+      :height="_height"
       :row-style="selectedHighlight"
       :header-cell-style="headerCellStyle"
       :cell-style="cellStyle"
@@ -225,6 +225,7 @@ export default {
   },
   props: {
     // temp: {type: Object, default: _ => {} }, // 可动态变化行高
+    // pageSize: { type: Number, default: 7 },
     data: Array,
     RegObj: Object,
     fixed: { type: String, default: "right" },
@@ -243,7 +244,7 @@ export default {
     codeToLabel: { type: Array, default: _ => [] },
     btnConfigure: { type: Object, default: _ => {} },
     persent: { type: Number, default: 95 },
-    height: { type: Number, default: 500 }
+    // height: { type: Number, default: 500 }
   },
   methods: {
     // 表格中的switch事件处理
@@ -528,7 +529,12 @@ export default {
   },
   components: {},
   created() {
-    this.fieldsWidth;
+    const top = 30
+    const bottom = 70
+    this.heightInnerSet = window.innerHeight - top - bottom // 表格高
+    const pageSize = this.heightInnerSet ? Math.floor(this.heightInnerSet / 44) : Math.floor(500 / 44)
+    // 表格自适应渲染行数
+    this.$emit("update:pageSize",pageSize)
   },
   mounted() {
     // 全局禁用tab
@@ -539,6 +545,9 @@ export default {
     };
   },
   computed: {
+    _height(){
+      return this.height ? this.height : this.heightInnerSet
+    }
     // _handleArr() {
     //   // return this.handleArr.filter(
     //   //   ele => !["查看", "新增", "删除"].includes(ele)
@@ -558,7 +567,7 @@ export default {
 // .tableClass /deep/ .el-radio__label {
 //   display: none;
 // }
-//cell padding设置表格行高
+// 通过td th padding来控制表格行高
 // .tableClass /deep/  td{
 //   // border: none
 //   padding: 4px 0 4px
