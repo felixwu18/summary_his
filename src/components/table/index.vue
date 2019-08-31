@@ -18,7 +18,7 @@
       <!-- 单选设置 -->
       <el-table-column v-if="radio" fixed label="选择" width="60px">
         <template scope="scope">
-          <el-radio v-model="radioVal" :label="scope.$index">&nbsp;</el-radio>
+          <el-radio v-model="radioVal" :label="scope.$index" @change="radioChange">&nbsp;</el-radio>
         </template>
       </el-table-column>
       <!-- 多选设置 -->
@@ -240,6 +240,12 @@ export default {
     height: { type: Number, default: 500 }
   },
   methods: {
+    radioChange(val){
+       // val为label值
+       console.log('radio-val')
+       console.log(val)
+       this.$emit('radioSelcet',val)
+    },
     // select自定义搜索方法
     selectFilterVal(val, formHeadItem) {
       const field = formHeadItem.prop; // 对应表头筛选

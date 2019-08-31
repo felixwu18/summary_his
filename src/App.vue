@@ -13,10 +13,10 @@
     <collapse />
     <dynamicTable
       :formHead="formHead"
+      :radio="true"
       :data="tableData"
       :configureSet="selectConfigureSet"
       :btnConfigure="btnConfigure"
-      :radio="true"
       :editArr="['name','zip', 'province']"
       :selectArr="['name','zip']"
       :RegObj="{zip:numberReg}"
