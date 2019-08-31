@@ -1,6 +1,6 @@
 <template>
-  <div style="margin-top: 2em;">
-    <h1>列表头 table</h1>
+  <div class="columnTable">
+    <h1>列表头 table (calc计算过)</h1>
     <!-- 仅带行表头 -->
     <table
       class="mailTable"
@@ -88,8 +88,13 @@ export default {
 /* .cell{
   background: yellowgreen
 } */
+.columnTable{
+ margin-top: 2em;
+}
 .mailTable {
   border: solid 1px lightgreen;
+  /* 运算符合两边需要 */
+  height:  calc(100vh - 500px - 30px);
 }
 th,
 td {
