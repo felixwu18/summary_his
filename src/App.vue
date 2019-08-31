@@ -29,7 +29,7 @@
       @deleteRow="deleteRow"
       @row-click="rowClick"
       @dynamicEvent="eventTrigger"
-      :pageSize.sync="pageSize"
+      :pageSize.sync = "pageSize"
     />
     <!-- 
       :formHead="formHead"
@@ -63,7 +63,7 @@
     <Pagination :total="30" />
     <!-- 选择器 -->
     <searchSelect title="选择器" :insertValue.sync="selectVal" :configure="configue_level" />
-    <searchLayout title :width="350">
+    <searchLayout title="选择器实现2" :width="350">
       <setGetEnable @change="getObj" :insertValue.sync="selectVal" :configure="configue_level" />
     </searchLayout>
     {{selectVal}}
@@ -363,19 +363,6 @@ export default {
     };
   },
   methods: {
-    // 测试验证
-    validateTest(formName) {
-      this.$refs[formName].validate(valid => {
-        if (valid) {
-          debugger;
-          alert("submit!");
-        } else {
-          debugger;
-          console.log("error submit!!");
-          return false;
-        }
-      });
-    },
     testLodash() {
       // 数据处理
       const num_before = "3.9";
@@ -405,26 +392,26 @@ export default {
       console.log(val);
     },
     ceshi() {
-      console.log("pageSize");
-      console.log(this.pageSize);
-      // -----------测试变换数据结构通过引用间接操作数据,更新--------------------
-      const test = [];
-      this.tableData.forEach(ele => {
-        if (ele.level === 3) {
-          test.push(ele);
-        }
-      });
-      for (var i = 0; i < test.length; i++) {
-        // this.tableData[4] = test[i]
-        // this.tableData
-        // this.tableData.push(test[i])
-        this.$set(this.tableData[2], "level", test[i]);
-        // test[i].zip = 1200
-        // test[i].minite = '666分钟'
-        // this.$set(test[i],'zip','1000')
+      console.log('pageSize')
+      console.log(this.pageSize)
+    // -----------测试变换数据结构通过引用间接操作数据,更新--------------------
+    const test = []
+    this.tableData.forEach(ele => {
+      if(ele.level === 3){
+        test.push(ele)
       }
-      // this.$forceUpdate()
-      //  ----------------我是一条分割线[end]------------------------------------
+    })
+    for(var i = 0; i < test.length; i++) {
+      // this.tableData[4] = test[i]
+      // this.tableData
+      // this.tableData.push(test[i])
+      this.$set(this.tableData[2], 'level', test[i])
+      // test[i].zip = 1200
+      // test[i].minite = '666分钟'
+      // this.$set(test[i],'zip','1000')
+    }
+    // this.$forceUpdate()
+  //  ----------------我是一条分割线[end]------------------------------------ 
       this.timeDefault = ["2019-6-8", "2019-7-8"];
       // this.selectVal = "三级城市";
       this.selectVal = 3;

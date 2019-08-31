@@ -79,7 +79,7 @@ export default {
     dynamicTable
   },
   created() {
-    this.activeNames = 0; // 将折叠版容器value与callapse-item的name值保持一样,可默认展开所有
+    // this.activeNames = 0; // 将折叠版容器value与callapse-item的name值保持一样,可默认展开所有
   },
   mounted() {
     this.$refs.collapse
