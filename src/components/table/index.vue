@@ -224,12 +224,13 @@ export default {
     };
   },
   props: {
+    // temp: {type: Object, default: _ => {} }, // 可动态变化行高
     data: Array,
     RegObj: Object,
     fixed: { type: String, default: "right" },
     maxHeight: { type: Number, default: 1200 },
     fieldsWidth: { type: Object, default: _ => {} },
-    handle_width: { type: Number, default: 150 },
+    handle_width: { type: Number, default: 200 },
     formHead: { type: Array, default: _ => [] },
     radio: { type: Boolean, default: false },
     selection: { type: Boolean, default: false },
@@ -440,13 +441,18 @@ export default {
       }
     },
     selectedHighlight({ row, rowIndex }) {
+      var common = {'height':'40px'}
+      // 可动态变化行高
+      // common = this.temp && Object.keys(this.temp).length ? this.temp : common
       if (row.zip === 999) {
         return {
-          "background-color": "rgb(250, 195, 100)"
+          "background-color": "rgb(250, 195, 100)",
+          ...common
         };
       } else {
         return {
-          "background-color": "lightBlue"
+          "background-color": "lightBlue",
+          ...common
         };
       }
     },
@@ -551,5 +557,10 @@ export default {
 // }
 // .tableClass /deep/ .el-radio__label {
 //   display: none;
+// }
+//cell padding设置表格行高
+// .tableClass /deep/  td{
+//   // border: none
+//   padding: 4px 0 4px
 // }
 </style>

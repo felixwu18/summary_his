@@ -23,6 +23,7 @@
       :handleArr="['查看','新增','删除','审核','点我啊','果然']"
       :codeToLabel="codeToLabel"
       :fieldsWidth="fieldsWidth"
+      :handle_width="240"
       @newRow="addRow"
       @enterDetail="handleDetail"
       @deleteRow="deleteRow"
