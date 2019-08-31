@@ -3,23 +3,34 @@
     <h1>table</h1>
     <el-table
       ref="dynamicTable"
+      class="tableClass"
       :data="data"
       border
-      style="width: 95%;margin:0 auto;"
+      :style="{width: `${persent}%`, margin:'0 auto'}"
+      :height="height"
       :row-style="selectedHighlight"
       :header-cell-style="headerCellStyle"
+      :cell-style="cellStyle"
       :max-height="maxHeight"
       @row-click="rowClick"
       @selection-change="selectionChange"
     >
       <!-- 单选设置 -->
-      <el-table-column v-if="radio" fixed label="选择" width="60px" class="cell">
+      <el-table-column v-if="radio" fixed label="选择" width="60px">
         <template scope="scope">
           <el-radio v-model="radioVal" :label="scope.$index">&nbsp;</el-radio>
         </template>
       </el-table-column>
       <!-- 多选设置 -->
-      <el-table-column v-if="selection" label="选择" type="selection" width="60px" class="cell"></el-table-column>
+      <el-table-column v-if="selection" label="选择" type="selection" width="60px"></el-table-column>
+      <!-- 序号 -->
+      <el-table-column v-if="index" label="序号" width="60px">
+        <template scope="scope">
+          <!-- 此处可加svg-icon图标 -->
+          {{ scope.$index + 1 }}
+        </template>
+      </el-table-column>
+
       <!-- 列 -->
       <template v-for="(formHeadItem, index) in formHead">
         <!-- 单表头 -->
@@ -148,7 +159,7 @@
       </template>
       <!-- 操作 -->
       <el-table-column
-        :width="150"
+        :width="handle_width"
         :fixed="fixed"
         style="width: 300px"
         v-if="(btnConfigure ? Object.keys(btnConfigure).length : false) || handleArr.length"
@@ -196,7 +207,11 @@ export default {
     return {
       // 居中头部
       headerCellStyle: {
-        "text-align": "center"
+        "text-align": "center",
+        "font-size": "15px"
+      },
+      cellStyle: {
+        "font-size": "14px"
       },
       radioVal: "",
       autoSearchVal: "", // 远程搜索输入值
@@ -210,15 +225,19 @@ export default {
     fixed: { type: String, default: "right" },
     maxHeight: { type: Number, default: 1200 },
     fieldsWidth: { type: Object, default: _ => {} },
+    handle_width: { type: Number, default: 150 },
     formHead: { type: Array, default: _ => [] },
     radio: { type: Boolean, default: false },
     selection: { type: Boolean, default: false },
+    index: { type: Boolean, default: false },
     editArr: { type: Array, default: _ => [] },
     selectArr: { type: Array, default: _ => [] },
     configureSet: { type: Object, default: _ => {} }, // selcet配置数据
     handleArr: { type: Array, default: _ => [] },
     codeToLabel: { type: Array, default: _ => [] },
-    btnConfigure: { type: Object, default: _ => {} }
+    btnConfigure: { type: Object, default: _ => {} },
+    persent: { type: Number, default: 95 },
+    height: { type: Number, default: 500 }
   },
   methods: {
     // select自定义搜索方法
@@ -503,5 +522,15 @@ export default {
   }
 };
 </script>
-<style scoped>
+<style lang="less" scoped>
+// radio居中
+.tableClass /deep/ .el-table__row td:nth-child(1) {
+  text-align: center
+}
+.tableClass /deep/ thead tr:nth-child(1) th:nth-child(1) {
+  border-right: 1.5px solid #EBEEF5
+}
+.tableClass /deep/ .el-radio__label {
+  display: none
+}
 </style>

@@ -16,6 +16,7 @@
       :data="tableData"
       :configureSet="selectConfigureSet"
       :btnConfigure="btnConfigure"
+      :radio="true"
       :editArr="['name','zip', 'province']"
       :selectArr="['name','zip']"
       :RegObj="{zip:numberReg}"
@@ -61,7 +62,7 @@
     <!-- 选择器 -->
     <searchSelect title="选择器" :insertValue.sync="selectVal" :configure="configue_level" />
     <searchLayout title="选择器实现2" :width="350">
-      <setGetEnable @change="getObj" :insertValue.sync="selectVal" :configure="configue_level"  />
+      <setGetEnable @change="getObj" :insertValue.sync="selectVal" :configure="configue_level" />
     </searchLayout>
     {{selectVal}}
     <button @click="ceshi">ceshi</button>
@@ -342,7 +343,7 @@ export default {
       },
       selectConfigureSet: { name: formHead, zip: selcet }, //测试selet
       // selectVal: null,
-      selectVal: '',
+      selectVal: "",
       formHead, // 配置标头
       tableData,
       tableData2,
@@ -363,23 +364,41 @@ export default {
       console.log("before-lodash-after");
       console.log(num_before);
       console.log(num);
-      console.log((num-1).toFixed(1));
+      console.log((num - 1).toFixed(1));
       // console.log(this.$lodash.isEmpty(obj));
       // console.log(this.$lodash.isEqual(arr1, arr2));
       // const tmp = this.$lodash.cloneDeep(arr1);
       // tmp.name = "美眉";
       // console.log(tmp);
       // console.log(arr1);
-    //  const fn = this.$lodash.once(_ => console.log(arr1))
-    //  const fn = _ => console.log(arr1)
-    // this.$lodash.throttle(_ => console.log(arr1), 1000)
-      this.$lodash.pullAll(arr2, [])  
+      //  const fn = this.$lodash.once(_ => console.log(arr1))
+      //  const fn = _ => console.log(arr1)
+      // this.$lodash.throttle(_ => console.log(arr1), 1000)
+      this.$lodash.pullAll(arr2, []);
     },
     getObj(val) {
       console.log("va---l");
       console.log(val);
     },
     ceshi() {
+    // -----------测试变换数据结构通过引用间接操作数据,更新--------------------
+    const test = []
+    this.tableData.forEach(ele => {
+      if(ele.level === 3){
+        test.push(ele)
+      }
+    })
+    for(var i = 0; i < test.length; i++) {
+      // this.tableData[4] = test[i]
+      // this.tableData
+      // this.tableData.push(test[i])
+      this.$set(this.tableData[2], 'level', test[i])
+      // test[i].zip = 1200
+      // test[i].minite = '666分钟'
+      // this.$set(test[i],'zip','1000')
+    }
+    // this.$forceUpdate()
+  //  ----------------我是一条分割线[end]------------------------------------ 
       this.timeDefault = ["2019-6-8", "2019-7-8"];
       // this.selectVal = "三级城市";
       this.selectVal = 3;
@@ -592,7 +611,7 @@ export default {
       ];
       // const obj = {id: 1, age: 18}
       // objArr = this.noSame(objArr, "id");
-      console.log("去重去空");
+      console.log("去重(合并)去空");
       console.log(objArr);
       objArr = this.$utils.uniqueObjArr(objArr, "id");
       objArr = this.$utils.removeUnexpectObj(objArr, "id");
