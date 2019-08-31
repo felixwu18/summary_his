@@ -17,6 +17,7 @@
       :configureSet="selectConfigureSet"
       :btnConfigure="btnConfigure"
       :editArr="['name','zip', 'province']"
+      :switchArr="['state1', 'state2']"
       :selectArr="['name','zip']"
       :RegObj="{zip:numberReg}"
       :handleArr="['查看','新增','删除','审核','点我啊','果然']"
@@ -176,7 +177,8 @@ const later2 = Vue.component("later2", function(resolve) {
 const formHead = [
   { prop: "airQuality", label: "空气质量" },
   { prop: "level", label: "等级" },
-  { prop: "switch", label: "状态" },
+  { prop: "state1", label: "状态1" },
+  { prop: "state2", label: "状态2" },
   { prop: "name", label: "姓名" },
   {
     label: "日期",
@@ -210,7 +212,8 @@ const tableData = [
   {
     airQuality: 1,
     level: 1,
-    switch: false,
+    state1: false,
+    state2: true,
     date: "2016-05-02",
     hour: "8小时",
     minite: "90分钟",
@@ -223,7 +226,8 @@ const tableData = [
   {
     airQuality: 1,
     level: 2,
-    switch: true,
+    state1: true,
+    state2: false,
     date: "2016-05-02",
     hour: "8小时",
     minite: "90分钟",
@@ -236,7 +240,8 @@ const tableData = [
   {
     airQuality: 3,
     level: 3,
-    switch: true,
+    state1: true,
+    state2: true,
     date: "2016-05-04",
     hour: "10小时",
     minite: "30分钟",

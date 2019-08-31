@@ -93,8 +93,8 @@
               </el-select>
             </template>
             <!-- switch开关选择 -->
-            <template slot-scope="scope" v-else-if="formHeadItem.prop === 'switch'">
-              <el-switch @change="val => switchChange(val, scope.row)" v-model="scope.row.switch" active-color="#13ce66" inactive-color="red"></el-switch>
+            <template slot-scope="scope" v-else-if="switchArr.includes(formHeadItem.prop)">
+              <el-switch v-model="scope.row[formHeadItem.prop]" @change="val => switchChange(val, scope.row)" active-color="#13ce66" inactive-color="red"></el-switch>
             </template>
             <!-- 远程搜索 -->
             <template
@@ -235,6 +235,7 @@ export default {
     selection: { type: Boolean, default: false },
     index: { type: Boolean, default: false },
     editArr: { type: Array, default: _ => [] },
+    switchArr: { type: Array, default: _ => [] },
     selectArr: { type: Array, default: _ => [] },
     configureSet: { type: Object, default: _ => {} }, // selcet配置数据
     handleArr: { type: Array, default: _ => [] },
@@ -541,14 +542,14 @@ export default {
 };
 </script>
 <style lang="less" scoped>
-// radio居中
-.tableClass /deep/ .el-table__row td:nth-child(1) {
-  text-align: center;
-}
-.tableClass /deep/ thead tr:nth-child(1) th:nth-child(1) {
-  border-right: 1.5px solid #ebeef5;
-}
-.tableClass /deep/ .el-radio__label {
-  display: none;
-}
+// radio居中(暂未实现根据状态是否居中)
+// .tableClass /deep/ .el-table__row td:nth-child(1) {
+//   text-align: center;
+// }
+// .tableClass /deep/ thead tr:nth-child(1) th:nth-child(1) {
+//   border-right: 1.5px solid #ebeef5;
+// }
+// .tableClass /deep/ .el-radio__label {
+//   display: none;
+// }
 </style>
