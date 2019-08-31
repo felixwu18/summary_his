@@ -92,6 +92,10 @@
                 ></el-option>
               </el-select>
             </template>
+            <!-- switch开关选择 -->
+            <template slot-scope="scope" v-else-if="formHeadItem.prop === 'switch'">
+              <el-switch @change="val => switchChange(val, scope.row)" v-model="scope.row.switch" active-color="#13ce66" inactive-color="red"></el-switch>
+            </template>
             <!-- 远程搜索 -->
             <template
               v-else-if="scope.$index===(data.length-1) ? ['city'].includes(formHeadItem.prop) : false"
@@ -240,11 +244,19 @@ export default {
     height: { type: Number, default: 500 }
   },
   methods: {
-    radioChange(val){
-       // val为label值
-       console.log('radio-val')
-       console.log(val)
-       this.$emit('radioSelcet',val)
+    // 表格中的switch事件处理
+    switchChange(val, row){
+      console.log("switch-val-row");
+      console.log(val);
+      console.log(row);
+      this.$emit("switchChange", val);
+    },
+    // 单选事件
+    radioChange(val) {
+      // val为label值
+      console.log("radio-val");
+      console.log(val);
+      this.$emit("radioSelcet", val);
     },
     // select自定义搜索方法
     selectFilterVal(val, formHeadItem) {
@@ -531,12 +543,12 @@ export default {
 <style lang="less" scoped>
 // radio居中
 .tableClass /deep/ .el-table__row td:nth-child(1) {
-  text-align: center
+  text-align: center;
 }
 .tableClass /deep/ thead tr:nth-child(1) th:nth-child(1) {
-  border-right: 1.5px solid #EBEEF5
+  border-right: 1.5px solid #ebeef5;
 }
 .tableClass /deep/ .el-radio__label {
-  display: none
+  display: none;
 }
 </style>

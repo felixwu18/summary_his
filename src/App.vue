@@ -176,6 +176,7 @@ const later2 = Vue.component("later2", function(resolve) {
 const formHead = [
   { prop: "airQuality", label: "空气质量" },
   { prop: "level", label: "等级" },
+  { prop: "switch", label: "状态" },
   { prop: "name", label: "姓名" },
   {
     label: "日期",
@@ -209,6 +210,7 @@ const tableData = [
   {
     airQuality: 1,
     level: 1,
+    switch: false,
     date: "2016-05-02",
     hour: "8小时",
     minite: "90分钟",
@@ -221,6 +223,7 @@ const tableData = [
   {
     airQuality: 1,
     level: 2,
+    switch: true,
     date: "2016-05-02",
     hour: "8小时",
     minite: "90分钟",
@@ -233,6 +236,7 @@ const tableData = [
   {
     airQuality: 3,
     level: 3,
+    switch: true,
     date: "2016-05-04",
     hour: "10小时",
     minite: "30分钟",
