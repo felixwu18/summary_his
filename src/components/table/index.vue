@@ -94,7 +94,12 @@
             </template>
             <!-- switch开关选择 -->
             <template slot-scope="scope" v-else-if="switchArr.includes(formHeadItem.prop)">
-              <el-switch v-model="scope.row[formHeadItem.prop]" @change="val => switchChange(val, scope.row)" active-color="#13ce66" inactive-color="red"></el-switch>
+              <el-switch
+                v-model="scope.row[formHeadItem.prop]"
+                @change="val => switchChange(val, scope.row)"
+                active-color="#13ce66"
+                inactive-color="red"
+              ></el-switch>
             </template>
             <!-- 远程搜索 -->
             <template
@@ -115,9 +120,27 @@
             >{{ scope.row[formHeadItem.prop] }}</span>
             <!-- 正常显示(经过配置转换) -->
             <!-- <span v-else-if="!editArr.includes(formHeadItem.prop)">{{ scope.row[formHeadItem.prop] }}</span> -->
-            <span
-              v-else-if="!editArr.includes(formHeadItem.prop)"
-            >{{ codeTransform(scope.row[formHeadItem.prop], formHeadItem.prop) }}</span>
+            <span v-else-if="!editArr.includes(formHeadItem.prop)">
+              {{ codeTransform(scope.row[formHeadItem.prop], formHeadItem.prop) }}
+              <!-- <label :style="{color: getColor(formHeadItem, row, stateColor)}"> -->
+              <!-- </label> -->
+              <!-- 
+                <el-tooltip class="item" effect="dark" content="Right Center 提示文字" placement="right">
+                <i>警告</i>
+              </el-tooltip>
+              -->
+              <el-popover
+                v-if="formHeadItem.prop === 'airQuality'"
+                placement="top-start"
+                title="标题"
+                width="200"
+                trigger="hover"
+                content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。"
+              >
+                <!-- <el-button slot="reference">hover 激活</el-button> -->
+                <i slot="reference">警告</i>
+              </el-popover>
+            </span>
             <!-- 
               <el-popover
               placement="top-start"
@@ -244,11 +267,15 @@ export default {
     codeToLabel: { type: Array, default: _ => [] },
     btnConfigure: { type: Object, default: _ => {} },
     persent: { type: Number, default: 95 },
+    // stateClor: { type: Object, default: _ => {} }
     // height: { type: Number, default: 500 }
   },
   methods: {
+    // getColor(formHeadItem, row, stateColor){
+    //   return this.stateColor && Object.kes(this.stateColor).length && (Object.keys(this.stateColor)[0] === formHeadItem.prop) && (stateColor[Object.keys(stateColor)[0]].state === row[formHeadItem.prop]) ? stateColor[Object.keys(stateColor)[0]].color : 'inherit'  
+    //  }
     // 表格中的switch事件处理
-    switchChange(val, row){
+    switchChange(val, row) {
       console.log("switch-val-row");
       console.log(val);
       console.log(row);
@@ -442,7 +469,7 @@ export default {
       }
     },
     selectedHighlight({ row, rowIndex }) {
-      var common = {'height':'40px'}
+      var common = { height: "40px" };
       // 可动态变化行高
       // common = this.temp && Object.keys(this.temp).length ? this.temp : common
       if (row.zip === 999) {
@@ -529,13 +556,15 @@ export default {
   },
   components: {},
   created() {
-    const top = 30
-    const bottom = 400
+    const top = 30;
+    const bottom = 400;
     // 表格动态高度
-    this.setTableHeight = window.innerHeight - top - bottom // 表格高
-    const pageSize = this.setTableHeight ? Math.floor(this.setTableHeight / 44) : Math.floor(500 / 44)
+    this.setTableHeight = window.innerHeight - top - bottom; // 表格高
+    const pageSize = this.setTableHeight
+      ? Math.floor(this.setTableHeight / 44)
+      : Math.floor(500 / 44);
     // 表格自适应渲染行数
-    this.$emit("update:pageSize",pageSize)
+    this.$emit("update:pageSize", pageSize);
   },
   mounted() {
     // 全局禁用tab
@@ -546,8 +575,8 @@ export default {
     };
   },
   computed: {
-    _height(){
-      return this.height ? this.height : this.setTableHeight
+    _height() {
+      return this.height ? this.height : this.setTableHeight;
     }
     // _handleArr() {
     //   // return this.handleArr.filter(

@@ -1,13 +1,18 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
+Vue.use(ElementUI)
+
+
 import App from './App.vue'
 
-// 验证挂在Vue实例
-import validate from './utils'
-Vue.prototype.$validate  = validate
+import * as utils from './utils/index'
+Vue.prototype.$utils = utils
 
-Vue.use(ElementUI)
+// 引入lodash
+import _ from 'lodash'
+Vue.prototype.$lodash = _
+
 
 new Vue({
   el: '#app',
