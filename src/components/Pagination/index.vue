@@ -1,7 +1,15 @@
 <template>
   <div :class="{'hidden':hidden}" class="pagination-container">
-    <h1>分页器</h1>
+    <!-- <h1>分页器</h1> -->
     <el-pagination
+      :background="background"
+      :layout="layout"
+      :hide-on-single-page="true"
+      :total="total"
+      :page-size.sync="pageSize"
+      @current-change="handleCurrentChange" 
+    />
+      <!-- 
       :background="background"
       :current-page.sync="currentPage"
       :page-size.sync="pageSize"
@@ -9,9 +17,10 @@
       :page-sizes="pageSizes"
       :total="total"
       v-bind="$attrs"
+      :hide-on-single-page="true"
       @size-change="handleSizeChange"
-      @current-change="handleCurrentChange"
-    />
+      @current-change="handleCurrentChange" 
+      -->
   </div>
 </template>
 
@@ -22,8 +31,9 @@ export default {
   name: "Pagination",
   props: {
     total: {
-      required: true,
-      type: Number
+      // required: true,
+      type: Number,
+      default: 0
     },
     page: {
       type: Number,
@@ -72,6 +82,9 @@ export default {
       set(val) {
         this.$emit("update:limit", val);
       }
+    },
+    isHide(){
+      return false
     }
   },
   methods: {
@@ -91,7 +104,7 @@ export default {
     },
     handleCurrentChange(val) {
       this.$emit("pagination", { page: val, limit: this.pageSize });
-
+      console.log(val)
       // 解决正常方法无法滚动
       // let main = document.getElementsByClassName("el-table")[0];
       // main.parentNode.style.position = "absolute";
@@ -109,11 +122,11 @@ export default {
 </script>
 
 <style scoped>
-.pagination-container {
+/* .pagination-container {
   background: #fff;
   padding: 32px 16px;
 }
 .pagination-container.hidden {
   display: none;
-}
+} */
 </style>

@@ -24,12 +24,15 @@
       :codeToLabel="codeToLabel"
       :fieldsWidth="fieldsWidth"
       :handle_width="240"
+      :table_top="440"
+      :multiple-head="3"
+      :total="13"
+      :pageSize.sync = "pageSize"
       @newRow="addRow"
       @enterDetail="handleDetail"
       @deleteRow="deleteRow"
       @row-click="rowClick"
       @dynamicEvent="eventTrigger"
-      :pageSize.sync = "pageSize"
     />
     <!-- 
       :formHead="formHead"
@@ -314,7 +317,7 @@ export default {
   },
   data() {
     return {
-      pageSize: 0,
+      pageSize: 10,
       // 测试按钮配置
       btnConfigure: {
         prop: "level",
@@ -392,8 +395,9 @@ export default {
       console.log(val);
     },
     ceshi() {
-      console.log('pageSize')
-      console.log(this.pageSize)
+      console.log("table-pageSize");
+      console.log(this.pageSize);
+
     // -----------测试变换数据结构通过引用间接操作数据,更新--------------------
     const test = []
     this.tableData.forEach(ele => {

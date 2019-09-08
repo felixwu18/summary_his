@@ -7,7 +7,7 @@
       :data="data"
       border
       :style="{width: `${persent}%`, margin:'0 auto'}"
-      :height="_height"
+      :height="setTableHeight"
       :row-style="selectedHighlight"
       :header-cell-style="headerCellStyle"
       :cell-style="cellStyle"
@@ -226,12 +226,18 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页器 -->
+    <div class="paginationWrap">
+      <Pagination :total="total" :limit="pageSize" layout="prev, pager, next, jumper"/>
+    </div>
   </div>
 </template>
 <script>
+import Pagination from '@/components/Pagination/index'
 export default {
   data() {
     return {
+      // total: 16,
       // 居中头部
       headerCellStyle: {
         "text-align": "center",
@@ -248,7 +254,6 @@ export default {
   },
   props: {
     // temp: {type: Object, default: _ => {} }, // 可动态变化行高
-    // pageSize: { type: Number, default: 7 },
     data: Array,
     RegObj: Object,
     fixed: { type: String, default: "right" },
@@ -267,6 +272,9 @@ export default {
     codeToLabel: { type: Array, default: _ => [] },
     btnConfigure: { type: Object, default: _ => {} },
     persent: { type: Number, default: 95 },
+    table_top: { type: Number, default: 200 },
+    multipleHead: { type: Number, default: 1 },
+    total: { type: Number, default: 0 }, // 分页
     // stateClor: { type: Object, default: _ => {} }
     // height: { type: Number, default: 500 }
   },
@@ -554,17 +562,22 @@ export default {
       return btnShowArr;
     }
   },
-  components: {},
+  components: {
+    Pagination
+  },
   created() {
-    const top = 30;
-    const bottom = 400;
+    // const top = 30;
+    const bottom = 90;
     // 表格动态高度
-    this.setTableHeight = window.innerHeight - top - bottom; // 表格高
+    this.setTableHeight = window.innerHeight - this.table_top - bottom - this.multipleHead; // 表格高(包括多级表头)
     const pageSize = this.setTableHeight
       ? Math.floor(this.setTableHeight / 44)
       : Math.floor(500 / 44);
-    // 表格自适应渲染行数
-    this.$emit("update:pageSize", pageSize);
+    this.pageSize = pageSize // 组件一页条数
+    this.$emit("update:pageSize", pageSize); // 同步请求
+    console.log('setTableHeight-pageSize')
+    console.log(this.setTableHeight)
+    console.log(pageSize)
   },
   mounted() {
     // 全局禁用tab
@@ -576,7 +589,7 @@ export default {
   },
   computed: {
     _height() {
-      return this.height ? this.height : this.setTableHeight;
+      // return this.height ? this.height : this.setTableHeight;
     }
     // _handleArr() {
     //   // return this.handleArr.filter(
@@ -587,6 +600,12 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+// 分页不觉
+.paginationWrap{
+  padding-top: 15px;
+  padding-right: 20px;
+  text-align: right
+}
 // radio居中(暂未实现根据状态是否居中)
 // .tableClass /deep/ .el-table__row td:nth-child(1) {
 //   text-align: center;
