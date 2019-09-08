@@ -55,6 +55,30 @@
         :tableStyle="{ width:'80%',margin:'0 auto' }"
       />
     </div>
+    <!-- 验证组件 -->
+    <searchInput />
+
+     <!-- 封装验证组件(加布局) -->
+     <!-- 
+       注意事项 :
+            (1)验证的对象(如:search)传给组件内
+            (2)slot值 与 检验值 相同
+            (3)slot值 与 检验值 一样
+            (4)validate调用,验证结果
+       -->
+      <h1>封装验证组件</h1>
+     <searchInput2
+     :search="search"
+     @validate="handleValidate"
+     >
+       <el-input slot="name" title="名称椒盐" v-model="search.name"></el-input>
+       <el-select slot="region" title="区域选择" v-model="search.region" clearable placeholder="请选择活动区域">
+          <el-option label="区域一" value="shanghai"></el-option>
+          <el-option label="区域二" value="beijing"></el-option>
+      </el-select>
+       <!-- <el-input slot="input" v-model="search.name"></el-input> -->
+     </searchInput2>
+
     <!-- 时间组件 -->
     <dataSelector
       title="日期"
@@ -167,6 +191,9 @@ import setGetEnable from "./components/searchSelect/setGetEnable";
 import inputSearch from "./components/inputSearch/index";
 import inputSuggestion from "./components/inputSuggestion/index";
 import searchLayout from "./components/layout/searchLayout";
+import searchInput from "@/components/searchInput/index";
+import searchInput2 from "@/components/searchInput/index2";
+
 // import UploadExcel from "./components/UploadExcel/index";
 // 服务器异步组件1：
 const later = Vue.component("later", function(resolve) {
@@ -311,6 +338,8 @@ export default {
     inputSearch,
     inputSuggestion,
     searchLayout,
+    searchInput,
+    searchInput2,
     // UploadExcel,
     later,
     later2
@@ -342,7 +371,9 @@ export default {
       addClassflag: false,
       search: {
         start: "",
-        end: ""
+        end: "",
+        name: '',
+        region:''
       },
       timeDefault: [],
       rowHeadArr,
@@ -366,6 +397,10 @@ export default {
     };
   },
   methods: {
+    handleValidate(valid){
+     console.log('valid')
+     console.log(valid)
+    },
     testLodash() {
       // 数据处理
       const num_before = "3.9";
@@ -397,6 +432,7 @@ export default {
     ceshi() {
       console.log("table-pageSize");
       console.log(this.pageSize);
+            // debugger
 
     // -----------测试变换数据结构通过引用间接操作数据,更新--------------------
     const test = []
