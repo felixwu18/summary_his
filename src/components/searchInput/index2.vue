@@ -21,6 +21,12 @@
   </div>
 </template>
 <script>
+// const rulesConfigure = {
+//   required: true,
+//   message: "请输入活动名称",
+//   trigger: "blur",
+//   validator: this.checkName
+// };
 export default {
   props: {
     search: { type: Object, default: _ => {} }
@@ -40,7 +46,13 @@ export default {
       //         // 测试已封组件
       //         selectVal: ""
       //       },
-      rules: {
+        rulesConfigure = {
+          required: true,
+          message: "请输入活动名称",
+          trigger: "blur",
+          validator: this.checkName
+         }, 
+       rules: {
         name: [
           { required: true, message: "请输入活动名称", trigger: "blur" },
           { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
@@ -95,6 +107,28 @@ export default {
           return false;
         }
       });
+    },
+        // 检测活动名称
+    checkName(rule, value, callback) {
+      console.log("rule, value, callback");
+      console.log(this.$validate.check);
+      // this.$validate()
+      // debugger
+      let {check} = this.$validate({
+        label: "活动名称",
+        value,
+        rules: ["notnull", "length"],
+        conditions: ["2", "10"]
+      });
+      this.isCallback(check, callback);
+    },
+    // 是否通过callback
+    isCallback(check, callback) {
+      if (!check.result) {
+        return callback(new Error(check.message));
+      } else {
+        return callback();
+      }
     }
   },
   components: {},

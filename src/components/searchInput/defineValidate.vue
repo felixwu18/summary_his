@@ -97,8 +97,10 @@ export default {
     // 检测活动名称
     checkName(rule, value, callback) {
       console.log("rule, value, callback");
-      console.log(rule, value, callback);
-      let check = this.$validate({
+      console.log(this.$validate.check);
+      // this.$validate()
+      // debugger
+      let {check} = this.$validate({
         label: "活动名称",
         value,
         rules: ["notnull", "length"],
