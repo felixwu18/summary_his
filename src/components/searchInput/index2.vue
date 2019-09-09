@@ -1,6 +1,6 @@
 <template>
   <div class="validateContainer">
-    <el-form :model="_search" :rules="rules" ref="ruleForm">
+    <el-form :model="_search" :rules="_rules" ref="ruleForm">
       <!-- <el-form-item label="活动名称" prop="name">
                 <slot name="input" />
         </el-form-item>
@@ -29,7 +29,8 @@
 // };
 export default {
   props: {
-    search: { type: Object, default: _ => {} }
+    search: { type: Object, default: _ => {} },
+//     _options: { type: Array, default: _ => [] }
   },
   data() {
     return {
@@ -46,17 +47,18 @@ export default {
       //         // 测试已封组件
       //         selectVal: ""
       //       },
-        rulesConfigure = {
-          required: true,
-          message: "请输入活动名称",
-          trigger: "blur",
-          validator: this.checkName
-         }, 
-       rules: {
-        name: [
-          { required: true, message: "请输入活动名称", trigger: "blur" },
-          { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
-        ],
+      rulesConfigure: {
+        required: true,
+        message: "请输入活动名称",
+        trigger: "blur",
+        validator: this.checkName,
+        type: "date",
+      },
+      rules: {
+        //         name: [
+        //           { required: true, message: "请输入活动名称", trigger: "blur" },
+        //           { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
+        //         ],
         region: [
           { required: true, message: "请选择活动区域", trigger: "blur" }
         ],
@@ -108,13 +110,13 @@ export default {
         }
       });
     },
-        // 检测活动名称
+    // 检测活动名称
     checkName(rule, value, callback) {
       console.log("rule, value, callback");
       console.log(this.$validate.check);
       // this.$validate()
       // debugger
-      let {check} = this.$validate({
+      let { check } = this.$validate({
         label: "活动名称",
         value,
         rules: ["notnull", "length"],
@@ -148,6 +150,47 @@ export default {
         }
       });
       return obj || {};
+    },
+    _rules() {
+//       var obj = {
+//         name: [
+//           { required: true, message: "请输入活动名称", trigger: "blur" },
+//           { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
+//         ]
+//       };
+      //       _search(obj)
+      Object.keys(this._search).forEach(prop => {
+        //                value =   _search[prop]
+        //prop
+        //1,checkObj
+        const checkObj = {
+          required: false,
+          message: `${this.$slots[prop][0].data.attrs.title}必填`,
+          trigger: "blur"
+        };
+        // 根据输入修改默认
+        const options = this.$slots[prop][0].data.attrs.options
+        options && options.includes("required") ? (checkObj.required = true) : "";
+        options && options.includes("change") ? (checkObj.trigger = "change") : "";
+        // this.$slots[prop][0].data.attrs._options
+        //  2, itemValidArr
+        const itemValidArr = [checkObj];
+        //  3, item
+        const item = {
+          [prop]: itemValidArr
+        };
+        console.log('item')
+        console.log(item)
+        Object.assign(this.rules, item);
+      });
+      // 组装验证对象
+//       checkObj;
+//       // 按需组合验证数组
+//       itemValidArr;
+//       // 单条验证对象封装
+//       item;
+//       Object.assign(this.rules, obj);
+      return this.rules;
     }
   }
 };
