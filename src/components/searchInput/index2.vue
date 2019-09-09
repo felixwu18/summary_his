@@ -172,7 +172,7 @@ export default {
         const options = this.$slots[prop][0].data.attrs.options
         options && options.includes("required") ? (checkObj.required = true) : "";
         options && options.includes("change") ? (checkObj.trigger = "change") : "";
-        // this.$slots[prop][0].data.attrs._options
+        //this.$slots[prop][0].data.attrs._options
         //  2, itemValidArr
         const itemValidArr = [checkObj];
         //  3, item

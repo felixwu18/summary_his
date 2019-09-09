@@ -27,7 +27,7 @@
       :table_top="440"
       :multiple-head="3"
       :total="13"
-      :pageSize.sync = "pageSize"
+      :pageSize.sync="pageSize"
       @newRow="addRow"
       @enterDetail="handleDetail"
       @deleteRow="deleteRow"
@@ -58,26 +58,24 @@
     <!-- 验证组件 -->
     <searchInput />
 
-     <!-- 封装验证组件(加布局) -->
-     <!-- 
+    <!-- 封装验证组件(加布局) -->
+    <!-- 
        注意事项 :
             (1)验证的对象(如:search)传给组件内
             (2)slot值 与 检验值 相同
             (3)slot值 与 检验值 一样
             (4)validate调用,验证结果
-       -->
-      <h1>封装验证组件</h1>
-     <searchInput2
-     :search="search"
-     @validate="handleValidate"
-     >
-       <el-input slot="name" title="名称椒盐" :options="['required']" v-model="search.name"></el-input>
-       <el-select slot="region" title="区域选择" v-model="search.region" clearable placeholder="请选择活动区域">
-          <el-option label="区域一" value="shanghai"></el-option>
-          <el-option label="区域二" value="beijing"></el-option>
+    -->
+    <h1>封装验证组件</h1>
+    <searchInput2 :search="search" @validate="handleValidate">
+      <el-input slot="name" title="名称椒盐" :options="['required']" v-model="search.name"></el-input>
+      <el-select slot="region" title="区域选择" v-model="search.region" clearable placeholder="请选择活动区域">
+        <el-option label="区域一" value="shanghai"></el-option>
+        <el-option label="区域二" value="beijing"></el-option>
       </el-select>
-       <!-- <el-input slot="input" v-model="search.name"></el-input> -->
-     </searchInput2>
+      <el-date-picker slot="date1" title="时间选择器" :options="['required']" type="date" placeholder="选择日期" v-model="search.date1" style="width: 100%;"></el-date-picker>
+      <!-- <el-input slot="input" v-model="search.name"></el-input> -->
+    </searchInput2>
 
     <!-- 时间组件 -->
     <dataSelector
@@ -194,6 +192,15 @@ import searchLayout from "./components/layout/searchLayout";
 import searchInput from "@/components/searchInput/index";
 import searchInput2 from "@/components/searchInput/index2";
 
+// window.this.timeDefault
+// console.log('window.this.timeDefault')
+// console.log(window.that)
+// var that
+// window.onload=function(){
+//   that = window.that
+//   // debugger
+// }
+// setTimeout(_ => console.log('--',that = this.timeDefault, window.that), 1000)
 // import UploadExcel from "./components/UploadExcel/index";
 // 服务器异步组件1：
 const later = Vue.component("later", function(resolve) {
@@ -346,6 +353,7 @@ export default {
   },
   data() {
     return {
+      // that,
       pageSize: 10,
       // 测试按钮配置
       btnConfigure: {
@@ -372,8 +380,9 @@ export default {
       search: {
         start: "",
         end: "",
-        name: '',
-        region:''
+        name: "",
+        region: "",
+        date1: ''
       },
       timeDefault: [],
       rowHeadArr,
@@ -397,9 +406,9 @@ export default {
     };
   },
   methods: {
-    handleValidate(valid){
-     console.log('valid')
-     console.log(valid)
+    handleValidate(valid) {
+      console.log("valid");
+      console.log(valid);
     },
     testLodash() {
       // 数据处理
@@ -431,27 +440,27 @@ export default {
     },
     ceshi() {
       console.log("table-pageSize");
-      console.log(this.pageSize);
-            // debugger
+      console.log(this.that);
+      // debugger
 
-    // -----------测试变换数据结构通过引用间接操作数据,更新--------------------
-    const test = []
-    this.tableData.forEach(ele => {
-      if(ele.level === 3){
-        test.push(ele)
+      // -----------测试变换数据结构通过引用间接操作数据,更新--------------------
+      const test = [];
+      this.tableData.forEach(ele => {
+        if (ele.level === 3) {
+          test.push(ele);
+        }
+      });
+      for (var i = 0; i < test.length; i++) {
+        // this.tableData[4] = test[i]
+        // this.tableData
+        // this.tableData.push(test[i])
+        this.$set(this.tableData[2], "level", test[i]);
+        // test[i].zip = 1200
+        // test[i].minite = '666分钟'
+        // this.$set(test[i],'zip','1000')
       }
-    })
-    for(var i = 0; i < test.length; i++) {
-      // this.tableData[4] = test[i]
-      // this.tableData
-      // this.tableData.push(test[i])
-      this.$set(this.tableData[2], 'level', test[i])
-      // test[i].zip = 1200
-      // test[i].minite = '666分钟'
-      // this.$set(test[i],'zip','1000')
-    }
-    // this.$forceUpdate()
-  //  ----------------我是一条分割线[end]------------------------------------ 
+      // this.$forceUpdate()
+      //  ----------------我是一条分割线[end]------------------------------------
       this.timeDefault = ["2019-6-8", "2019-7-8"];
       // this.selectVal = "三级城市";
       this.selectVal = 3;
@@ -730,6 +739,8 @@ export default {
   },
   created() {
     this.timeDefault = ["2019-6-8", "2019-7-8"];
+    // window.that = this.timeDefault
+    // debugger
   },
   mounted() {},
   computed: {}
