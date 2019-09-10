@@ -161,9 +161,9 @@ export default {
       //       };
       //       _search(obj)
       Object.keys(this._search).forEach(prop => {
-        //prop--字段 , this._search[prop] -- 字段值
-        //1,组装验证对象 checkObj
-        //           (1) element组件定义,是否必须
+          //prop--字段 , this._search[prop] -- 字段值
+          //1,组装验证对象 checkObj
+          //        (1) element组件定义,是否必须
         const checkObj = {
           required: false,
           message: `${this.$slots[prop][0].data.attrs.title}必填`,
@@ -190,7 +190,7 @@ export default {
           ? (checkObj.trigger = "change")
           : "";
         //this.$slots[prop][0].data.attrs._options
-        //  2, 按需组合验证数组,itemValidArr
+        //  2, 按需组合验证数组,itemValidArr(待分情况选择添加数组)
         const itemValidArr = [checkObj, afterInputHadCheck];
         //  3, 单条字段验证对象封装,item
         const item = {
