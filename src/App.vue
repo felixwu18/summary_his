@@ -104,7 +104,13 @@
     <button v-for="(item,index) in test.obj" :key="index">{{item}}--{{index}}</button>
     <br />
     <label for>arr:</label>
-    <button v-for="(item,index) in test.arr" :key="index">{{item}}-{{index}}</button>
+    <button v-for="(item,index) in test.arr" :key="index">[{{item}}-{{index}}]
+      <template v-for="(item, index) in [10,11]">
+        <span :key="index">
+          {{item}}----{{index}}
+        </span>
+      </template>
+    </button>
     <br />
     <h1>一个对象从另一个对象中找属性值</h1>
     <button @click="handleFind">查找</button>
