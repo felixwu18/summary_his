@@ -73,7 +73,15 @@
         <el-option label="区域一" value="shanghai"></el-option>
         <el-option label="区域二" value="beijing"></el-option>
       </el-select>
-      <el-date-picker slot="date1" title="时间选择器" :options="['required']" type="date" placeholder="选择日期" v-model="search.date1" style="width: 100%;"></el-date-picker>
+      <el-date-picker
+        slot="date1"
+        title="时间选择器"
+        :options="['required']"
+        type="date"
+        placeholder="选择日期"
+        v-model="search.date1"
+        style="width: 100%;"
+      ></el-date-picker>
       <!-- <el-input slot="input" v-model="search.name"></el-input> -->
     </searchInput2>
 
@@ -104,11 +112,10 @@
     <button v-for="(item,index) in test.obj" :key="index">{{item}}--{{index}}</button>
     <br />
     <label for>arr:</label>
-    <button v-for="(item,index) in test.arr" :key="index">[{{item}}-{{index}}]
+    <button v-for="(item,index) in test.arr" :key="index">
+      [{{item}}-{{index}}]
       <template v-for="(item, index) in [10,11]">
-        <span :key="index">
-          {{item}}----{{index}}
-        </span>
+        <span :key="index">{{item}}----{{index}}</span>
       </template>
     </button>
     <br />
@@ -388,7 +395,7 @@ export default {
         end: "",
         name: "",
         region: "",
-        date1: ''
+        date1: ""
       },
       timeDefault: [],
       rowHeadArr,

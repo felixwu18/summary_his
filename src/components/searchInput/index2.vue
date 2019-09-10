@@ -29,8 +29,8 @@
 // };
 export default {
   props: {
-    search: { type: Object, default: _ => {} },
-//     _options: { type: Array, default: _ => [] }
+    search: { type: Object, default: _ => {} }
+    //     _options: { type: Array, default: _ => [] }
   },
   data() {
     return {
@@ -52,7 +52,7 @@ export default {
         message: "请输入活动名称",
         trigger: "blur",
         validator: this.checkName,
-        type: "date",
+        type: "date"
       },
       rules: {
         //         name: [
@@ -112,10 +112,11 @@ export default {
     },
     // 检测活动名称
     checkName(rule, value, callback) {
-      console.log("rule, value, callback");
-      console.log(this.$validate.check);
+      //       console.log("rule, value, callback");
+      //       console.log(rule);
       // this.$validate()
       // debugger
+      // 这里可多考虑, 做改动抽象
       let { check } = this.$validate({
         label: "活动名称",
         value,
@@ -137,9 +138,8 @@ export default {
   created() {},
   mounted() {},
   computed: {
+    // 筛选有效验证字段
     _search() {
-      console.log("this.search");
-      console.log(this.search);
       if (!this.search) {
         return;
       }
@@ -151,45 +151,54 @@ export default {
       });
       return obj || {};
     },
+    // 重组验证规则
     _rules() {
-//       var obj = {
-//         name: [
-//           { required: true, message: "请输入活动名称", trigger: "blur" },
-//           { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
-//         ]
-//       };
+      //       var obj = {
+      //         name: [
+      //           { required: true, message: "请输入活动名称", trigger: "blur" },
+      //           { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
+      //         ]
+      //       };
       //       _search(obj)
       Object.keys(this._search).forEach(prop => {
-        //                value =   _search[prop]
-        //prop
-        //1,checkObj
+        //prop--字段 , this._search[prop] -- 字段值
+        //1,组装验证对象 checkObj
+        //           (1) element组件定义,是否必须
         const checkObj = {
           required: false,
           message: `${this.$slots[prop][0].data.attrs.title}必填`,
           trigger: "blur"
         };
+        //          (2) element组件定义, 输入是否合规则
+        const afterInputHadCheck = {
+          min: 3,
+          max: 5,
+          message: "长度在 3 到 5 个字符",
+          trigger: "blur"
+        };
+        //          (3) 自定义输入是否合规则 (扩展重点部分)
+        const afterInputCheckObj = {
+          validator: this.checkName,
+          trigger: "blur"
+        };
         // 根据输入修改默认
-        const options = this.$slots[prop][0].data.attrs.options
-        options && options.includes("required") ? (checkObj.required = true) : "";
-        options && options.includes("change") ? (checkObj.trigger = "change") : "";
+        const options = this.$slots[prop][0].data.attrs.options;
+        options && options.includes("required")
+          ? (checkObj.required = true)
+          : "";
+        options && options.includes("change")
+          ? (checkObj.trigger = "change")
+          : "";
         //this.$slots[prop][0].data.attrs._options
-        //  2, itemValidArr
-        const itemValidArr = [checkObj];
-        //  3, item
+        //  2, 按需组合验证数组,itemValidArr
+        const itemValidArr = [checkObj, afterInputHadCheck];
+        //  3, 单条字段验证对象封装,item
         const item = {
           [prop]: itemValidArr
         };
-        console.log('item')
-        console.log(item)
+        //  4, 合并字段验证对象
         Object.assign(this.rules, item);
       });
-      // 组装验证对象
-//       checkObj;
-//       // 按需组合验证数组
-//       itemValidArr;
-//       // 单条验证对象封装
-//       item;
-//       Object.assign(this.rules, obj);
       return this.rules;
     }
   }
