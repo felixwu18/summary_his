@@ -346,13 +346,3 @@ export const handleSave = (function() {
     set
   };
 })();
-
-// 列表获取配置信息
-export function confugureFormatter(configure, key) {
-  if (configure) {
-    let matchObj = configure.filter(e => e.key == key);
-    if (matchObj[0]) {
-      return matchObj[0].value;
-    }
-  }
-}

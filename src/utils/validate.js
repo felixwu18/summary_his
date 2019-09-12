@@ -8,7 +8,7 @@
  * @return {obj} { result, message } 验证结果对象
  */
 
-const validate = function(obj) {
+const validate = function (obj) {
   let reg;
   const validatorObj = {
     // 验证定义

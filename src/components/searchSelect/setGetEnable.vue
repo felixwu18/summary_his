@@ -30,7 +30,7 @@ export default {
     configure: { type: Array, default: _ => [] },
     // insertValue: { type: String, default: '' },
     fields: { type: Object, default: _ => {} }, // 动态属性配置
-    insertValue: [Number,String],
+    insertValue: [Number, String],
     disabled: { type: Boolean, default: false }
   },
   methods: {
@@ -49,6 +49,15 @@ export default {
         //val为空时，还原数组
         this.options = this.configure;
       }
+    },
+    // 列表获取配置信息
+    confugureFormatter(configure, key) {
+      if (configure) {
+        let matchObj = configure.filter(e => e[this._fields.key] == key);
+        if (matchObj[0]) {
+          return matchObj[0][this._fields.value];
+        }
+      }
     }
   },
   computed: {
@@ -57,7 +66,7 @@ export default {
         return this.insertValue;
       },
       set(key) {
-        const value = this.$utils.confugureFormatter(this.configure, key);
+        const value = confugureFormatter(this.configure, key);
         // this.$emit(`change`, { key, value }); // 传编码及值
         this.$emit(`change`, {
           [this._fields.key]: key,
@@ -70,12 +79,11 @@ export default {
       if (!this.fields || !Object.keys(this.fields).length) {
         return { key: "key", value: "value" }; // 默认防错处理
       } else {
-        return this.fields
+        return this.fields;
       }
     }
   },
-  created() {
-  }
+  created() {}
 };
 </script>
 <style scoped>
