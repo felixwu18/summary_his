@@ -1,5 +1,5 @@
 <template>
-  <div :class="{'hidden':hidden}" class="pagination-container">
+  <div>
     <!-- <h1>分页器</h1> -->
     <el-pagination
       :background="background"
@@ -7,7 +7,8 @@
       :hide-on-single-page="true"
       :total="total"
       :page-size.sync="pageSize"
-      @current-change="handleCurrentChange" 
+      :current-page="currentPage"
+      @current-change="handleCurrentChange"
     />
       <!-- 
       :background="background"
@@ -39,16 +40,16 @@ export default {
       type: Number,
       default: 1
     },
-    limit: {
+    limit: { // 分页一页条数
       type: Number,
       default: 20
     },
-    pageSizes: {
-      type: Array,
-      default() {
-        return [15, 25, 35, 50, 70];
-      }
-    },
+    // pageSizes: {
+    //   type: Array,
+    //   default() {
+    //     return [15, 25, 35, 50, 70];
+    //   }
+    // },
     layout: {
       type: String,
       default: "total, sizes, prev, pager, next, jumper"
@@ -57,23 +58,20 @@ export default {
       type: Boolean,
       default: true
     },
-    autoScroll: {
-      type: Boolean,
-      default: true
-    },
-    hidden: {
-      type: Boolean,
-      default: false
-    }
+    // autoScroll: {
+    //   type: Boolean,
+    //   default: true
+    // }
   },
   computed: {
     currentPage: {
       get() {
         return this.page;
-      },
-      set(val) {
-        this.$emit("update:page", val);
       }
+      // ,
+      // set(val) {
+      //   this.$emit("update:page", val);
+      // }
     },
     pageSize: {
       get() {
@@ -83,27 +81,27 @@ export default {
         this.$emit("update:limit", val);
       }
     },
-    isHide(){
-      return false
-    }
+    // isHide(){
+    //   return false
+    // }
   },
   methods: {
-    handleSizeChange(val) {
-      this.$emit("pagination", { page: this.currentPage, limit: val });
+    // handleSizeChange(val) {
+    //   this.$emit("pagination", { page: this.currentPage, limit: val });
 
-      // 解决正常方法无法滚动
-      // let main = document.getElementsByClassName("el-table")[0];
-      // main.parentNode.style.position = "absolute";
-      // setTimeout(() => {
-      //   main.parentNode.style.position = "static";
-      // }, 0);
+    //   // 解决正常方法无法滚动
+    //   // let main = document.getElementsByClassName("el-table")[0];
+    //   // main.parentNode.style.position = "absolute";
+    //   // setTimeout(() => {
+    //   //   main.parentNode.style.position = "static";
+    //   // }, 0);
 
-      // if (this.autoScroll) {
-      //   scrollTo(0, 1000);
-      // }
-    },
+    //   // if (this.autoScroll) {
+    //   //   scrollTo(0, 1000);
+    //   // }
+    // },
     handleCurrentChange(val) {
-      this.$emit("pagination", { page: val, limit: this.pageSize });
+      this.$emit("pageChange", val);
       console.log(val)
       // 解决正常方法无法滚动
       // let main = document.getElementsByClassName("el-table")[0];
@@ -122,11 +120,4 @@ export default {
 </script>
 
 <style scoped>
-/* .pagination-container {
-  background: #fff;
-  padding: 32px 16px;
-}
-.pagination-container.hidden {
-  display: none;
-} */
 </style>

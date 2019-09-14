@@ -24,10 +24,12 @@
       :codeToLabel="codeToLabel"
       :fieldsWidth="fieldsWidth"
       :handle_width="240"
-      :table_top="440"
+      :table_top="320"
       :multiple-head="3"
-      :total="13"
+      :total="39"
       :pageSize.sync="pageSize"
+      :currentPage="current"
+      @pageChange="pageChange"
       @newRow="addRow"
       @enterDetail="handleDetail"
       @deleteRow="deleteRow"
@@ -68,7 +70,7 @@
     -->
     <h1>封装验证组件</h1>
     <searchInput2 :search="search" @validate="handleValidate">
-      <el-input slot="name" title="名称椒盐" :options="['required']" v-model="search.name"></el-input>
+      <el-input slot="name" title="名称椒盐" :options="['required', checkObj]" v-model="search.name"></el-input>
       <el-select slot="region" title="区域选择" v-model="search.region" clearable placeholder="请选择活动区域">
         <el-option label="区域一" value="shanghai"></el-option>
         <el-option label="区域二" value="beijing"></el-option>
@@ -366,8 +368,15 @@ export default {
   },
   data() {
     return {
+      checkObj:  {
+        label: "活动名称",
+        value:'1',
+        rules: ["notnull", "length"],
+        conditions: ["2", "10"]
+      },
       // that,
       pageSize: 10,
+      current: 1,
       // 测试按钮配置
       btnConfigure: {
         prop: "level",
@@ -446,6 +455,11 @@ export default {
       //  const fn = _ => console.log(arr1)
       // this.$lodash.throttle(_ => console.log(arr1), 1000)
       this.$lodash.pullAll(arr2, []);
+    },
+    pageChange(val){
+      this.current = val
+      console.log('val---')
+      console.log(val)
     },
     getObj(val) {
       console.log("va---l");

@@ -227,7 +227,7 @@
     </el-table>
     <!-- 分页器 -->
     <div class="paginationWrap">
-      <Pagination :total="total" :limit="pageSize" layout="prev, pager, next, jumper"/>
+      <Pagination :total="total" :limit="pageSize" :page.sync="currentPage" @pageChange="pageChange" layout="prev, pager, next, jumper"/>
     </div>
   </div>
 </template>
@@ -274,10 +274,15 @@ export default {
     table_top: { type: Number, default: 200 },
     multipleHead: { type: Number, default: 1 },
     total: { type: Number, default: 10 }, // 分页
+    currentPage: { type: Number, default: 1 }
     // stateClor: { type: Object, default: _ => {} }
     // height: { type: Number, default: 500 }
   },
   methods: {
+    // 点击分页
+    pageChange(val){
+      this.$emit("pageChange", val);
+    },
     // getColor(formHeadItem, row, stateColor){
     //   return this.stateColor && Object.kes(this.stateColor).length && (Object.keys(this.stateColor)[0] === formHeadItem.prop) && (stateColor[Object.keys(stateColor)[0]].state === row[formHeadItem.prop]) ? stateColor[Object.keys(stateColor)[0]].color : 'inherit'  
     //  }

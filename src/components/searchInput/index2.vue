@@ -25,7 +25,7 @@
 //   required: true,
 //   message: "请输入活动名称",
 //   trigger: "blur",
-//   validator: this.checkName
+//   validator: this.checkFunc
 // };
 export default {
   props: {
@@ -47,13 +47,13 @@ export default {
       //         // 测试已封组件
       //         selectVal: ""
       //       },
-      rulesConfigure: {
-        required: true,
-        message: "请输入活动名称",
-        trigger: "blur",
-        validator: this.checkName,
-        type: "date"
-      },
+      //       rulesConfigure: {
+      //         required: true,
+      //         message: "请输入活动名称",
+      //         trigger: "blur",
+      //         validator: this.checkFunc,
+      //         type: "date"
+      //       },
       rules: {
         //         name: [
         //           { required: true, message: "请输入活动名称", trigger: "blur" },
@@ -110,19 +110,30 @@ export default {
         }
       });
     },
-    // 检测活动名称
-    checkName(rule, value, callback) {
+    // 触发验证函数
+    checkFunc(rule, value, callback, obj) {
+      // var    params
+      //     debugger
       //       console.log("rule, value, callback");
       //       console.log(rule);
       // this.$validate()
       // debugger
       // 这里可多考虑, 做改动抽象
-      let { check } = this.$validate({
-        label: "活动名称",
-        value,
-        rules: ["notnull", "length"],
-        conditions: ["2", "10"]
-      });
+      //       {
+      //         label: "活动名称",
+      //         value,
+      //         rules: ["notnull", "length"],
+      //         conditions: ["2", "10"]
+      //       }
+      // lebel : this.$slots[prop][0].data.attrs.title
+//       this.checkFuncObj.label = this.$slots[prop][0].data.attrs.title
+            let { check } = this.$validate(this.checkFuncObj);
+//       let { check } = this.$validate({
+//         label: "活动名称",
+//         value,
+//         rules: ["notnull", "length"],
+//         conditions: ["2", "10"]
+//       });
       this.isCallback(check, callback);
     },
     // 是否通过callback
@@ -132,6 +143,11 @@ export default {
       } else {
         return callback();
       }
+    },
+    // 类型检测(如对象: 'Object')
+    isType(value = null) {
+      if (!value) return false;
+      return value.constructor.name;
     }
   },
   components: {},
@@ -161,28 +177,33 @@ export default {
       //       };
       //       _search(obj)
       Object.keys(this._search).forEach(prop => {
-          //prop--字段 , this._search[prop] -- 字段值
-          //1,组装验证对象 checkObj
-          //        (1) element组件定义,是否必须
+        //prop--字段 , this._search[prop] -- 字段值
+        //    验证规则数组
+        const options = this.$slots[prop][0].data.attrs.options;
+        //1,组装验证对象 checkObj
+        //        (1) element组件定义,是否必须
         const checkObj = {
           required: false,
           message: `${this.$slots[prop][0].data.attrs.title}必填`,
           trigger: "blur"
         };
         //          (2) element组件定义, 输入是否合规则
-        const afterInputHadCheck = {
+        const hadCheckDefine = {
           min: 3,
           max: 5,
           message: "长度在 3 到 5 个字符",
           trigger: "blur"
         };
         //          (3) 自定义输入是否合规则 (扩展重点部分)
-        const afterInputCheckObj = {
-          validator: this.checkName,
+        options ? this.checkFuncObj = options.find(ele => this.isType(ele) === "Object") : '';
+//                 console.log('options')
+//         console.log(this.checkFuncObj)
+
+        const afterInputCheck = {
+          validator: this.checkFunc,
           trigger: "blur"
         };
         // 根据输入修改默认
-        const options = this.$slots[prop][0].data.attrs.options;
         options && options.includes("required")
           ? (checkObj.required = true)
           : "";
@@ -191,13 +212,19 @@ export default {
           : "";
         //this.$slots[prop][0].data.attrs._options
         //  2, 按需组合验证数组,itemValidArr(待分情况选择添加数组)
-        const itemValidArr = [checkObj, afterInputHadCheck];
+        //         const itemValidArr = [checkObj, hadCheckDefine];
+        var itemValidArr = [checkObj];
+        if(this.checkFuncObj) {
+                itemValidArr = [checkObj, afterInputCheck]  
+        }
         //  3, 单条字段验证对象封装,item
         const item = {
           [prop]: itemValidArr
         };
         //  4, 合并字段验证对象
         Object.assign(this.rules, item);
+        console.log('this.rules')
+        console.log(this.rules)
       });
       return this.rules;
     }
