@@ -163,7 +163,6 @@ export default {
   created() {
     // 自定义添加策略 fn(type, fn, falseMessage)
     const addStrategy = this.$validate();
-
     const checkAdd = {
       type: "_length",
       func: obj => {
