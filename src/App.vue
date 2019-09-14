@@ -69,7 +69,7 @@
             (4)validate调用,验证结果
     -->
     <h1>封装验证组件</h1>
-    <searchInput2 :search="search" @validate="handleValidate">
+    <searchInput2 :validateFields="search" @validate="handleValidate">
       <el-input slot="name" title="名称椒盐" :options="['required', checkObj]" v-model="search.name"></el-input>
       <el-select slot="region" title="区域选择" v-model="search.region" clearable placeholder="请选择活动区域">
         <el-option label="区域一" value="shanghai"></el-option>
@@ -368,10 +368,19 @@ export default {
   },
   data() {
     return {
-      checkObj:  {
-        label: "活动名称",
-        value:'1',
-        rules: ["notnull", "length"],
+      checkAdd: {
+        type: "_length",
+        func: obj => {
+          if (!obj.value) return true;
+          return (
+            obj.conditions[0] <= obj.value.length &&
+            obj.value.length <= obj.conditions[1]
+          );
+        },
+        falseMessage: "名称椒盐的长度在 2 到 10 个字符"
+      },
+      checkObj: {
+        rules: ["_length"],
         conditions: ["2", "10"]
       },
       // that,
@@ -456,10 +465,10 @@ export default {
       // this.$lodash.throttle(_ => console.log(arr1), 1000)
       this.$lodash.pullAll(arr2, []);
     },
-    pageChange(val){
-      this.current = val
-      console.log('val---')
-      console.log(val)
+    pageChange(val) {
+      this.current = val;
+      console.log("val---");
+      console.log(val);
     },
     getObj(val) {
       console.log("va---l");

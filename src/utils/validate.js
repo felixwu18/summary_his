@@ -7,9 +7,11 @@
  *  @param {Array} conditions: 条件字段 例如： ['2', '10'] ,则验证长度错误会提示: 密码的长度在2到10个字符,以传入数组的条件去做验证, 验证的提示{1}开始将匹配的是当前数组
  * @return {obj} { result, message } 验证结果对象
  */
-
-const validate = function (obj) {
+import { handleSave } from "@/utils/index";
+const validate = function(obj) {
+  // 进入验证
   let reg;
+  var _this = this
   const validatorObj = {
     // 验证定义
     validator: {
@@ -112,9 +114,24 @@ const validate = function (obj) {
         checkType,
         message = "验证成功",
         validatorMethods = this.validator.methods,
-        validatorMessage = this.validator.messages;
+        validatorMessage = handleSave.get("messagesAdd") || this.validator.messages;
+      // console.log("validator.methods");
+      // console.log(validatorMethods);
+      // console.log(validatorMessage);
       // 循环验证
       for (let i = 0, len = obj.rules.length; i < len; i++) {
+        // 新添加暂时的从sessions里取
+        if (!validatorMethods[obj.rules[i]]) {
+          // sessionStorage.getItem(obj.rules[i]) ? tempFn = sessionStorage.getItem(obj.rules[i]) : console.error("暂无新添的策略方法")
+          if (!_this[obj.rules[i]]) {console.error("暂无新添的策略方法");break}
+          var tempFn = null;
+          tempFn = _this[obj.rules[i]]
+          if (!tempFn(obj)) {
+            checkType = obj.rules[i];
+            result = false;
+          }
+          break
+        }
         // 得到当前验证失败信息
         if (!validatorMethods[obj.rules[i]](obj)) {
           checkType = obj.rules[i];
@@ -125,6 +142,11 @@ const validate = function (obj) {
       // 如果验证失败, 得到验证失败的结果集
       if (!result) {
         message = validatorMessage[checkType];
+        // 策略添加的失败提示
+        if (message.add) {
+          return { result, message };
+        }
+        // 内部自带的失败消息
         if (obj.conditions) {
           obj.conditions.forEach((item, index) => {
             message = message.replace("{" + (index + 1) + "}", item);
@@ -136,16 +158,35 @@ const validate = function (obj) {
       return { result, message };
     }
   };
-//   return validatorObj.checkResult(obj);
-   const check = validatorObj.checkResult(obj)
-  return {
-    check,
-//     addStrategy(type, fn, falseMessage) {
-//       const validator = validatorObj.validator;
-//       validator.methods[type] = fn;
-//       validator.messages[type] = falseMessage;
-//     }
-  };
-}
+  // 添加策略
+  if (!obj) {
+    return function(checkAdd) {
+      // return function(type, fn, falseMessage) {
+      // fn返回是否符合验证的布尔值, type验证算法
+      const validator = validatorObj.validator;
+      validator.methods[checkAdd.type] = checkAdd.func;
+      validator.messages[checkAdd.type] = checkAdd.falseMessage;
+      validator.methods[checkAdd.type].constructor.prototype.add = true; // 标识新添加
+
+      _this[checkAdd.type] = checkAdd.func
+      // sessionStorage.setItem(type, fn);
+      handleSave.set("messagesAdd", validator.messages);
+    };
+  }
+  return validatorObj.checkResult(obj);
+  //  const check = validatorObj.checkResult(obj)
+  //  if(obj){
+  //    return validatorObj.checkResult(obj)
+  //  }
+  //  }
+  // return {
+  //   check,
+  //   addStrategy(type, fn, falseMessage) { // fn返回是否符合验证的布尔值, type验证算法
+  //     const validator = validatorObj.validator;
+  //     validator.methods[type] = fn;
+  //     validator.messages[type] = falseMessage;
+  //   }
+  // };
+};
 
 export default validate;

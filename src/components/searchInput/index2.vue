@@ -1,15 +1,15 @@
 <template>
   <div class="validateContainer">
-    <el-form :model="_search" :rules="_rules" ref="ruleForm">
+    <el-form :model="_validateFields" :rules="_rules" ref="ruleForm">
       <!-- <el-form-item label="活动名称" prop="name">
                 <slot name="input" />
         </el-form-item>
         <el-form-item label="活动区域" prop="region">
                 <slot name="select" />       
       </el-form-item>-->
-      <!-- <el-form-item v-for="(val,key) in search" :key="key" :label="$slots.[key][0].data.attrs.title" prop="name"> -->
+      <!-- <el-form-item v-for="(val,key) in validateFields" :key="key" :label="$slots.[key][0].data.attrs.title" prop="name"> -->
       <el-form-item
-        v-for="(val,key) in _search"
+        v-for="(val,key) in _validateFields"
         :key="key"
         :label="$slots[key][0].data.attrs.title"
         :prop="key"
@@ -29,13 +29,15 @@
 // };
 export default {
   props: {
-    search: { type: Object, default: _ => {} }
+    validateFields: { type: Object, default: _ => {} },
+    checkAdd: { type: Object, default: _ => {} }
     //     _options: { type: Array, default: _ => [] }
   },
   data() {
     return {
-      // 将要验证结果search的一组值给:model,
-      //       search: {
+      checkFuncObj: {},
+      // 将要验证结果validateFields的一组值给:model,
+      //       validateFields: {
       //         name: "",
       //         region: "",
       //         date1: "",
@@ -59,40 +61,40 @@ export default {
         //           { required: true, message: "请输入活动名称", trigger: "blur" },
         //           { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
         //         ],
-        region: [
-          { required: true, message: "请选择活动区域", trigger: "blur" }
-        ],
-        selectVal: [
-          { required: true, message: "选择器2必选", trigger: "change" }
-        ],
-        date1: [
-          {
-            type: "date",
-            required: true,
-            message: "请选择日期",
-            trigger: "change"
-          }
-        ],
-        date2: [
-          {
-            type: "date",
-            required: true,
-            message: "请选择时间",
-            trigger: "change"
-          }
-        ],
-        type: [
-          {
-            type: "array",
-            required: true,
-            message: "请至少选择一个活动性质",
-            trigger: "change"
-          }
-        ],
-        resource: [
-          { required: true, message: "请选择活动资源", trigger: "change" }
-        ],
-        desc: [{ required: true, message: "请填写活动形式", trigger: "blur" }]
+        // region: [
+        //   { required: true, message: "请选择活动区域", trigger: "blur" }
+        // ],
+        // selectVal: [
+        //   { required: true, message: "选择器2必选", trigger: "change" }
+        // ],
+        //   date1: [
+        //     {
+        //       type: "date",
+        //       required: true,
+        //       message: "请选择日期",
+        //       trigger: "change"
+        //     }
+        //   ],
+        //   date2: [
+        //     {
+        //       type: "date",
+        //       required: true,
+        //       message: "请选择时间",
+        //       trigger: "change"
+        //     }
+        //   ],
+        //   type: [
+        //     {
+        //       type: "array",
+        //       required: true,
+        //       message: "请至少选择一个活动性质",
+        //       trigger: "change"
+        //     }
+        //   ],
+        //   resource: [
+        //     { required: true, message: "请选择活动资源", trigger: "change" }
+        //   ],
+        //   desc: [{ required: true, message: "请填写活动形式", trigger: "blur" }]
       }
     };
   },
@@ -111,11 +113,11 @@ export default {
       });
     },
     // 触发验证函数
-    checkFunc(rule, value, callback, obj) {
+    checkFunc(rule, value, callback) {
       // var    params
       //     debugger
-      //       console.log("rule, value, callback");
-      //       console.log(rule);
+      // console.log("rule, value, callback");
+      // console.log(rule);
       // this.$validate()
       // debugger
       // 这里可多考虑, 做改动抽象
@@ -126,14 +128,21 @@ export default {
       //         conditions: ["2", "10"]
       //       }
       // lebel : this.$slots[prop][0].data.attrs.title
-//       this.checkFuncObj.label = this.$slots[prop][0].data.attrs.title
-            let { check } = this.$validate(this.checkFuncObj);
-//       let { check } = this.$validate({
-//         label: "活动名称",
-//         value,
-//         rules: ["notnull", "length"],
-//         conditions: ["2", "10"]
-//       });
+      //       this.checkFuncObj.label = this.$slots[prop][0].data.attrs.title
+      // console.log('this.checkFuncObj[rule.field]')
+      // console.log(this.checkFuncObj[rule.field])
+      // 将传入配置的部分封装到此
+      this.checkFuncObj[rule.field].value = value;
+      this.checkFuncObj[rule.field].label = this.$slots[
+        rule.field
+      ][0].data.attrs.title;
+      const check = this.$validate(this.checkFuncObj[rule.field]);
+      //       let { check } = this.$validate({
+      //         label: "活动名称",
+      //         value,
+      //         rules: ["notnull", "length"],
+      //         conditions: ["2", "10"]
+      //       });
       this.isCallback(check, callback);
     },
     // 是否通过callback
@@ -151,18 +160,36 @@ export default {
     }
   },
   components: {},
-  created() {},
-  mounted() {},
+  created() {
+    // 自定义添加策略 fn(type, fn, falseMessage)
+    const addStrategy = this.$validate();
+
+    const checkAdd = {
+      type: "_length",
+      func: obj => {
+        if (!obj.value) return true;
+        return (
+          obj.conditions[0] <= obj.value.length &&
+          obj.value.length <= obj.conditions[1]
+        );
+      },
+      falseMessage: "名称椒盐的长度在 2 到 10 个字符"
+    };
+    // addStrategy(this.checkAdd);
+    addStrategy(checkAdd);
+    // debugger;
+  },
+  // mounted() {},
   computed: {
-    // 筛选有效验证字段
-    _search() {
-      if (!this.search) {
+    // 筛选需要验证字段(避免报错)
+    _validateFields() {
+      if (!this.validateFields) {
         return;
       }
       const obj = {};
-      Object.keys(this.search).forEach(key => {
+      Object.keys(this.validateFields).forEach(key => {
         if (this.$slots[key]) {
-          obj[key] = this.search[key];
+          obj[key] = this.validateFields[key];
         }
       });
       return obj || {};
@@ -175,9 +202,9 @@ export default {
       //           { min: 3, max: 5, message: "长度在 3 到 5 个字符", trigger: "blur" }
       //         ]
       //       };
-      //       _search(obj)
-      Object.keys(this._search).forEach(prop => {
-        //prop--字段 , this._search[prop] -- 字段值
+      //       _validateFields(obj)
+      Object.keys(this._validateFields).forEach(prop => {
+        //prop--字段 , this._validateFields[prop] -- 字段值
         //    验证规则数组
         const options = this.$slots[prop][0].data.attrs.options;
         //1,组装验证对象 checkObj
@@ -195,14 +222,13 @@ export default {
           trigger: "blur"
         };
         //          (3) 自定义输入是否合规则 (扩展重点部分)
-        options ? this.checkFuncObj = options.find(ele => this.isType(ele) === "Object") : '';
-//                 console.log('options')
-//         console.log(this.checkFuncObj)
-
-        const afterInputCheck = {
-          validator: this.checkFunc,
-          trigger: "blur"
-        };
+        // 字段给一个自定义函数的验证参数对象
+        options
+          ? (this.checkFuncObj[prop] = options.find(
+              ele => this.isType(ele) === "Object"
+            ))
+          : "";
+        const afterInputCheck = { validator: this.checkFunc, trigger: "blur" };
         // 根据输入修改默认
         options && options.includes("required")
           ? (checkObj.required = true)
@@ -210,12 +236,14 @@ export default {
         options && options.includes("change")
           ? (checkObj.trigger = "change")
           : "";
-        //this.$slots[prop][0].data.attrs._options
         //  2, 按需组合验证数组,itemValidArr(待分情况选择添加数组)
-        //         const itemValidArr = [checkObj, hadCheckDefine];
         var itemValidArr = [checkObj];
-        if(this.checkFuncObj) {
-                itemValidArr = [checkObj, afterInputCheck]  
+        // 有定义的验证参数对象传入,即装配上自定义函数的验证对象
+        if (this.checkFuncObj[prop]) {
+          // debugger
+          itemValidArr = [checkObj, afterInputCheck];
+          // console.log('itemValidArr')
+          // console.log(itemValidArr[1].validator)
         }
         //  3, 单条字段验证对象封装,item
         const item = {
@@ -223,8 +251,8 @@ export default {
         };
         //  4, 合并字段验证对象
         Object.assign(this.rules, item);
-        console.log('this.rules')
-        console.log(this.rules)
+        // console.log('this.r')
+        // console.log(this.rules.validator)
       });
       return this.rules;
     }
