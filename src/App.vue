@@ -85,7 +85,7 @@
         style="width: 100%;"
       ></el-date-picker>
       <!-- <el-input slot="input" v-model="search.name"></el-input> -->
-      <el-button slot='btn' @click="testFn" type="primary">立即创建</el-button>
+      <el-button @click="testFn" type="primary">立即创建</el-button>
     </searchInput2>
 
     <!-- 测试组件用 -->
@@ -451,11 +451,12 @@ export default {
     testFn(){
       // 按钮可灵活位置
       const valid = this.$refs.formCheck.submitForm('ruleForm')
+      // debugger
       valid && console.log("it's ok---") 
     },
     handleValidate(valid) {
-      console.log("valid");
-      console.log(valid);
+      // console.log("valid");
+      // console.log(valid);
     },
     testLodash() {
       // 数据处理
