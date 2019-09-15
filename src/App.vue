@@ -69,7 +69,7 @@
             (4)validate调用,验证结果
     -->
     <h1>封装验证组件</h1>
-    <searchInput2 :validateFields="search" :checkAdd="checkAdd" @validate="handleValidate">
+    <searchInput2 :validateFields="search" ref="formCheck" :checkAdd="checkAdd" @validate="handleValidate">
       <el-input slot="name" title="名称椒盐" :options="['required', checkObj]" v-model="search.name"></el-input>
       <el-select slot="region" title="区域选择" v-model="search.region" clearable placeholder="请选择活动区域">
         <el-option label="区域一" value="shanghai"></el-option>
@@ -85,6 +85,7 @@
         style="width: 100%;"
       ></el-date-picker>
       <!-- <el-input slot="input" v-model="search.name"></el-input> -->
+      <el-button slot='btn' @click="testFn" type="primary">立即创建</el-button>
     </searchInput2>
 
     <!-- 测试组件用 -->
@@ -447,6 +448,10 @@ export default {
     };
   },
   methods: {
+    testFn(){
+      const valid = this.$refs.formCheck.submitForm('ruleForm')
+      valid && console.log("it's ok---") 
+    },
     handleValidate(valid) {
       console.log("valid");
       console.log(valid);
@@ -786,7 +791,8 @@ export default {
     // window.that = this.timeDefault
     // __this = this
   },
-  mounted() {},
+  mounted() {
+  },
   computed: {}
 };
 </script>

@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div v-bind="$attrs">
     <h1>testcomponent</h1>
     {{ car }}
     {{ house }}
@@ -7,9 +7,11 @@
   </div>
 </template>
 <script>
+import Vue from 'Vue'
 export default {
   data() {
     return {
+                    son: 'son'
     };
   },
   inject: { // 不同祖先级provide同属性的值, 当前inject取最近的,且不受隔层同属性值的变化影响

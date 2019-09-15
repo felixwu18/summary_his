@@ -17,13 +17,11 @@
         <slot :name="key" />
       </el-form-item>
     </el-form>
-    <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button>
-        <testComponent />
+    <slot name="btn" @click="submitForm('ruleForm')" />
+    <!-- <el-button type="primary" @click="submitForm('ruleForm')">立即创建</el-button> -->
   </div>
 </template>
 <script>
-import testComponent from "@/components/testComponent";
-
 // const rulesConfigure = {
 //   required: true,
 //   message: "请输入活动名称",
@@ -35,9 +33,6 @@ export default {
     validateFields: { type: Object, default: _ => {} },
     checkAdd: { type: Array, default: _ => [] }
     //     _options: { type: Array, default: _ => [] }
-  },
- provide: {
-    car: "有车子---"
   },
   data() {
     return {
@@ -106,17 +101,20 @@ export default {
   },
   methods: {
     submitForm(formName) {
-      this.$emit("validate", this.$slots.name[0].data.attrs.title);
+      // this.$emit("validate", this.$slots.name[0].data.attrs.title);
+      var flag = false;
       this.$refs[formName].validate(valid => {
-        this.$emit("validate", valid);
+        // this.$emit("validate", valid);
+        flag = valid;
         if (valid) {
           //           this.$emit('validate', valid)
           //           alert("submit!");
         } else {
           console.log("error submit!!");
-          return false;
+          // return false;
         }
       });
+      return flag;
     },
     // 触发验证函数
     checkFunc(rule, value, callback) {
@@ -137,7 +135,9 @@ export default {
       // console.log(this.checkFuncObj[rule.field])
       // 将传入配置的部分封装到此
       this.checkFuncObj[rule.field].value = value;
-      this.checkFuncObj[rule.field].label = this.$slots[rule.field][0].data.attrs.title;
+      this.checkFuncObj[rule.field].label = this.$slots[
+        rule.field
+      ][0].data.attrs.title;
       const check = this.$validate(this.checkFuncObj[rule.field]);
       //       let { check } = this.$validate({
       //         label: "活动名称",
@@ -161,10 +161,10 @@ export default {
       return value.constructor.name;
     }
   },
-  components: {
-    testComponent
-  },
+  components: {},
   created() {
+    // this.$slots
+    // debugger
     // 自定义添加策略addStrategy([对象]])
     const addStrategy = this.$validate();
     // const checkAdd = [{
@@ -181,7 +181,7 @@ export default {
     // addStrategy(this.checkAdd);
     addStrategy(this.checkAdd);
   },
-  // mounted() {},
+  mounted() {},
   computed: {
     // 筛选需要验证字段(避免报错)
     _validateFields() {
@@ -235,9 +235,9 @@ export default {
           ? (this.checkFuncObj[prop] = options.find(
               ele => this.isType(ele) === "Object"
             ))
-          : ""; 
-          console.log('this.checkFuncObj[prop]')
-          console.log(this.checkFuncObj[prop])
+          : "";
+        console.log("this.checkFuncObj[prop]");
+        console.log(this.checkFuncObj[prop]);
         const afterInputCheck = { validator: this.checkFunc, trigger: "blur" };
         // 根据输入修改默认
         options && options.includes("required")
@@ -249,7 +249,6 @@ export default {
         //  2, 按需组合验证数组,itemValidArr(待分情况选择添加数组)
         var itemValidArr = [checkObj];
         // 有定义的验证参数对象传入,即装配上自定义函数的验证对象
-        // debugger
         if (this.checkFuncObj[prop]) {
           itemValidArr = [checkObj, afterInputCheck];
           // console.log('itemValidArr')
@@ -265,8 +264,7 @@ export default {
       return this.rules;
     }
   },
-  comments:{
-  }
+  comments: {}
 };
 </script>
 <style lang="less" scoped>
