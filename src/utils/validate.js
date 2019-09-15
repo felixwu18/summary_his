@@ -1,5 +1,5 @@
 /**
- * 传入验证规则，得到验证结果
+ * 传入验证规则，得到验证结果 (暂时需要借助Vue实例)
  * @param {Obj} { label, value, rules, conditions}
  *  @param {String} label: 验证的字段名称
  *  @param {String} value: 验证的值 (验证重复的时候可以添加value1属性)
@@ -7,7 +7,7 @@
  *  @param {Array} conditions: 条件字段 例如： ['2', '10'] ,则验证长度错误会提示: 密码的长度在2到10个字符,以传入数组的条件去做验证, 验证的提示{1}开始将匹配的是当前数组
  * @return {obj} { result, message } 验证结果对象
  */
-import { handleSave } from "@/utils/index";
+import { isType } from "@/utils/index";
 const validate = function(obj) {
   // 进入验证
   let reg;
@@ -113,25 +113,10 @@ const validate = function(obj) {
       let result = true,
         checkType,
         message = "验证成功",
-        validatorMethods = this.validator.methods,
-        validatorMessage = handleSave.get("messagesAdd") || this.validator.messages;
-      // console.log("validator.methods");
-      // console.log(validatorMethods);
-      // console.log(validatorMessage);
+        validatorMethods = _this.methods,
+        validatorMessage = _this.messages;
       // 循环验证
       for (let i = 0, len = obj.rules.length; i < len; i++) {
-        // 新添加暂时的从sessions里取
-        if (!validatorMethods[obj.rules[i]]) {
-          // sessionStorage.getItem(obj.rules[i]) ? tempFn = sessionStorage.getItem(obj.rules[i]) : console.error("暂无新添的策略方法")
-          if (!_this[obj.rules[i]]) {console.error("暂无新添的策略方法");break}
-          var tempFn = null;
-          tempFn = _this[obj.rules[i]]
-          if (!tempFn(obj)) {
-            checkType = obj.rules[i];
-            result = false;
-          }
-          break
-        }
         // 得到当前验证失败信息
         if (!validatorMethods[obj.rules[i]](obj)) {
           checkType = obj.rules[i];
@@ -142,11 +127,11 @@ const validate = function(obj) {
       // 如果验证失败, 得到验证失败的结果集
       if (!result) {
         message = validatorMessage[checkType];
-        // 策略添加的失败提示
-        if (message.add) {
-          return { result, message };
+        // 1. 自定义的失败消息
+          if (!checkType in this.validator.messages) {
+            return { result, message };
         }
-        // 内部自带的失败消息
+        // 2. 内部自带的失败消息(动态替换定位部分)
         if (obj.conditions) {
           obj.conditions.forEach((item, index) => {
             message = message.replace("{" + (index + 1) + "}", item);
@@ -158,35 +143,24 @@ const validate = function(obj) {
       return { result, message };
     }
   };
-  // 添加策略
+  // 添加策略 addStrategy(type, fn, falseMessage)
   if (!obj) {
-    return function(checkAdd) {
-      // return function(type, fn, falseMessage) {
-      // fn返回是否符合验证的布尔值, type验证算法
+    return function(addConfig) {
+      // func返回是否符合验证的布尔值, addConfig.type 验证算法名
+      isType(addConfig) === "Array" ? '' : addConfig = []
       const validator = validatorObj.validator;
-      validator.methods[checkAdd.type] = checkAdd.func;
-      validator.messages[checkAdd.type] = checkAdd.falseMessage;
-      validator.methods[checkAdd.type].constructor.prototype.add = true; // 标识新添加
-
-      _this[checkAdd.type] = checkAdd.func
-      // sessionStorage.setItem(type, fn);
-      handleSave.set("messagesAdd", validator.messages);
+      // 定义
+      _this.methods = validator.methods
+      _this.messages = validator.messages
+      // 循环添加
+      addConfig.forEach(ele => {
+        _this.methods[ele.type] = ele.func
+        _this.messages[ele.type] = ele.falseMessage
+     })
     };
   }
+  // 返回验证结果
   return validatorObj.checkResult(obj);
-  //  const check = validatorObj.checkResult(obj)
-  //  if(obj){
-  //    return validatorObj.checkResult(obj)
-  //  }
-  //  }
-  // return {
-  //   check,
-  //   addStrategy(type, fn, falseMessage) { // fn返回是否符合验证的布尔值, type验证算法
-  //     const validator = validatorObj.validator;
-  //     validator.methods[type] = fn;
-  //     validator.messages[type] = falseMessage;
-  //   }
-  // };
 };
 
 export default validate;

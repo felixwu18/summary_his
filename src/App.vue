@@ -69,7 +69,7 @@
             (4)validate调用,验证结果
     -->
     <h1>封装验证组件</h1>
-    <searchInput2 :validateFields="search" @validate="handleValidate">
+    <searchInput2 :validateFields="search" :checkAdd="checkAdd" @validate="handleValidate">
       <el-input slot="name" title="名称椒盐" :options="['required', checkObj]" v-model="search.name"></el-input>
       <el-select slot="region" title="区域选择" v-model="search.region" clearable placeholder="请选择活动区域">
         <el-option label="区域一" value="shanghai"></el-option>
@@ -87,6 +87,8 @@
       <!-- <el-input slot="input" v-model="search.name"></el-input> -->
     </searchInput2>
 
+    <!-- 测试组件用 -->
+    <testComponent />
     <!-- 时间组件 -->
     <dataSelector
       title="日期"
@@ -206,6 +208,7 @@ import inputSuggestion from "./components/inputSuggestion/index";
 import searchLayout from "./components/layout/searchLayout";
 import searchInput from "@/components/searchInput/index";
 import searchInput2 from "@/components/searchInput/index2";
+import testComponent from "@/components/testComponent";
 
 // window.this.timeDefault
 // console.log('window.this.timeDefault')
@@ -213,7 +216,6 @@ import searchInput2 from "@/components/searchInput/index2";
 // var that
 // window.onload=function(){
 //   that = window.that
-//   // debugger
 // }
 // setTimeout(_ => console.log('--',that = this.timeDefault, window.that), 1000)
 // import UploadExcel from "./components/UploadExcel/index";
@@ -362,23 +364,31 @@ export default {
     searchLayout,
     searchInput,
     searchInput2,
+    testComponent,
     // UploadExcel,
     later,
     later2
   },
+  provide: {
+    house: "有房子",
+    car: "有车子",
+    money: "￥10000"
+  },
   data() {
     return {
-      checkAdd: {
-        type: "_length",
-        func: obj => {
-          if (!obj.value) return true;
-          return (
-            obj.conditions[0] <= obj.value.length &&
-            obj.value.length <= obj.conditions[1]
-          );
-        },
-        falseMessage: "名称椒盐的长度在 2 到 10 个字符"
-      },
+      checkAdd: [
+        {
+          type: "_length",
+          func: obj => {
+            if (!obj.value) return true;
+            return (
+              obj.conditions[0] <= obj.value.length &&
+              obj.value.length <= obj.conditions[1]
+            );
+          },
+          falseMessage: "名称椒盐的长度在 2 到 10 个字符"
+        }
+      ],
       checkObj: {
         rules: ["_length"],
         conditions: ["2", "10"]
@@ -477,7 +487,6 @@ export default {
     ceshi() {
       console.log("table-pageSize");
       console.log(this.that);
-      // debugger
 
       // -----------测试变换数据结构通过引用间接操作数据,更新--------------------
       const test = [];
@@ -531,7 +540,6 @@ export default {
         // 记录当前函数触发的时间
         var nowTime = Date.now();
         if (nowTime - lastTime > delay) {
-          // debugger
           fn();
           // 同步时间, 重新计算
           lastTime = nowTime;
@@ -776,7 +784,7 @@ export default {
   created() {
     this.timeDefault = ["2019-6-8", "2019-7-8"];
     // window.that = this.timeDefault
-    // debugger
+    // __this = this
   },
   mounted() {},
   computed: {}

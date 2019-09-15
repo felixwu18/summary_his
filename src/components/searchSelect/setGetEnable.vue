@@ -20,6 +20,7 @@ export default {
   name: "searchSelect",
   data() {
     return {
+      test:'test',
       // itemKey: "",
       // itemValue: "",
       // fieldsProp:
@@ -31,7 +32,7 @@ export default {
     // insertValue: { type: String, default: '' },
     fields: { type: Object, default: _ => {} }, // 动态属性配置
     insertValue: [Number, String],
-    disabled: { type: Boolean, default: false }
+    disabled: { type: Boolean, default: false },
   },
   methods: {
     // 自定义搜索
@@ -44,7 +45,6 @@ export default {
           val,
           fieldsArr
         );
-        // debugger
       } else {
         //val为空时，还原数组
         this.options = this.configure;
@@ -83,7 +83,8 @@ export default {
       }
     }
   },
-  created() {}
+  created() {
+  }
 };
 </script>
 <style scoped>
