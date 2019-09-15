@@ -449,6 +449,7 @@ export default {
   },
   methods: {
     testFn(){
+      // 按钮可灵活位置
       const valid = this.$refs.formCheck.submitForm('ruleForm')
       valid && console.log("it's ok---") 
     },
