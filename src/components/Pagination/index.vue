@@ -5,11 +5,17 @@
       :background="background"
       :layout="layout"
       :hide-on-single-page="true"
-      :total="total"
       :page-size.sync="pageSize"
       :current-page="currentPage"
-      @current-change="handleCurrentChange"
+      v-on="$listeners"
+      v-bind="$attrs"
     />
+      <!--
+        此两,封装的组件,外部一个继承原有事件,一个继承原有的属性
+      v-on="$listeners"
+      v-bind="$attrs"
+       -->
+
       <!-- 
       :background="background"
       :current-page.sync="currentPage"
@@ -31,11 +37,11 @@
 export default {
   name: "Pagination",
   props: {
-    total: {
-      // required: true,
-      type: Number,
-      default: 0
-    },
+    // total: {
+    //   // required: true,
+    //   type: Number,
+    //   default: 0
+    // },
     page: {
       type: Number,
       default: 1

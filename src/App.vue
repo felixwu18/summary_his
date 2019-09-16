@@ -98,7 +98,7 @@
       :end.sync="search.end"
     />
     <!-- 分页器 -->
-    <Pagination :total="30" />
+    <Pagination :total="35" @current-change="handleCurrentChange" />
     <!-- 选择器 -->
     <searchSelect title="选择器" :insertValue.sync="selectVal" :configure="configue_level" />
     <searchLayout title="选择器实现2" :width="350">
@@ -448,6 +448,10 @@ export default {
     };
   },
   methods: {
+    handleCurrentChange(){
+      debugger
+      console.log('测试pagination--')
+    },
     testFn(){
       // 按钮可灵活位置
       const valid = this.$refs.formCheck.submitForm('ruleForm')
