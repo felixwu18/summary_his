@@ -182,7 +182,7 @@ export function removeClass(ele, cls) {
 }
 
 /**
- * 对象数组去重
+ * 对象数组去重(重复对象,可将指定字段值累加)
  * @param {ObjArr} objArr
  * @param {string} propStr
  */

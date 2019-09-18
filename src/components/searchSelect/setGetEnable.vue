@@ -29,7 +29,7 @@ export default {
   },
   props: {
     configure: { type: Array, default: _ => [] },
-    // insertValue: { type: String, default: '' },
+    syncObj: { type: Object, default: _ => {} },
     fields: { type: Object, default: _ => {} }, // 动态属性配置
     insertValue: [Number, String],
     disabled: { type: Boolean, default: false },
@@ -66,12 +66,16 @@ export default {
         return this.insertValue;
       },
       set(key) {
-        const value = confugureFormatter(this.configure, key);
+        const value = this.confugureFormatter(this.configure, key);
         // this.$emit(`change`, { key, value }); // 传编码及值
         this.$emit(`change`, {
           [this._fields.key]: key,
           [this._fields.value]: value
         }); // 传编码及值
+        this.$emit("update:syncObj", {
+          [this._fields.key]: key,
+          [this._fields.value]: value
+        }); // 同步对象
         this.$emit("update:insertValue", key); // 编码
       }
     },

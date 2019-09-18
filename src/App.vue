@@ -102,9 +102,9 @@
     <!-- 选择器 -->
     <searchSelect title="选择器" :insertValue.sync="selectVal" :configure="configue_level" />
     <searchLayout title="选择器实现2" :width="350">
-      <setGetEnable @change="getObj" :insertValue.sync="selectVal" :configure="configue_level" />
+      <setGetEnable @change="getObj" :syncObj.sync="syncObj" :insertValue.sync="selectVal" :configure="configue_level" />
     </searchLayout>
-    {{selectVal}}
+    {{selectVal}}-------syncObj->----{{syncObj.value}}
     <button @click="ceshi">ceshi</button>
     <!-- 上传组件 -->
     <!-- <UploadExcel /> -->
@@ -157,7 +157,10 @@
     <!-- 对象去重 -->
     <h1>测试v-for 和 v-if 对页面渲染的影响</h1>
     <div v-for="(item, index) in configue_level" :key="index+6">
-      <span ref="vifInner" v-if="item.key === 1">{{item.key}}---{{item.value}}</span>
+      <span ref="vifInner" v-if="item.key === 1">{{item.key}}--outer--{{item.value}}</span>
+      <div v-for="(item_, index) in [11,22,33]" :key="index">
+          <button>--inner--{{index}}</button>
+      </div>
     </div>
     <div>
       <!-- {{item.value}} -->
@@ -377,6 +380,7 @@ export default {
   },
   data() {
     return {
+      syncObj: {},
       checkAdd: [
         {
           type: "_length",
@@ -449,7 +453,6 @@ export default {
   },
   methods: {
     handleCurrentChange(){
-      debugger
       console.log('测试pagination--')
     },
     testFn(){
@@ -724,6 +727,7 @@ export default {
         { id: 1, age: 18 },
         { id: 6, age: 19 },
         { id: 6, age: 66 },
+        { id: 6, age: 15 },
         {}
       ];
       // const obj = {id: 1, age: 18}
@@ -803,6 +807,9 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+// html * {
+//   outline: 1px solid red
+// }
 @import "~@/common/less/mixin.less";
 .marginLeft {
   margin-left: 1em;

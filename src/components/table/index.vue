@@ -604,6 +604,9 @@ export default {
 };
 </script>
 <style lang="less" scoped>
+// html * {
+//   outline: 1px solid red
+// }
 // 分页不觉
 .paginationWrap{
   padding-top: 15px;

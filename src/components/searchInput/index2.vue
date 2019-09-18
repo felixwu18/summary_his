@@ -1,6 +1,12 @@
 <template>
   <div class="validateContainer">
-    <el-form :model="_validateFields" :rules="_rules" ref="ruleForm">
+    <el-form
+      :model="_validateFields"
+      :rules="_rules"
+      ref="ruleForm"
+      v-on="$listeners"
+      v-bind="$attrs"
+    >
       <!-- <el-form-item label="活动名称" prop="name">
                 <slot name="input" />
         </el-form-item>
@@ -22,7 +28,6 @@
   </div>
 </template>
 <script>
-
 // const rulesConfigure = {
 //   required: true,
 //   message: "请输入活动名称",
@@ -103,10 +108,10 @@ export default {
   methods: {
     submitForm(formName) {
       this.$emit("validate", this.$slots.name[0].data.attrs.title);
-      var flag = false
+      var flag = false;
       this.$refs[formName].validate(valid => {
         // this.$emit("validate", valid);
-        valid ? flag = valid : console.log("error submit!!")
+        valid ? (flag = valid) : console.log("error submit!!");
         // if (valid) {
         //   //           this.$emit('validate', valid)
         //   //           alert("submit!");
@@ -115,7 +120,7 @@ export default {
         //   // return false;
         // }
       });
-      return flag
+      return flag;
     },
     // 触发验证函数
     checkFunc(rule, value, callback) {
@@ -136,7 +141,9 @@ export default {
       // console.log(this.checkFuncObj[rule.field])
       // 将传入配置的部分封装到此
       this.checkFuncObj[rule.field].value = value;
-      this.checkFuncObj[rule.field].label = this.$slots[rule.field][0].data.attrs.title;
+      this.checkFuncObj[rule.field].label = this.$slots[
+        rule.field
+      ][0].data.attrs.title;
       const check = this.$validate(this.checkFuncObj[rule.field]);
       //       let { check } = this.$validate({
       //         label: "活动名称",
@@ -160,8 +167,7 @@ export default {
       return value.constructor.name;
     }
   },
-  components: {
-  },
+  components: {},
   created() {
     // this.$slots
     // debugger
@@ -181,9 +187,7 @@ export default {
     // addStrategy(this.checkAdd);
     addStrategy(this.checkAdd);
   },
-  mounted() {
-
-  },
+  mounted() {},
   computed: {
     // 筛选需要验证字段(避免报错)
     _validateFields() {
@@ -237,9 +241,9 @@ export default {
           ? (this.checkFuncObj[prop] = options.find(
               ele => this.isType(ele) === "Object"
             ))
-          : ""; 
-          // console.log('this.checkFuncObj[prop]')
-          // console.log(this.checkFuncObj[prop])
+          : "";
+        // console.log('this.checkFuncObj[prop]')
+        // console.log(this.checkFuncObj[prop])
         const afterInputCheck = { validator: this.checkFunc, trigger: "blur" };
         // 根据输入修改默认
         options && options.includes("required")
@@ -266,8 +270,7 @@ export default {
       return this.rules;
     }
   },
-  comments:{
-  }
+  comments: {}
 };
 </script>
 <style lang="less" scoped>
