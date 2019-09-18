@@ -263,8 +263,8 @@ export default {
         // console.log(  _case === 'date')
         if ((options && options.includes(_case)) || (temp && Object.keys(temp).includes(_case))) {
           var cashe = {}
-        console.log('temp===')
-        console.log(options.includes(_case))
+        // console.log('temp===')
+        // console.log(options.includes(_case))
 
           _case === 'date' ? cashe = {type: "date", required: true, message: "请选择日期", trigger: "change"} : ''
           // _case === 'min' || 'max' ? cashe = { min: Object.keys(temp)['min'], max: Object.keys(temp)['max'], message: `长度在 ${Object.keys(temp)['min']} 到 ${Object.keys(temp)['max']} 个字符`} : ''
