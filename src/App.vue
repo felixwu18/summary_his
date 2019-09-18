@@ -78,7 +78,7 @@
       <el-date-picker
         slot="date1"
         title="时间选择器"
-        :options="['required']"
+        :options="['date']"
         type="date"
         placeholder="选择日期"
         v-model="search.date1"

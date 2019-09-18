@@ -22,7 +22,7 @@
           <!-- </searchLayout> -->
         </el-form-item>
                       <el-form-item label="日期" prop="date1">
-                        <el-date-picker
+                        <el-date-picker 
                           type="date"
                           placeholder="选择日期"
                           v-model="search.date1"

@@ -224,9 +224,9 @@ export default {
         };
         //          (2) element组件定义, 输入是否合规则
         const hadCheckDefine = {
-          min: 3,
-          max: 5,
-          message: "长度在 3 到 5 个字符",
+          // min: 3,
+          // max: 5,
+          // message: "长度在 3 到 5 个字符",
           trigger: "blur"
         };
         // const hadCheckDefine = {
@@ -239,7 +239,7 @@ export default {
         // 字段给一个自定义函数的验证参数对象
         options
           ? (this.checkFuncObj[prop] = options.find(
-              ele => this.isType(ele) === "Object"
+              ele => this.isType(ele) === "Object" && ele['rules']
             ))
           : "";
         // console.log('this.checkFuncObj[prop]')
@@ -254,9 +254,25 @@ export default {
           : "";
         //  2, 按需组合验证数组,itemValidArr(待分情况选择添加数组)
         var itemValidArr = [checkObj];
+        // 框架已有实现, 加入数组
+        // options ? options.includes('min' || 'max') : ''
+        const _case = 'date' || 'max' || 'date'
+        var temp = {}
+        options ? temp = options.find( ele => this.isType(ele) === "Object" && !ele['rules'] ) : ""
+        //         console.log('temp===')
+        // console.log(  _case === 'date')
+        if ((options && options.includes(_case)) || (temp && Object.keys(temp).includes(_case))) {
+          var cashe = {}
+        console.log('temp===')
+        console.log(options.includes(_case))
+
+          _case === 'date' ? cashe = {type: "date", required: true, message: "请选择日期", trigger: "change"} : ''
+          // _case === 'min' || 'max' ? cashe = { min: Object.keys(temp)['min'], max: Object.keys(temp)['max'], message: `长度在 ${Object.keys(temp)['min']} 到 ${Object.keys(temp)['max']} 个字符`} : ''
+          itemValidArr.push(Object.assign(hadCheckDefine, cashe))
+        }
         // 有定义的验证参数对象传入,即装配上自定义函数的验证对象
         if (this.checkFuncObj[prop]) {
-          itemValidArr = [checkObj, afterInputCheck];
+          itemValidArr.push(afterInputCheck);
           // console.log('itemValidArr')
           // console.log(itemValidArr[1].validator)
         }
