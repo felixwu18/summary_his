@@ -215,6 +215,8 @@ export default {
         //prop--字段 , this._validateFields[prop] -- 字段值
         //    验证规则数组
         const options = this.$slots[prop][0].data.attrs.options;
+        console.log('options')
+        console.log(options)
         //1,组装验证对象 checkObj
         //        (1) element组件定义,是否必须
         const checkObj = {
@@ -256,20 +258,34 @@ export default {
         var itemValidArr = [checkObj];
         // 框架已有实现, 加入数组
         // options ? options.includes('min' || 'max') : ''
-        const _case = 'date' || 'max' || 'date'
-        var temp = {}
-        options ? temp = options.find( ele => this.isType(ele) === "Object" && !ele['rules'] ) : ""
-        //         console.log('temp===')
-        // console.log(  _case === 'date')
-        if ((options && options.includes(_case)) || (temp && Object.keys(temp).includes(_case))) {
+        const _case = ['date', ['min', 'max']]
+        // 不含rules的对象
+        var tempObj = {}
+        options ? tempObj = options.find( ele => this.isType(ele) === "Object" && !ele['rules'] ) : ""
+        //循环检验
+        _case.forEach(ele => {
+          if(!options){return}
+          // 继承组件的两种类型
+          const isStringType = this.isType(ele) === 'String' && options.includes(ele);
+          const isObjType = tempObj && this.isType(ele) === 'Array';
+          const tempKeys = tempObj ? Object.keys(tempObj) : []
           var cashe = {}
-        // console.log('temp===')
-        // console.log(options.includes(_case))
-
-          _case === 'date' ? cashe = {type: "date", required: true, message: "请选择日期", trigger: "change"} : ''
-          // _case === 'min' || 'max' ? cashe = { min: Object.keys(temp)['min'], max: Object.keys(temp)['max'], message: `长度在 ${Object.keys(temp)['min']} 到 ${Object.keys(temp)['max']} 个字符`} : ''
-          itemValidArr.push(Object.assign(hadCheckDefine, cashe))
-        }
+          if( isStringType ) {
+             ele === 'date' ? cashe = {type: "date", required: true, message: "请选择日期", trigger: "change"} : '';
+          } else if( isObjType ) {
+            // 值范围
+             tempKeys.includes(ele[0]) && tempKeys.includes(ele[1]) ? cashe = { min: tempObj['min'], max: tempObj['max'], message: `长度在 ${tempObj['min']} 到 ${tempObj['max']} 个字符`} : ''
+          }
+          // 将装配好的校验对象合并
+          const hadDefine = Object.assign(hadCheckDefine, cashe)
+          console.log('ca=======she')
+          console.log(cashe)
+          if(!Object.keys(cashe).length) {
+            itemValidArr.push(hadDefine)
+          }
+        })
+        console.log('itemValidArr')
+        console.log(itemValidArr)
         // 有定义的验证参数对象传入,即装配上自定义函数的验证对象
         if (this.checkFuncObj[prop]) {
           itemValidArr.push(afterInputCheck);
