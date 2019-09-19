@@ -3,7 +3,7 @@
     <el-form
       :model="_validateFields"
       :rules="_rules"
-      ref="ruleForm"
+      :ref="refValue"
       v-on="$listeners"
       v-bind="$attrs"
     >
@@ -42,6 +42,7 @@ export default {
   },
   data() {
     return {
+      refValue: '',
       checkFuncObj: {},
       // 将要验证结果validateFields的一组值给:model,
       //       validateFields: {
@@ -106,8 +107,10 @@ export default {
     };
   },
   methods: {
-    submitForm(formName) {
-      this.$emit("validate", this.$slots.name[0].data.attrs.title);
+    validate(formName) {
+      // this.$emit("validate", this.$slots.name[0].data.attrs.title);
+      // 取在父级里标签上ref值(同步当前组件ref)
+      formName = this._vnode.parent.data.ref
       var flag = false;
       this.$refs[formName].validate(valid => {
         // this.$emit("validate", valid);
@@ -169,8 +172,6 @@ export default {
   },
   components: {},
   created() {
-    // this.$slots
-    // debugger
     // 自定义添加策略addStrategy([对象]])
     const addStrategy = this.$validate();
     // const checkAdd = [{
@@ -187,7 +188,9 @@ export default {
     // addStrategy(this.checkAdd);
     addStrategy(this.checkAdd);
   },
-  mounted() {},
+  mounted() {
+    this.refValue = this._vnode.parent.data.ref
+  },
   computed: {
     // 筛选需要验证字段(避免报错)
     _validateFields() {
@@ -231,29 +234,13 @@ export default {
           // message: "长度在 3 到 5 个字符",
           trigger: "blur"
         };
-        // const hadCheckDefine = {
-        //   min: 3,
-        //   max: 5,
-        //   message: "长度在 3 到 5 个字符",
-        //   trigger: "blur"
-        // };
         //          (3) 自定义输入是否合规则 (扩展重点部分)
         // 字段给一个自定义函数的验证参数对象
-        options
-          ? (this.checkFuncObj[prop] = options.find(
-              ele => this.isType(ele) === "Object" && ele['rules']
-            ))
-          : "";
-        // console.log('this.checkFuncObj[prop]')
-        // console.log(this.checkFuncObj[prop])
+        options ? (this.checkFuncObj[prop] = options.find(ele => this.isType(ele) === "Object" && ele['rules'])) : "";
         const afterInputCheck = { validator: this.checkFunc, trigger: "blur" };
         // 根据输入修改默认
-        options && options.includes("required")
-          ? (checkObj.required = true)
-          : "";
-        options && options.includes("change")
-          ? (checkObj.trigger = "change")
-          : "";
+        options && options.includes("required") ? (checkObj.required = true) : "";
+        options && options.includes("change") ? (checkObj.trigger = "change") : "";
         //  2, 按需组合验证数组,itemValidArr(待分情况选择添加数组)
         var itemValidArr = [checkObj];
         // 框架已有实现, 加入数组
@@ -292,7 +279,7 @@ export default {
           // console.log('itemValidArr')
           // console.log(itemValidArr[1].validator)
         }
-        //  3, 单条字段验证对象封装,item
+        //  3, 单条字段验证对象封装(加上验证字段名)),item
         const item = {
           [prop]: itemValidArr
         };
