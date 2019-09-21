@@ -142,7 +142,7 @@ export default {
       //       this.checkFuncObj.label = this.$slots[prop][0].data.attrs.title
       // console.log('this.checkFuncObj[rule.field]')
       // console.log(this.checkFuncObj[rule.field])
-      // 将传入配置的部分封装到此
+      // 将传入配置的部分封装到此, rule.field--字段名
       this.checkFuncObj[rule.field].value = value;
       this.checkFuncObj[rule.field].label = this.$slots[
         rule.field
@@ -189,6 +189,7 @@ export default {
     addStrategy(this.checkAdd);
   },
   mounted() {
+    // 与组件外标签保持一致ref
     this.refValue = this._vnode.parent.data.ref
   },
   computed: {
@@ -218,14 +219,12 @@ export default {
         //prop--字段 , this._validateFields[prop] -- 字段值
         //    验证规则数组
         const options = this.$slots[prop][0].data.attrs.options;
-        console.log('options')
-        console.log(options)
         //1,组装验证对象 checkObj
         //        (1) element组件定义,是否必须
         const checkObj = {
           required: false,
           message: `${this.$slots[prop][0].data.attrs.title}必填`,
-          trigger: "blur"
+          trigger: "change"
         };
         //          (2) element组件定义, 输入是否合规则
         const hadCheckDefine = {
@@ -235,61 +234,55 @@ export default {
           trigger: "blur"
         };
         //          (3) 自定义输入是否合规则 (扩展重点部分)
-        // 字段给一个自定义函数的验证参数对象
+        // 字段给一个自定义函数的验证参数对象(含rules属性)
         options ? (this.checkFuncObj[prop] = options.find(ele => this.isType(ele) === "Object" && ele['rules'])) : "";
         const afterInputCheck = { validator: this.checkFunc, trigger: "blur" };
         // 根据输入修改默认
         options && options.includes("required") ? (checkObj.required = true) : "";
-        options && options.includes("change") ? (checkObj.trigger = "change") : "";
-        //  2, 按需组合验证数组,itemValidArr(待分情况选择添加数组)
-        var itemValidArr = [checkObj];
-        // 框架已有实现, 加入数组
-        // options ? options.includes('min' || 'max') : ''
-        const _case = ['date', ['min', 'max']]
+        options && options.includes("blur") ? (checkObj.trigger = "blur") : "";
+        //  2, 按需组合验证数组,itemValidArr(分情况选择添加数组)
+        var itemValidArr = [];
+        // 2-1 框架已有实现, 加入数组
+        checkObj.required ? itemValidArr.push(checkObj) : '' //是否必须
+        const _case = ['date', 'email', ['min', 'max']]
         // 不含rules的对象
         var tempObj = {}
         options ? tempObj = options.find( ele => this.isType(ele) === "Object" && !ele['rules'] ) : ""
         //循环检验
         _case.forEach(ele => {
           if(!options){return}
-          // 继承组件的两种类型
           const isStringType = this.isType(ele) === 'String' && options.includes(ele);
           const isObjType = tempObj && this.isType(ele) === 'Array';
-          const tempKeys = tempObj ? Object.keys(tempObj) : []
+          const tempKeys = tempObj ? Object.keys(tempObj) : [] //对象keys
           var cashe = {}
-          if( isStringType ) {
+          if( isStringType ) { // 字符串
              ele === 'date' ? cashe = {type: "date", required: true, message: "请选择日期", trigger: "change"} : '';
-          } else if( isObjType ) {
+             ele === 'email' ? cashe = {type: "email", message: '请输入正确的邮箱地址', trigger: ["blur","change"]} : '';
+          } else if( isObjType ) { // 不含rules的对象
             // 值范围
              tempKeys.includes(ele[0]) && tempKeys.includes(ele[1]) ? cashe = { min: tempObj['min'], max: tempObj['max'], message: `长度在 ${tempObj['min']} 到 ${tempObj['max']} 个字符`} : ''
           }
           // 将装配好的校验对象合并
-          const hadDefine = Object.assign(hadCheckDefine, cashe)
-          console.log('ca=======she')
-          console.log(cashe)
-          if(!Object.keys(cashe).length) {
+          const hadDefine = Object.assign({...hadCheckDefine}, {...cashe})
+          if(Object.keys(cashe).length) { // 满足条件再加验证对象
             itemValidArr.push(hadDefine)
           }
         })
-        console.log('itemValidArr')
-        console.log(itemValidArr)
-        // 有定义的验证参数对象传入,即装配上自定义函数的验证对象
+        // 2-2 含rules的对象(自定义验证)传入,即装配上自定义函数的验证对象
         if (this.checkFuncObj[prop]) {
           itemValidArr.push(afterInputCheck);
-          // console.log('itemValidArr')
-          // console.log(itemValidArr[1].validator)
         }
         //  3, 单条字段验证对象封装(加上验证字段名)),item
-        const item = {
-          [prop]: itemValidArr
-        };
-        //  4, 合并字段验证对象
+        var item = {}
+        itemValidArr.length ? item = {[prop]: itemValidArr} : ''
+        //  4, 合并字段验证对象(利用引用,改变this.rules)
         Object.assign(this.rules, item);
       });
+      console.log('this.rules')
+      console.log(this.rules)
       return this.rules;
     }
-  },
-  comments: {}
+  }
 };
 </script>
 <style lang="less" scoped>

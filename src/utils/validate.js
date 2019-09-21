@@ -22,6 +22,7 @@ const validate = function(obj) {
         min: "长度最小为 {1} 个字符",
         length: "{0}的长度在 {1} 到 {2} 个字符",
         number: "{0}必须是数字",
+        posNumber: "{0}必须是正整数",
         string: "{0}必须是字母或者数字",
         moblie: "{0}必须是手机或者电话号码格式",
         noChinese: "{0}不能为中文",
@@ -56,6 +57,11 @@ const validate = function(obj) {
         number: obj => {
           if (!obj.value) return true;
           reg = /^[0-9]+.?[0-9]*$/;
+          return reg.test(obj.value);
+        },
+        posNumber: obj => {
+          if (!obj.value) return true;
+          reg = /^[+]{0,1}(\d+)$/;
           return reg.test(obj.value);
         },
         string: obj => {

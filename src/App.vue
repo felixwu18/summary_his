@@ -70,8 +70,12 @@
     -->
     <h1>封装验证组件</h1>
     <searchInput2 :validateFields="search" ref="formCheck" :checkAdd="checkAdd" @validate="handleValidate">
-      <el-input slot="name" title="名称椒盐" :options="['required', {min: 3, max: 9}]" v-model="search.name"></el-input>
-      <el-select slot="region" title="区域选择" v-model="search.region" clearable placeholder="请选择活动区域">
+      <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur',{min: 3, max: 9}]" v-model="search.name" clearable></el-input> -->
+      <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur','email']" v-model="search.name" clearable></el-input> -->
+      <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur',{rules:['repeat'],value1: '22'}]" v-model="search.name" clearable></el-input> -->
+      <el-input slot="name" title="名称椒盐" :options="[{rules:['posNumber']}]" v-model="search.name" clearable></el-input>
+      <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur',{rules:['noChinese']}]" v-model="search.name" clearable></el-input> -->
+      <el-select slot="region" title="区域选择" :options="['required']" v-model="search.region" clearable placeholder="请选择活动区域">
         <el-option label="区域一" value="shanghai"></el-option>
         <el-option label="区域二" value="beijing"></el-option>
       </el-select>
