@@ -200,7 +200,7 @@ function mergeRefObj(acc, obj, propStr, addProp) {
   //  var temp = acc.find(ele => obj[propStr] === ele[propStr])
   acc.forEach(ele => {
     if (obj[propStr] === ele[propStr]) {
-      ele[addProp] = obj[addProp] + ele[addProp];
+      ele[addProp] = obj[addProp] * 1 + ele[addProp] * 1;
     }
   });
 }
