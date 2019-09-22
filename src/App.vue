@@ -740,7 +740,7 @@ export default {
       // objArr = this.noSame(objArr, "id");
       console.log("去重(合并)去空");
       console.log(objArr);
-      objArr = this.$utils.uniqueObjArr(objArr, "id");
+      objArr = this.$utils.uniqueObjArr(this.$utils.deepClone(objArr), "id", 'age');
       objArr = this.$utils.removeUnexpectObj(objArr, "id");
       console.log(objArr);
     },

@@ -186,21 +186,21 @@ export function removeClass(ele, cls) {
  * @param {ObjArr} objArr
  * @param {string} propStr
  */
-export function uniqueObjArr(objArr, propStr) {
+export function uniqueObjArr(objArr, propStr, addProp) {
   var obj = {};
   return objArr.reduce(function(acc, cur) {
     obj[cur[propStr]]
-      ? mergeRefObj(acc, cur, propStr)
+      ? mergeRefObj(acc, cur, propStr, addProp)
       : (obj[cur[propStr]] = true && acc.push(cur));
     return acc;
   }, []);
 }
 // 合并指定字段相同对象, 指定字段值累加(暂时写死)
-function mergeRefObj(acc, obj, propStr) {
+function mergeRefObj(acc, obj, propStr, addProp) {
   //  var temp = acc.find(ele => obj[propStr] === ele[propStr])
   acc.forEach(ele => {
     if (obj[propStr] === ele[propStr]) {
-      ele.age = obj.age + ele.age;
+      ele[addProp] = obj[addProp] + ele[addProp];
     }
   });
 }
