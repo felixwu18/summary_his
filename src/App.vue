@@ -204,11 +204,14 @@
     <h1>测试component全局注册</h1>
     <Comp1 />
     <Comp2 />
+    <!-- render函数 对template的弥补-->
+        <h1>render函数</h1>
+    <Button :type="type" :text="text" @myEvent="testButton" />
   </div>
 </template>
 <script>
 /**
- * v-for 不仅遍历数组, 还可遍历对象,数字(需要变量转数字对象)
+ * v-for 不仅遍历数组 , 还可遍历对象,数字(需要变量转数字对象)
  * 遍历数字,item--依次从1到数字值大小
  * 遍历对象, item--依次为对象值,index为属性,
  * 遍历数组, item--依次为数组元素
@@ -402,6 +405,8 @@ export default {
   },
   data() {
     return {
+      type: 'success',
+      text: '成功',
       updateFlag: true,
       loading: true,
       syncObj: {},
@@ -476,6 +481,10 @@ export default {
     };
   },
   methods: {
+  testButton(){
+    console.log('1111')
+    // console.log()
+    },
     testPlugin(){
       // this.use(router)
     },
