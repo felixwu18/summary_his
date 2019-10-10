@@ -66,6 +66,7 @@ export default {
         return this.insertValue;
       },
       set(key) {
+        if (typeof key === 'number') {key = String(key)}
         const value = this.confugureFormatter(this.configure, key);
         // this.$emit(`change`, { key, value }); // 传编码及值
         this.$emit(`change`, {

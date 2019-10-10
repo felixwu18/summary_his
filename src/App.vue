@@ -29,6 +29,9 @@
       :total="39"
       :pageSize.sync="pageSize"
       :currentPage="current"
+      ref="singleTable"
+      highlight-current-row
+      @current-change="handleCurrentChange"
       @pageChange="pageChange"
       @newRow="addRow"
       @enterDetail="handleDetail"
@@ -36,6 +39,7 @@
       @row-click="rowClick"
       @dynamicEvent="eventTrigger"
     />
+    <el-button @click="setCurrent(tableData[1])">选中第二行</el-button>
     <!-- 
       :formHead="formHead"
       :data="tableData"
@@ -129,7 +133,10 @@
     </button>
     <br />
     <h1>一个对象从另一个对象中找属性值</h1>
-    <button @click="handleFind">查找</button>
+    <el-button 
+    @click="handleFind"
+    :loading="true"
+    >查找</el-button>
     <!-- 输入框带搜索 -->
     <inputSearch />
     <!-- 输入框带建议 -->
@@ -190,6 +197,9 @@
     <!-- 测试lodash -->
     <h1>测试lodash</h1>
     <el-button @click="testLodash">click lodash</el-button>
+    <!-- 测试插件,配合Vue.use -->
+    <h1>测试插件</h1>
+    <el-button @click="testPlugin">click lodash</el-button>
   </div>
 </template>
 <script>
@@ -218,6 +228,10 @@ import searchInput from "@/components/searchInput/index";
 import searchInput2 from "@/components/searchInput/index2";
 import testComponent from "@/components/testComponent";
 
+// import router from "./plugin/index"
+// Vue.use(router)
+// console.log('router')
+// console.log(router)
 // window.this.timeDefault
 // console.log('window.this.timeDefault')
 // console.log(window.that)
@@ -384,6 +398,8 @@ export default {
   },
   data() {
     return {
+      updateFlag: true,
+      loading: true,
       syncObj: {},
       checkAdd: [
         {
@@ -456,9 +472,19 @@ export default {
     };
   },
   methods: {
-    handleCurrentChange(){
-      console.log('测试pagination--')
+    testPlugin(){
+      // this.use(router)
     },
+    handleCurrentChange(val){
+      // console.log('测试pagination--')
+      console.log('val===table')
+      console.log(val)
+    },
+    setCurrent(row) {
+        // this.$refs.singleTable
+        // debugger
+        // .setCurrentRow(row);
+      },
     testFn(){
       // 按钮可灵活位置
       // this.$refs.formCheck
@@ -745,6 +771,9 @@ export default {
       console.log(objArr);
     },
     handleFind() {
+      if(!this.updateFlag) { return }
+        this.updateFlag = false
+        setTimeout(_ => this.updateFlag = true, 3000)
       const toObj = {
         name: "",
         height: "",
@@ -760,6 +789,16 @@ export default {
       console.log(toObj);
       this.$utils.copyPropVal(fromObj, toObj);
       console.log(toObj);
+      // 全局loading
+    //   const loadingObj = this.$loading({
+    //       lock: true,
+    //       text: '提交中...',
+    //       spinner: 'el-icon-loading',
+    //       background: 'rgba(0, 0, 0, 0.7)',
+    //       // target: document.querySelector('.submit-test-dialog')
+    // });
+    // //后端返回结果后，结束loadingObj，即loadingObj.close();
+    // loadingObj.close();
     },
     // 赋值属性值
     findPropVal(fromObj, toObj) {

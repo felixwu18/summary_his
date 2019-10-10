@@ -12,6 +12,8 @@
       :header-cell-style="headerCellStyle"
       :cell-style="cellStyle"
       :max-height="maxHeight"
+      v-on="$listeners"
+      v-bind="$attrs"
       @row-click="rowClick"
       @selection-change="selectionChange"
     >
@@ -225,6 +227,8 @@
         </template>
       </el-table-column>
     </el-table>
+        <el-button @click="setCurrent(data[1])">选中第二行</el-button>
+
     <!-- 分页器 -->
     <div class="paginationWrap">
       <Pagination :total="total" :limit="pageSize" :page.sync="currentPage" @pageChange="pageChange" layout="prev, pager, next, jumper"/>
@@ -279,6 +283,9 @@ export default {
     // height: { type: Number, default: 500 }
   },
   methods: {
+    setCurrent(row) {
+        this.$refs.dynamicTable.setCurrentRow(row);
+      },
     // 点击分页
     pageChange(val){
       this.$emit("pageChange", val);

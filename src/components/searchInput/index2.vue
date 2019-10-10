@@ -190,6 +190,9 @@ export default {
   },
   mounted() {
     // 与组件外标签保持一致ref
+    console.log('index2=====creatd')
+    console.log(this.quanjuzhuru)
+
     this.refValue = this._vnode.parent.data.ref
   },
   computed: {
