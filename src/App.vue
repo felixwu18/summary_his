@@ -200,7 +200,7 @@
     <!-- 测试插件,配合Vue.use -->
     <h1>测试插件</h1>
     <el-button @click="testPlugin">click lodash</el-button>
-    <!-- 测试全局注册, 无需引入 -->
+    <!-- 测试全局注册, 无需引入(高频使用的组件)) -->
     <h1>测试component全局注册</h1>
     <Comp1 />
     <Comp2 />
