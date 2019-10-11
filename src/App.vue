@@ -205,8 +205,16 @@
     <Comp1 />
     <Comp2 />
     <!-- render函数 对template的弥补-->
-        <h1>render函数</h1>
+     <h1>render函数</h1>
     <Button :type="type" :text="text" @myEvent="testButton" />
+    <!-- 精度权限控制 _自定义指令-->
+     <h1>权限控制</h1>
+     <div>
+        <button v-display-key="10">我是权限1</button>
+     </div>
+     <div>
+        <button v-display-key="'2'">我是权限2</button>
+     </div>
   </div>
 </template>
 <script>

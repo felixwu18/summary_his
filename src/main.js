@@ -4,6 +4,26 @@ import 'element-ui/lib/theme-chalk/index.css'
 
 // 全局注册
 import '@/components/global.js'
+import { checkArray } from '@/common/array.js'
+//vue的自定义指令
+Vue.directive('display-key',{
+  inserted(el, binding) {
+    console.log('el-bing')
+    console.log(el)
+    console.log(binding)
+    const displayKey = binding.value
+    if(displayKey){
+      const hasPermisson = checkArray(displayKey)
+      console.log(hasPermisson)
+      // 没有权限
+      if(!hasPermisson){
+        el.parentNode && el.parentNode.removeChild(el)
+      }
+    } else {
+      throw new Error('没有权限key')
+    }
+  }
+})
 
 Vue.use(ElementUI)
 
