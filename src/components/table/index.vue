@@ -7,7 +7,7 @@
       :data="data"
       border
       :style="{width: `${persent}%`, margin:'0 auto'}"
-      :height="setTableHeight"
+      :height="_height"
       :row-style="selectedHighlight"
       :header-cell-style="headerCellStyle"
       :cell-style="cellStyle"
@@ -47,8 +47,9 @@
           <!-- 输入控制 -->
           <template slot-scope="scope">
             <!-- 输入框 -->
+            <!-- v-if="formHeadItem.prop==='province'" -->
             <template
-              v-if="scope.$index===(data.length-1) ? editArr.includes(formHeadItem.prop) : false"
+              v-if="scope.$index===(data.length-2) ? editArr.includes(formHeadItem.prop) : false"    
             >
               <!-- 焦点事件的间接拿row -->
               <!-- <el-input
@@ -61,15 +62,19 @@
               class="edit-input"
               size="small"
               />-->
-              <el-input
-                ref="ginput"
-                :key="index"
-                v-model="scope.row[formHeadItem.prop]"
-                @keydown.native.13="downChang"
-                @input="scope.row[formHeadItem.prop] = isInput(scope.row[formHeadItem.prop], formHeadItem.prop, RegObj, 1)"
-                class="edit-input"
-                size="small"
-              />
+              <!-- <el-form :model="scope.row" :rules="rules" ref="ruleForm">
+                <el-form-item prop="province" ref="nameItem"> -->
+                <el-input
+                  ref="ginput"
+                  :key="index"
+                  v-model="scope.row[formHeadItem.prop]"
+                  @keydown.native.13="downChang"
+                  @input="scope.row[formHeadItem.prop] = isInput(scope.row[formHeadItem.prop], formHeadItem.prop, RegObj, 1)"
+                  class="edit-input"
+                  size="small"
+                />
+              <!-- </el-form-item>
+              </el-form> -->
             </template>
             <!-- 下拉框 -->
             <template
@@ -240,6 +245,12 @@ import Pagination from '@/components/Pagination/index'
 export default {
   data() {
     return {
+      // rules: {
+      //   province: [
+      //     { required: true, message: "请输入活动名称", trigger: "blur" },
+      //     { validator: this.checkName, trigger: "blur" }
+      //   ]
+      // },
       // total: 16,
       // 居中头部
       headerCellStyle: {
@@ -251,8 +262,10 @@ export default {
       },
       radioVal: "",
       autoSearchVal: "", // 远程搜索输入值
-      options: []
+      options: [],
       // selectVal: "" //直接选中数据加入tableData
+      pageSize: 7,
+      table_top: 320,
     };
   },
   props: {
@@ -275,7 +288,7 @@ export default {
     codeToLabel: { type: Array, default: _ => [] },
     btnConfigure: { type: Object, default: _ => {} },
     persent: { type: Number, default: 95 },
-    table_top: { type: Number, default: 200 },
+    // table_top: { type: Number, default: 200 },
     multipleHead: { type: Number, default: 1 },
     total: { type: Number, default: 10 }, // 分页
     currentPage: { type: Number, default: 1 }
@@ -283,6 +296,11 @@ export default {
     // height: { type: Number, default: 500 }
   },
   methods: {
+    checkName(rule, value, callback){
+      if(value !== '666') {
+        callback(new Error('check.message'));
+      }
+    },
     setCurrent(row) {
         this.$refs.dynamicTable.setCurrentRow(row);
       },
@@ -577,20 +595,24 @@ export default {
     Pagination
   },
   created() {
-    // const top = 30;
-    const bottom = 90;
-    // 表格动态高度
-    this.setTableHeight = window.innerHeight - this.table_top - bottom - this.multipleHead; // 表格高(包括多级表头)
-    const pageSize = this.setTableHeight
-      ? Math.floor(this.setTableHeight / 44)
-      : Math.floor(500 / 44);
-    this.pageSize = pageSize // 组件一页条数
-    this.$emit("update:pageSize", pageSize); // 同步请求
-    console.log('setTableHeight-pageSize')
-    console.log(this.setTableHeight)
-    console.log(pageSize)
+      // // const top = this.$refs.dynamicTable.$el.offsetTop
+      // const bottom = 90;
+      // // 表格动态高度
+      // this.setTableHeight = window.innerHeight - this.table_top - bottom - this.multipleHead; // 表格高(包括多级表头)
+      // // this.setTableHeight = window.innerHeight - top - bottom - this.multipleHead; // 表格高(包括多级表头)
+      // const pageSize = this.setTableHeight
+      //   ? Math.floor(this.setTableHeight / 44)
+      //   : Math.floor(500 / 44);
+      // this.pageSize = pageSize // 组件一页条数
+      // this.$emit("update:pageSize", pageSize); // 同步请求
+      // console.log('setTableHeight-pageSize')
+      // console.log(this.setTableHeight)
+      // console.log(pageSize)
   },
   mounted() {
+      setTimeout(() => {
+        this.table_top = this.$refs.dynamicTable.$el.offsetTop
+      })
     // 全局禁用tab
     document.onkeydown = function(event) {
       if (event.keyCode === 9) {
@@ -600,7 +622,16 @@ export default {
   },
   computed: {
     _height() {
-      // return this.height ? this.height : this.setTableHeight;
+      const bottom = 90;
+      this.setTableHeight = window.innerHeight - this.table_top - bottom - this.multipleHead; // 表格高(包括多级表头)
+      // 组件一页条数
+      this.pageSize = this.setTableHeight ? Math.floor(this.setTableHeight / 44) : 0
+      this.$emit("update:pageSize", this.pageSize); // 同步请求
+      console.log('setTableHeight-pageSize')
+      console.log(this.setTableHeight)
+      console.log(this.pageSize)
+      console.log(this.table_top)
+      return this.setTableHeight
     }
     // _handleArr() {
     //   // return this.handleArr.filter(

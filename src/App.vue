@@ -1,7 +1,7 @@
 <template>
   <div class="container">
-    <div>
-      <h1>异步组件测试</h1>点击按钮后
+    <!-- <div style="color: red">
+      <h1 :style="{'color': true ? 'blue' : ''}">异步组件测试</h1>点击按钮后
       第一个延迟300毫秒，从服务器加载
       第二个不延迟从服务器加载
       <template v-if="show">
@@ -10,7 +10,7 @@
       </template>
       <button @click="toggle" :class="{classSelectorA: show,classSelectorB: !show}">加载</button>
     </div>
-    <collapse />
+    <collapse /> -->
     <dynamicTable
       :formHead="formHead"
       :data="tableData"
@@ -24,7 +24,7 @@
       :codeToLabel="codeToLabel"
       :fieldsWidth="fieldsWidth"
       :handle_width="240"
-      :table_top="320"
+      :table_top="table_top"
       :multiple-head="3"
       :total="39"
       :pageSize.sync="pageSize"
@@ -413,6 +413,7 @@ export default {
   },
   data() {
     return {
+      table_top: 320,
       type: 'success',
       text: '成功',
       updateFlag: true,
@@ -552,48 +553,48 @@ export default {
       console.log(val);
     },
     ceshi() {
-      console.log("table-pageSize");
-      console.log(this.that);
+      // console.log("table-pageSize");
+      // console.log(this.that);
 
-      // -----------测试变换数据结构通过引用间接操作数据,更新--------------------
-      const test = [];
-      this.tableData.forEach(ele => {
-        if (ele.level === 3) {
-          test.push(ele);
-        }
-      });
-      for (var i = 0; i < test.length; i++) {
-        // this.tableData[4] = test[i]
-        // this.tableData
-        // this.tableData.push(test[i])
-        this.$set(this.tableData[2], "level", test[i]);
-        // test[i].zip = 1200
-        // test[i].minite = '666分钟'
-        // this.$set(test[i],'zip','1000')
-      }
-      // this.$forceUpdate()
-      //  ----------------我是一条分割线[end]------------------------------------
-      this.timeDefault = ["2019-6-8", "2019-7-8"];
-      // this.selectVal = "三级城市";
-      this.selectVal = 3;
-      setTimeout(_ => {
-        // this.selectVal = "二级城市";
-        this.selectVal = 2;
-      }, 1000);
-      setTimeout(_ => {
-        // this.selectVal = "一级城市";
-        this.selectVal = 1;
-      }, 2000);
-      //测试封装的存储
-      this.$utils.handleSave.set("try", "this time may ok-session");
-      this.$utils.handleSave.set(
-        "try",
-        "this time may ok-localStorage",
-        "localStorage"
-      );
-      console.log("get---");
-      console.log(this.$utils.handleSave.get("try"));
-      console.log(this.$utils.handleSave.get("try", "localStorage"));
+      // // -----------测试变换数据结构通过引用间接操作数据,更新--------------------
+      // const test = [];
+      // this.tableData.forEach(ele => {
+      //   if (ele.level === 3) {
+      //     test.push(ele);
+      //   }
+      // });
+      // for (var i = 0; i < test.length; i++) {
+      //   // this.tableData[4] = test[i]
+      //   // this.tableData
+      //   // this.tableData.push(test[i])
+      //   this.$set(this.tableData[2], "level", test[i]);
+      //   // test[i].zip = 1200
+      //   // test[i].minite = '666分钟'
+      //   // this.$set(test[i],'zip','1000')
+      // }
+      // // this.$forceUpdate()
+      // //  ----------------我是一条分割线[end]------------------------------------
+      // this.timeDefault = ["2019-6-8", "2019-7-8"];
+      // // this.selectVal = "三级城市";
+      // this.selectVal = 3;
+      // setTimeout(_ => {
+      //   // this.selectVal = "二级城市";
+      //   this.selectVal = 2;
+      // }, 1000);
+      // setTimeout(_ => {
+      //   // this.selectVal = "一级城市";
+      //   this.selectVal = 1;
+      // }, 2000);
+      // //测试封装的存储
+      // this.$utils.handleSave.set("try", "this time may ok-session");
+      // this.$utils.handleSave.set(
+      //   "try",
+      //   "this time may ok-localStorage",
+      //   "localStorage"
+      // );
+      // console.log("get---");
+      // console.log(this.$utils.handleSave.get("try"));
+      // console.log(this.$utils.handleSave.get("try", "localStorage"));
     },
     // 节流
     handleThrottle(fn, delay) {
@@ -868,6 +869,8 @@ export default {
     // __this = this
   },
   mounted() {
+    this.table_top = this.$refs.singleTable.$el.offsetTop
+    // debugger
   },
   computed: {}
 };

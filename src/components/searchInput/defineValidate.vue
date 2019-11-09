@@ -98,6 +98,7 @@ export default {
     checkName(rule, value, callback) {
       console.log("rule, value, callback");
       console.log(rule);
+      // callback(new Error('check.message'))
       // this.$validate()
       // debugger
       let {check} = this.$validate({
