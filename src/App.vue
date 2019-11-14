@@ -1,6 +1,6 @@
 <template>
   <div class="container">
-    <!-- <div style="color: red">
+    <div style="color: red">
       <h1 :style="{'color': true ? 'blue' : ''}">异步组件测试</h1>点击按钮后
       第一个延迟300毫秒，从服务器加载
       第二个不延迟从服务器加载
@@ -10,7 +10,7 @@
       </template>
       <button @click="toggle" :class="{classSelectorA: show,classSelectorB: !show}">加载</button>
     </div>
-    <collapse /> -->
+    <collapse />
     <dynamicTable
       :formHead="formHead"
       :data="tableData"

@@ -28,7 +28,7 @@ export default {
     }
   },
   methods: {},
-  components: {},
+  components: { },
   created() {      
     console.log("test----component");
     console.log(this.car);

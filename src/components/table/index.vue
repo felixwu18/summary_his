@@ -296,6 +296,14 @@ export default {
     // height: { type: Number, default: 500 }
   },
   methods: {
+    // 获取纵坐标
+    getPageY(element){
+      if(element.offsetParent) {
+        return element.offsetTop + this.getPageY(element.offsetParent)
+      } else {
+        return element.offsetTop
+      }
+    },
     checkName(rule, value, callback){
       if(value !== '666') {
         callback(new Error('check.message'));
@@ -612,6 +620,10 @@ export default {
   mounted() {
       setTimeout(() => {
         this.table_top = this.$refs.dynamicTable.$el.offsetTop
+        // debugger
+        const top = this.getPageY(this.$refs.dynamicTable.$el)
+        console.log('top--')
+        console.log(top)
       })
     // 全局禁用tab
     document.onkeydown = function(event) {
