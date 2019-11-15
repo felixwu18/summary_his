@@ -18,7 +18,6 @@ export default {
   name: "toDateSelector",
   data() {
     return {
-      time: [], 
       start: "",
       end: ""
     };
@@ -26,7 +25,12 @@ export default {
   // props: ["timeDefault"],
   props: {timeDefault: {type: Array, default: _ => []}},
   created(){
-    this.time = this.timeDefault
+    // this.time = this.timeDefault
+  },
+  computed: {
+    time(){
+      return this.timeDefault
+    }
   },
   methods: {
     monitorTime(time) {

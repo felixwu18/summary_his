@@ -574,7 +574,7 @@ export default {
       // }
       // // this.$forceUpdate()
       // //  ----------------我是一条分割线[end]------------------------------------
-      // this.timeDefault = ["2019-6-8", "2019-7-8"];
+      this.timeDefault = ["2019-10-1", "2019-10-1"];
       // // this.selectVal = "三级城市";
       // this.selectVal = 3;
       // setTimeout(_ => {
