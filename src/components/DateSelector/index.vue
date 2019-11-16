@@ -18,6 +18,7 @@ export default {
   name: "toDateSelector",
   data() {
     return {
+      time: [], 
       start: "",
       end: ""
     };
@@ -25,13 +26,13 @@ export default {
   // props: ["timeDefault"],
   props: {timeDefault: {type: Array, default: _ => []}},
   created(){
-    // this.time = this.timeDefault
+    this.time = this.timeDefault
   },
-  computed: {
-    time(){
-      return this.timeDefault
-    }
-  },
+  // computed: {
+  //   time(){
+  //     return this.timeDefault
+  //   }
+  // },
   methods: {
     monitorTime(time) {
       if (time) {
@@ -50,14 +51,13 @@ export default {
       this.start = "";
       this.end = "";
     }
+  },
+  watch: {
+    timeDefault(newValue, oldValue) {
+      this.time = newValue;
+      // this.time = this.timeDefault
+    }
   }
-  // watch: {
-  //   timeDefault(newValue, oldValue) {
-  //     // console.log('timeDefault change', newValue, oldValue);
-  //     // this.time = newValue;
-  //     this.time = this.timeDefault
-  //   }
-  // }
 };
 </script>
 <style scoped>
