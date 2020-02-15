@@ -23,7 +23,11 @@ export default {
         },
         // dom属性
         domProps: {
-          innerText: this.text || '默认'
+          innerText: this.text || '默认',
+          
+      //           v-on="$listeners"
+      // v-bind="$attrs"
+
         },
         on: {
           click: this.handleClick

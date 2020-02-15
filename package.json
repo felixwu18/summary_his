@@ -3,6 +3,7 @@
   "description": "A Vue.js project",
   "author": "yi.shyang@ele.me",
   "private": true,
+  "version": "0.0.1",
   "scripts": {
     "dev": "webpack-dev-server --inline --hot --env.dev",
     "build": "rimraf dist && webpack -p --progress --hide-modules"

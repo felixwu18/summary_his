@@ -206,7 +206,7 @@
     <Comp2 />
     <!-- render函数 对template的弥补-->
      <h1>render函数</h1>
-    <Button :type="type" :text="text" @myEvent="testButton" />
+    <Button :type="type" :text="text" @click="ceshiClick" />
     <!-- 精度权限控制 _自定义指令-->
      <h1>权限控制</h1>
      <div>
@@ -404,7 +404,7 @@ export default {
     testComponent,
     // UploadExcel,
     later,
-    later2
+    later2,
   },
   provide: {
     house: "有房子",
@@ -413,6 +413,10 @@ export default {
   },
   data() {
     return {
+      dataFromFather: [{title: '独孤九剑', children: [{title: '紫霞神功', children: [{title: '冲灵剑法'}]}]},
+                       {title: '六脉神剑'},
+                       {title: '一阳指', children: [{title: '玄铁重剑'}]}
+                       ],
       table_top: 320,
       type: 'success',
       text: '成功',
@@ -490,6 +494,9 @@ export default {
     };
   },
   methods: {
+  ceshiClick() {
+    console.log('ceshiClick')
+  },
   testButton(){
     console.log('1111')
     // console.log()
