@@ -1,5 +1,9 @@
 import Vue from 'vue'
 import ElementUI from 'element-ui'
+console.log(ElementUI, 'ElementUI-----');
+// import ComponentLib from 'component-lib'
+// console.log(ComponentLib, 'ComponentLib-----');
+
 import 'element-ui/lib/theme-chalk/index.css'
 
 // 全局注册
@@ -26,6 +30,7 @@ Vue.directive('display-key',{
 })
 
 Vue.use(ElementUI)
+// Vue.use(ComponentLib)
 
 Vue.mixin({
   // created: function(){

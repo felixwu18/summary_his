@@ -28,7 +28,8 @@
                           v-model="search.date1"
                           style="width: 100%;"
                         ></el-date-picker>
-                      </el-form-item>        <!-- <el-form-item label="活动时间" required>
+                      </el-form-item>        
+            <!-- <el-form-item label="活动时间" required>
                     <el-col :span="11">
                       <el-form-item prop="date1">
                         <el-date-picker

@@ -215,6 +215,8 @@
      <div>
         <button v-display-key="'2'">我是权限2</button>
      </div>
+     <!-- 测试编辑盒子 -->
+     <EditDiv v-model="inputVal"></EditDiv>
   </div>
 </template>
 <script>
@@ -242,6 +244,8 @@ import searchLayout from "./components/layout/searchLayout";
 import searchInput from "@/components/searchInput/index";
 import searchInput2 from "@/components/searchInput/index2";
 import testComponent from "@/components/testComponent";
+import EditDiv from '@/components/newTest/edit'
+
 
 // import router from "./plugin/index"
 // Vue.use(router)
@@ -405,6 +409,7 @@ export default {
     // UploadExcel,
     later,
     later2,
+    EditDiv
   },
   provide: {
     house: "有房子",
@@ -452,7 +457,7 @@ export default {
           { case: [4], btnArr: ["测试2", "测试4"] }
         ]
       },
-      inputVal: "",
+      inputVal: "33333",
       deSeconds: 0, // 倒计时
       configue_level, // 测试v-for and v-if
       // 设置列宽(包括多级表列宽)
@@ -559,7 +564,7 @@ export default {
       console.log("va---l");
       console.log(val);
     },
-    ceshi() {
+    ceshi(v) {
       // console.log("table-pageSize");
       // console.log(this.that);
 
@@ -581,7 +586,9 @@ export default {
       // }
       // // this.$forceUpdate()
       // //  ----------------我是一条分割线[end]------------------------------------
+      this.inputVal
       this.timeDefault = ["2019-10-1", "2019-10-1"];
+      // debugger
       // // this.selectVal = "三级城市";
       // this.selectVal = 3;
       // setTimeout(_ => {
@@ -590,7 +597,7 @@ export default {
       // }, 1000);
       // setTimeout(_ => {
       //   // this.selectVal = "一级城市";
-      //   this.selectVal = 1;
+        // this.selectVal = 1;
       // }, 2000);
       // //测试封装的存储
       // this.$utils.handleSave.set("try", "this time may ok-session");

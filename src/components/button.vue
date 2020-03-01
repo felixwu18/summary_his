@@ -11,7 +11,8 @@ export default {
        default: 'normal'
      }
   },
-  render(h) {
+  render(h, ctx) {
+    console.log(ctx, 1111)
      return h('button',{
            // v-bind class
           class: {
