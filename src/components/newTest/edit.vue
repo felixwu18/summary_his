@@ -11,6 +11,9 @@
     @input="changeText"
   >
   </div>
+  <slot :ceshiceshi="ceshiceshi">
+    <!-- {{ ceshiceshi }} -->
+  </slot>
 </div>
 </template>
 <script>
@@ -29,7 +32,8 @@ export default {
   data() {
     return {
       innerText: this.value,
-      isLocked: false
+      isLocked: false,
+      ceshiceshi: '来自子组件内部数据'
     };
   },
   watch: {

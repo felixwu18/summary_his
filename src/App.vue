@@ -216,7 +216,14 @@
         <button v-display-key="'2'">我是权限2</button>
      </div>
      <!-- 测试编辑盒子 -->
-     <EditDiv v-model="inputVal"></EditDiv>
+     <EditDiv v-model="inputVal">
+       <template v-slot:default="{ ceshiceshi }">
+         当前父组件：{{ceshiceshi}}
+       </template>
+     </EditDiv>
+     <EditDiv v-model="inputVal" v-slot="slotProps">
+         {{slotProps}}
+     </EditDiv>
   </div>
 </template>
 <script>
@@ -457,7 +464,7 @@ export default {
           { case: [4], btnArr: ["测试2", "测试4"] }
         ]
       },
-      inputVal: "33333",
+      inputVal: "",
       deSeconds: 0, // 倒计时
       configue_level, // 测试v-for and v-if
       // 设置列宽(包括多级表列宽)
