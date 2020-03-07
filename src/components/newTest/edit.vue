@@ -11,9 +11,9 @@
     @input="changeText"
   >
   </div>
-  <slot :ceshiceshi="ceshiceshi">
+  <slot name="test" :ceshiceshi="ceshiceshi" />
+  <slot :ceshiceshi="ceshiceshi" />
     <!-- {{ ceshiceshi }} -->
-  </slot>
 </div>
 </template>
 <script>
@@ -46,7 +46,7 @@ export default {
   methods: {
     ceshi() {
       this.value
-      this.innerText
+      this.innerText      
       debugger
     },
     changeText() {

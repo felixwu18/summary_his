@@ -221,8 +221,12 @@
          当前父组件：{{ceshiceshi}}
        </template>
      </EditDiv>
-     <EditDiv v-model="inputVal" v-slot="slotProps">
+     <EditDiv v-model="inputVal" v-slot:test="slotProps">
          {{slotProps}}
+         <!-- <template v-slot:test="slotProps">
+           {{ slotProps }}
+         </template> -->
+         <span slot="test" style="color: red">test</span>
      </EditDiv>
   </div>
 </template>
