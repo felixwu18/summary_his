@@ -47,7 +47,6 @@ export default {
     ceshi() {
       this.value
       this.innerText      
-      debugger
     },
     changeText() {
       this.$emit("input", this.$el.innerHTML);

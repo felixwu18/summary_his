@@ -1,5 +1,7 @@
 <template>
   <div class="container">
+    <stock />
+    <!-- <RZRJ /> -->
     <div style="color: red">
       <h1 :style="{'color': true ? 'blue' : ''}">异步组件测试</h1>点击按钮后
       第一个延迟300毫秒，从服务器加载
@@ -221,13 +223,13 @@
          当前父组件：{{ceshiceshi}}
        </template>
      </EditDiv>
-     <EditDiv v-model="inputVal" v-slot:test="slotProps">
+     <!-- <EditDiv v-model="inputVal" v-slot:test="slotProps">
          {{slotProps}}
-         <!-- <template v-slot:test="slotProps">
+         <template v-slot:test="slotProps">
            {{ slotProps }}
-         </template> -->
+         </template>
          <span slot="test" style="color: red">test</span>
-     </EditDiv>
+     </EditDiv> -->
   </div>
 </template>
 <script>
@@ -256,6 +258,8 @@ import searchInput from "@/components/searchInput/index";
 import searchInput2 from "@/components/searchInput/index2";
 import testComponent from "@/components/testComponent";
 import EditDiv from '@/components/newTest/edit'
+// import RZRJ from "@/components/vChart/index";
+import stock from "@/components/eCharts/index";
 
 
 // import router from "./plugin/index"
@@ -420,7 +424,9 @@ export default {
     // UploadExcel,
     later,
     later2,
-    EditDiv
+    EditDiv,
+    // RZRJ,
+    stock,
   },
   provide: {
     house: "有房子",
@@ -527,7 +533,7 @@ export default {
     },
     setCurrent(row) {
         // this.$refs.singleTable
-        // debugger
+
         // .setCurrentRow(row);
       },
     testFn(){

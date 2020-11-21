@@ -346,7 +346,6 @@ export default {
         const filterVal = Object.keys(objArr[0]);
         const list = objArr;
         const data = this.formatJson(filterVal, list);
-        debugger;
         excel.export_json_to_excel({
           header: tHeader,
           data,

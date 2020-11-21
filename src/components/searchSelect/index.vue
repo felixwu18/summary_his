@@ -1,6 +1,5 @@
 <template>
   <div>
-    <h1>输入框、选择框等</h1>
     <searchInput :title="title" :width="width">
       <el-select
         @change="changeSelect"
@@ -47,6 +46,9 @@ export default {
   },
   methods: {
     changeSelect(key) {
+      if (typeof key === 'number') {
+        key = '' + key
+      }
       const value = this.$utils.confugureFormatter(this.configure, key);
       this.$emit(`change`, { key, value });
       this.$emit(`update:insertValue`, key);

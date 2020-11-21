@@ -346,3 +346,14 @@ export const handleSave = (function() {
     set
   };
 })();
+
+export const confugureFormatter = (configure, key) => {
+  // key对应code, value对应转换后的值
+  if (configure) {
+    const matchObj = configure.find(e => e.key === key);
+    debugger
+    if (matchObj) {
+      return matchObj.value;
+    }
+  }
+}
