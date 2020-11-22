@@ -39,7 +39,8 @@ export default {
     insertValue: [Number, String],
     width: [String, Number],
     clearable: [Boolean, String],
-    disabled: [Boolean]
+    disabled: [Boolean],
+    isNumber: {type: Boolean, default: false}
   },
   components: {
     searchInput
@@ -57,7 +58,13 @@ export default {
   computed: {
     value() {
       return this.insertValue;
-    }
+    },
+    set(key) {
+      !this.isNumber && typeof key === 'number' ? key = String(key) : '' // 默认字符串
+      const value = this.$utils.confugureFormatter(this.configure, key)
+      this.$emit('update:insertValue', key) // 编码
+      this.$emit('change', {key, value}) // 传编码及值
+    },
   },
   watch: {
     // insertValue() {
