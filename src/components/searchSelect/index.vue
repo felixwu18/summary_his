@@ -5,6 +5,7 @@
         @change="changeSelect"
         v-model="value"
         clearable
+        filterable
         :disabled="disabled"
         placeholder="请选择"
         size="medium"

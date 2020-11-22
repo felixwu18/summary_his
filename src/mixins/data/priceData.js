@@ -81,19 +81,23 @@ export default {
     },
     methods: {
         mixinInit() {
-            const averages = this.dynamicGet20Day().reverse() || []
+            const averages = this.dynamicGet20Day().reverse() || [] // 将时间升序
             const date_arr = averages.map(obj => obj.date) || []
-            const upper_arr = averages.map(obj => obj.upper) || []
-            const ratio_arr = averages.map(obj => obj.ratio) || []
+            const upper_arr = [
+                {name: '布林上轨', data: averages.map(obj => obj.upper), type: 'line'},
+                {name: '收盘价格', data: averages.map(obj => obj.currentP), type: 'line'},
+                {name: '布林中轨', data: averages.map(obj => obj.average20), type: 'line'},
+            ] || []
+            const ratio_arr = [{name: '斜率', data: averages.map(obj => obj.ratio), type: 'line'}] || []
             /* 画布个数 */
             const datas = [
-                { date: date_arr, data: upper_arr, name: '布林上轨' },
-                { date: date_arr, data: ratio_arr, name: '斜率' }
+                { date: date_arr, data: upper_arr },
+                { date: date_arr, data: ratio_arr }
             ]
             /* 循环绘制图表 */
             datas.forEach((every, index) => {
-                const { date, data, name } = every
-                this.updateConfig({ date, data, name })
+                const { date, data } = every
+                this.updateConfig({ date, data })
                 const temp = JSON.parse(JSON.stringify(this.option))
                 setTimeout(() => {
                     this.myCharts[`myChart${index}`].setOption(temp); // 延时画布生成
@@ -125,7 +129,7 @@ export default {
                 sum20 += todayPrice * 1
                 price20.push(todayPrice)
             })
-            average = (sum20 / 20).toFixed(2) * 1
+            average = (sum20 / 20).toFixed(2) * 1 // 当天20均
             std = this.getStd(price20) * 1
             /* 组装数据 */
             // const temp = data.map(str => {
@@ -144,10 +148,12 @@ export default {
             //         average: obj.price
             //     }
             // })
+            const todayInfos = data[0].split(',')
             return {
-                date: data[0].split(',')[0],
+                date: todayInfos[0],
                 upper: (average * 1 + 2 * std * 1).toFixed(2),  // 布林通道上轨
-                // ratio: 
+                currentP: todayInfos[2],
+                average20: average // 当天20均价格
             }
         },
         dynamicGet20Day() {
@@ -158,23 +164,24 @@ export default {
                 const average = this.to20Average(every) // 计算出每天的布林通道上轨
                 averages.push(average)
             }
-            /* 单独处理加斜率 */
+            /* 单独处理加斜率 ratio */
             averages.forEach((item, index) => {
                 item.ratio = this.getRatio(item, averages[index + 1])
             })
             return averages
         },
         getRatio(suf, pre) { // pre时间前一天， suf当天
-            if (!pre) { return '-%' }
+            if (!pre) { return '-' }
             const ratio = (suf.upper - pre.upper) / pre.upper
             return `${((ratio) * 100).toFixed(1)}`
         },
-        updateConfig({ date, data, name = '布林上轨' }) {
+        updateConfig({ date, data }) {
             /**
-             * 表格头
+             * 表格头 // 取第一个数据name
              */
             const option = this.option
-            option.title.text = `${this.dataObj.byd.name}-${name}`
+            const names = data.map(item => item.name).join('&') // 多标题
+            option.title.text = `${this.dataObj.byd.name}-(${names})`
             // 内容
             option.xAxis = [
                 {
@@ -182,26 +189,16 @@ export default {
                     data: date
                 }
             ]
-
-            option.series = [
-                {
-                    name,
-                    data,
-                    type: 'line'
-                },
-                // {
-                //     name: '斜率',
-                //     data: ratio_arr,
-                //     stack: '比值',
-                //     type: 'line'
-                // }
-            ]
+            // 纵坐标数据可能多个类
+            option.series = data
+            /* 纵坐标 值类型设置 */
             option.yAxis = {
                 type: 'value',
                 axisLabel: {
-                    formatter: '{value}%'
+                    formatter: '{value}'
                 }
             }
+            data[0].name === '斜率' && (option.yAxis.axisLabel.formatter = '{value}%')
         }
 
     },
