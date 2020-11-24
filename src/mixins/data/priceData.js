@@ -92,6 +92,10 @@ export default {
             const ratio_arr = [
                 {name: '斜率', data: averages.map(obj => obj.ratio), type: 'line'}, 
             ] || []
+            /*  5% 以下：窄
+                10% ：正常
+                20% 以上: 宽 (做区间)
+            */
             const bollwidth_arr = [
                 {name: '带宽', data: averages.map(obj => obj.bollWidth), type: 'line'},
             ] || []
