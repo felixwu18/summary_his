@@ -80,6 +80,7 @@ export default {
         };
     },
     methods: {
+        /* 拿到画布处理好的基本数据，并渲染 */
         mixinInit() {
             const averages = this.dynamicGet20Day().reverse() || [] // 将时间升序
             const date_arr = averages.map(obj => obj.date) || []
@@ -88,7 +89,10 @@ export default {
                 {name: '收盘价格', data: averages.map(obj => obj.currentP), type: 'line'},
                 {name: '布林中轨', data: averages.map(obj => obj.average20), type: 'line'},
             ] || []
-            const ratio_arr = [{name: '斜率', data: averages.map(obj => obj.ratio), type: 'line'}] || []
+            const ratio_arr = [
+                {name: '斜率', data: averages.map(obj => obj.ratio), type: 'line'}, 
+                {name: '带宽', data: averages.map(obj => obj.bollWidth), type: 'line'}
+            ] || []
             /* 画布个数 */
             const datas = [
                 { date: date_arr, data: upper_arr },
@@ -106,6 +110,7 @@ export default {
                 }, 300)
             })
         },
+        /* 标准差 */
         getStd(arr) {
             var sum = function (x, y) { return x * 1 + y * 1; };　　//求和函数
             var square = function (x) { return x * x; };　　//数组中每个元素求它的平方
@@ -115,6 +120,7 @@ export default {
             var stddev = Math.sqrt(deviations.map(square).reduce(sum) / (arr.length - 1));
             return stddev.toFixed(2)
         },
+        /* 返回基础数据的对象 */
         to20Average(data) {
             // const temp = []
             // dataObj.byd.reverse()
@@ -123,37 +129,22 @@ export default {
             let average = null
             const price20 = []
             let std = null
-            data.forEach((str, index) => {
+            data.forEach((str, index) => { // 降序时间
                 const todayPrice = str.split(',')[2] // 取收盘价
                 // todayPrice && temp.push(todayPrice)
                 sum20 += todayPrice * 1
                 price20.push(todayPrice)
             })
             average = (sum20 / 20).toFixed(2) * 1 // 当天20均
-            std = this.getStd(price20) * 1
+            std = this.getStd(price20) * 1 // 计算标准差
             /* 组装数据 */
-            // const temp = data.map(str => {
-            //     const price = str.split(',')[2] // 取收盘价
-            //     const date = str.split(',')[0] // 日期
-            //     // todayPrice && temp.push(todayPrice)
-            //     return {
-            //         date,
-            //         price
-            //     }
-            // })
-            // /* 返回20均对象 */
-            // return temp.map(obj => { // 返回计算好的当天20均价
-            //     return {
-            //         date: obj.date,
-            //         average: obj.price
-            //     }
-            // })
             const todayInfos = data[0].split(',')
             return {
                 date: todayInfos[0],
                 upper: (average * 1 + 2 * std * 1).toFixed(2),  // 布林通道上轨
+                lower: (average * 1 - 2 * std * 1).toFixed(2),  // 布林通道下轨
                 currentP: todayInfos[2],
-                average20: average // 当天20均价格
+                average20: average // 当天20均价格(MD)
             }
         },
         dynamicGet20Day() {
@@ -164,16 +155,28 @@ export default {
                 const average = this.to20Average(every) // 计算出每天的布林通道上轨
                 averages.push(average)
             }
-            /* 单独处理加斜率 ratio */
+            /* 单独处理加斜率 ratio 及 布林带宽 */
             averages.forEach((item, index) => {
                 item.ratio = this.getRatio(item, averages[index + 1])
+                item.bollWidth = this.getBollWidth(item)
             })
             return averages
         },
-        getRatio(suf, pre) { // pre时间前一天， suf当天
+        getRatio(suf, pre) { // pre时间前一天， suf后一天
             if (!pre) { return '-' }
             const ratio = (suf.upper - pre.upper) / pre.upper
-            return `${((ratio) * 100).toFixed(1)}`
+            return `${((ratio) * 100).toFixed(2)}`
+        },
+        /* 获取布林带宽 */
+        getBollWidth(obj) { // 包含upper, lower数据
+            // if (!pre) { return '-' }
+            const bollWidth = (obj.upper / obj.lower) - 1
+            return `${((bollWidth) * 100).toFixed(2)}`
+        },
+        getRatio(suf, pre) { // pre时间前一天， suf后一天
+            if (!pre) { return '-' }
+            const ratio = (suf.upper - pre.upper) / pre.upper
+            return `${((ratio) * 100).toFixed(2)}`
         },
         updateConfig({ date, data }) {
             /**

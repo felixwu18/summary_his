@@ -10,10 +10,10 @@
       </el-form-item>
     </el-form>
 
-    <p>比亚迪</p>
+    <!-- <p>比亚迪</p> -->
     <!-- 为了方便页面搜索关键字 -->
     <div class="main" style="width: 90%; height: 400px">比亚迪</div>
-    <p>比亚迪</p>
+    <!-- <p>比亚迪</p> -->
     <div class="main" style="width: 90%; height: 400px">比亚迪</div>
   </div>
 </template>
