@@ -91,12 +91,15 @@ export default {
             ] || []
             const ratio_arr = [
                 {name: '斜率', data: averages.map(obj => obj.ratio), type: 'line'}, 
-                {name: '带宽', data: averages.map(obj => obj.bollWidth), type: 'line'}
+            ] || []
+            const bollwidth_arr = [
+                {name: '带宽', data: averages.map(obj => obj.bollWidth), type: 'line'},
             ] || []
             /* 画布个数 */
             const datas = [
                 { date: date_arr, data: upper_arr },
-                { date: date_arr, data: ratio_arr }
+                { date: date_arr, data: ratio_arr },
+                { date: date_arr, data: bollwidth_arr },
             ]
             /* 循环绘制图表 */
             datas.forEach((every, index) => {
@@ -173,11 +176,13 @@ export default {
             const bollWidth = (obj.upper / obj.lower) - 1
             return `${((bollWidth) * 100).toFixed(2)}`
         },
+        /* 获取斜率 */
         getRatio(suf, pre) { // pre时间前一天， suf后一天
             if (!pre) { return '-' }
             const ratio = (suf.upper - pre.upper) / pre.upper
             return `${((ratio) * 100).toFixed(2)}`
         },
+        /* 更新画布配置 */
         updateConfig({ date, data }) {
             /**
              * 表格头 // 取第一个数据name

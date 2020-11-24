@@ -12,9 +12,10 @@
 
     <!-- <p>比亚迪</p> -->
     <!-- 为了方便页面搜索关键字 -->
-    <div class="main" style="width: 90%; height: 400px">比亚迪</div>
+    <div class="main" style="width: 90%; height: 400px" />
     <!-- <p>比亚迪</p> -->
-    <div class="main" style="width: 90%; height: 400px">比亚迪</div>
+    <div class="main" style="width: 90%; height: 400px" />
+    <div class="main" style="width: 90%; height: 400px" />
   </div>
 </template>
 <script>
