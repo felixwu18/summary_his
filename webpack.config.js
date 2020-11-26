@@ -9,7 +9,7 @@ module.exports = (options = {}) => ({
   watch: true, //监听变化自动编译
   // ---------------------
   entry: {
-    vendor: "./src/vendor",
+    // vendor: "./src/vendor",
     index: "./src/main.js"
   },
   output: {
@@ -87,7 +87,8 @@ module.exports = (options = {}) => ({
   },
   plugins: [
     new webpack.optimize.CommonsChunkPlugin({
-      names: ["vendor", "manifest"]
+      // names: ["vendor", "manifest"]
+      names: ["manifest"]
     }),
     new HtmlWebpackPlugin({
       template: "src/index.html"

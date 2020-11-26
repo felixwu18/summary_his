@@ -506,8 +506,8 @@ export default {
         obj: { n: 11, age: 31, name: "felix" }
       },
       selectConfigureSet: { name: formHead, zip: selcet }, //测试selet
-      // selectVal: null,
-      selectVal: "",
+      selectVal: null,
+      // selectVal: '1',
       formHead, // 配置标头
       tableData,
       tableData2,

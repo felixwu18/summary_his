@@ -99,11 +99,15 @@ export default {
             const bollwidth_arr = [
                 {name: '带宽', data: averages.map(obj => obj.bollWidth), type: 'line'},
             ] || []
+            const bollWidthRatio_arr = [
+                {name: '带宽斜率', data: averages.map(obj => obj.bollWidthRatio), type: 'line'},
+            ] || []
             /* 画布个数 */
             const datas = [
                 { date: date_arr, data: upper_arr },
                 { date: date_arr, data: ratio_arr },
                 { date: date_arr, data: bollwidth_arr },
+                { date: date_arr, data: bollWidthRatio_arr },
             ]
             /* 循环绘制图表 */
             datas.forEach((every, index) => {
@@ -156,29 +160,41 @@ export default {
         },
         dynamicGet20Day() {
             const averages = [];
+            if(!this.dataObj.byd) { return }
             const data = this.dataObj.byd.klines.reverse();
             for (let i = 0; i < 20; i++) {
                 const every = data.slice(i, i + 20); // 动态获取每天前20天收盘价
                 const average = this.to20Average(every) // 计算出每天的布林通道上轨
                 averages.push(average)
             }
-            /* 单独处理加斜率 ratio 及 布林带宽 */
+            /* 单独处理加斜率 ratio ， 布林带宽 */
             averages.forEach((item, index) => {
                 item.ratio = this.getRatio(item, averages[index + 1])
                 item.bollWidth = this.getBollWidth(item)
             })
+            /* 单独处理带宽斜率 */
+            averages.forEach((item, index) => {
+                item.bollWidthRatio = this.getBollWidthRatio(item, averages[index + 1])
+            })
             return averages
         },
+        /* 获取upper的斜率 */
         getRatio(suf, pre) { // pre时间前一天， suf后一天
             if (!pre) { return '-' }
             const ratio = (suf.upper - pre.upper) / pre.upper
             return `${((ratio) * 100).toFixed(2)}`
         },
+        /* 获取带宽变化的斜率 */
+        getBollWidthRatio(suf, pre) { // pre时间前一天， suf后一天
+            if (!pre) { return '-' }
+            const bollWidthRatio = (suf.bollWidth - pre.bollWidth) / pre.bollWidth
+            return `${((bollWidthRatio) * 100).toFixed(2)}`
+        },
         /* 获取布林带宽 */
         getBollWidth(obj) { // 包含upper, lower数据
             // if (!pre) { return '-' }
-            const bollWidth = (obj.upper / obj.lower) - 1
-            return `${((bollWidth) * 100).toFixed(2)}`
+            const bollWidth = obj.upper - obj.lower
+            return bollWidth.toFixed(2)
         },
         /* 获取斜率 */
         getRatio(suf, pre) { // pre时间前一天， suf后一天
@@ -191,26 +207,27 @@ export default {
             /**
              * 表格头 // 取第一个数据name
              */
-            const option = this.option
-            const names = data.map(item => item.name).join('&') // 多标题
-            option.title.text = `${this.dataObj.byd.name}-(${names})`
+            const option = this.option;
+            const names = data.map(item => item.name).join('&'); // 多标题
+            option.title.text = `${this.dataObj.byd.name}-(${names})`;
             // 内容
             option.xAxis = [
                 {
                     type: 'category',
                     data: date
                 }
-            ]
+            ];
             // 纵坐标数据可能多个类
-            option.series = data
+            option.series = data;
             /* 纵坐标 值类型设置 */
             option.yAxis = {
                 type: 'value',
                 axisLabel: {
                     formatter: '{value}'
                 }
-            }
-            data[0].name === '斜率' && (option.yAxis.axisLabel.formatter = '{value}%')
+            };
+            // data[0].name === '斜率' && (option.yAxis.axisLabel.formatter = '{value}%')
+            ['斜率', '带宽斜率'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
         }
 
     },
