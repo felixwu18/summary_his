@@ -101,9 +101,11 @@ export default {
       },
       set(key) {
         !this.isNumber && typeof key === "number" ? (key = String(key)) : ""; // 默认字符串
-        const value = this.$utils.confugureFormatter(this.options, key);
+        // const value = this.$utils.confugureFormatter(this.options, key);
+        const selectObj = this.options.find(every => every.key === key)
+        const { value, marketT } = selectObj
         this.$emit("update:insertValue", key); // 编码
-        this.$emit("change", { key, value }); // 传编码及值
+        this.$emit("change", { key, value, marketT }); // 传编码及值
       },
     },
   },
