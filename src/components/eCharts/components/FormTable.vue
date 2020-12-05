@@ -36,18 +36,20 @@
       <el-col :span="12" />
     </el-row>
     <!-- 表格 -->
-    <el-table :data="tableData" border stripe style="margin-left: 50px">
-      <el-table-column type="index" label="序号" width="50" />
-      <el-table-column prop="key" label="编码"> </el-table-column>
-      <el-table-column prop="value" label="股票名称"> </el-table-column>
-      <el-table-column prop="pym" label="拼音码"> </el-table-column>
-      <el-table-column prop="marketT" label="市场类别"> </el-table-column>
-      <el-table-column label="操作" width="100px">
-        <template slot-scope="scope">
-            <el-button size="small" type="text" @click="toDetail(scope.row)">详情</el-button>
-        </template>
-      </el-table-column>
-    </el-table>
+    <div style="margin:0 50px 0;">
+      <el-table :data="tableData" border stripe>
+        <el-table-column type="index" label="序号" width="50" />
+        <el-table-column prop="key" label="编码"> </el-table-column>
+        <el-table-column prop="value" label="股票名称"> </el-table-column>
+        <el-table-column prop="pym" label="拼音码"> </el-table-column>
+        <el-table-column prop="marketT" label="市场类别"> </el-table-column>
+        <el-table-column label="操作" width="100px">
+          <template slot-scope="scope">
+              <el-button size="small" type="text" @click="toDetail(scope.row)">详情</el-button>
+          </template>
+        </el-table-column>
+      </el-table>
+    </div>
   </div>
 </template>
 <script>
