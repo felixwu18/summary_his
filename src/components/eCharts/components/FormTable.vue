@@ -15,7 +15,7 @@
               style="width: 100%"
             />
           </el-form-item>
-          <el-form-item label="活动区域：" label-width="115px">
+          <el-form-item label="版块：" label-width="115px">
             <el-select v-model="form.region" placeholder="请选择活动区域">
               <el-option label="区域一" value="shanghai"></el-option>
               <el-option label="区域二" value="beijing"></el-option>
@@ -37,11 +37,12 @@
     </el-row>
     <!-- 表格 -->
     <el-table :data="tableData" border stripe style="margin-left: 50px">
+      <el-table-column type="index" label="序号" width="50" />
       <el-table-column prop="key" label="编码"> </el-table-column>
       <el-table-column prop="value" label="股票名称"> </el-table-column>
       <el-table-column prop="pym" label="拼音码"> </el-table-column>
       <el-table-column prop="marketT" label="市场类别"> </el-table-column>
-      <el-table-column label="操作" width="200px">
+      <el-table-column label="操作" width="100px">
         <template slot-scope="scope">
             <el-button size="small" type="text" @click="toDetail(scope.row)">详情</el-button>
         </template>
