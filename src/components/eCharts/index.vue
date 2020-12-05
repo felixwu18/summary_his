@@ -9,9 +9,13 @@
         />
       </el-form-item>
     </el-form>
-    <el-tabs class="margin" v-model="activeName" @tab-click="handleClick(selectObj, activeName)">
+    <el-tabs
+      class="margin"
+      v-model="activeName"
+      @tab-click="handleClick(selectObj, activeName)"
+    >
       <!-- 1 即时价格跟踪 -->
-      <el-tab-pane label="boll" name="first">
+      <el-tab-pane label="个股boll" name="first">
         <!-- <p>比亚迪</p> -->
         <!-- 为了方便页面搜索关键字 -->
         <div class="main" style="width: 90%; height: 400px" />
@@ -27,8 +31,8 @@
           :url="iframeUrl"
           width="1060px"
           originWidth="1000px"
-          height="1300px"
-          originHeight="1600px"
+          height="1500px"
+          originHeight="1850px"
           margin="-400px 0px 0px 20px"
           style="margin-left: 120px"
         />
@@ -47,18 +51,49 @@
         />
       </el-tab-pane>
 
-      <!-- 4 个股k线，及筹码 -->
-      <!-- <el-tab-pane label="筹码" name="third">
+      <!-- 4 版块走势 -->
+      <el-tab-pane label="版块" name="forth">
         <iframePage
           :url="iframeUrl3"
-          width="1060px"
-          originWidth="1000px"
+          width="1050px"
+          originWidth="1200px"
           height="1300px"
-          originHeight="1600px"
-          margin="-400px 0px 0px 20px"
+          originHeight="1430px"
+          margin="-400px 0px 0px -210px"
           style="margin-left: 120px"
         />
-      </el-tab-pane> -->
+      </el-tab-pane>
+
+      <!-- 5 两融余额 -->
+      <el-tab-pane label="两融余额" name="fifth">
+        <div class="main" style="width: 1350px; height: 400px" />
+        <iframePage
+          :url="iframeUrl4"
+          width="1050px"
+          originWidth="1000px"
+          height="1200"
+          originHeight="1430px"
+          margin="-510px 0px 0px -300px"
+          style="margin-left: 120px"
+        />
+      </el-tab-pane>
+
+      <!-- 跟踪个股 -->
+      <el-tab-pane label="个股跟踪" name="sixth">
+        <iframePage
+          :url="iframeUrl5"
+          width="960px"
+          originWidth="1000px"
+          height="1800px"
+          originHeight="1830px"
+          margin="-400px 0px 0px -210px"
+          style="margin-left: 120px"
+        />
+      </el-tab-pane>
+      <!-- 条件选股 -->
+      <el-tab-pane label="条件选股" name="seventh">
+        <form-table @handle-detail="handleDetail" />
+      </el-tab-pane>
     </el-tabs>
   </div>
 </template>
@@ -68,21 +103,30 @@ import std from "@/mixins/std";
 import priceData from "@/mixins/data/priceData";
 import searchSelect from "@/components/searchSelect/index";
 import iframePage from "@/components/iframePage/index";
+import FormTable from "./components/FormTable";
 
-import { getLatestP, getConfigsP } from "@/api/index";
+import { getLatestP, getConfigsP, getbkLatestP, getRZRQ } from "@/api/index";
 
 export default {
   data() {
     return {
       selectVal: "0.002594",
-      stcokCode: 'sz002594',
-      iframeUrl: `http://quote.eastmoney.com/changes/stocks/${this.stcokCode || 'sz002594'}.html`,
-      iframeUrl2: `http://quote.eastmoney.com/concept/${this.stcokCode || 'sz002594'}.html`,
+      stcokCode: "sz002594",
+      iframeUrl: `http://quote.eastmoney.com/changes/stocks/${
+        this.stcokCode || "sz002594"
+      }.html`,
+      iframeUrl2: `http://quote.eastmoney.com/concept/${
+        this.stcokCode || "sz002594"
+      }.html`,
       // iframeUrl3: `http://quote.eastmoney.com/concept/${this.stcokCode || 'sz002594'}.html`,
+      iframeUrl3: `http://quote.eastmoney.com/center/hsbk.html`,
+      iframeUrl4: 'http://data.eastmoney.com/rzrq/total.html',
+      iframeUrl5: 'http://data.eastmoney.com/zjlx/002594.html',
       tabs: {
         first: this.first,
         second: this.second,
         third: this.third,
+        sixth: this.sixth,
       },
       selectObj: {},
       configsP: [
@@ -95,6 +139,14 @@ export default {
     };
   },
   mixins: [std, priceData],
+  async created() {
+    /* 下拉配置 */
+    const { configsP } = (await getConfigsP()) || [];
+    this.configsP = configsP;
+    this.selectObj = configsP.find((row) => row.key === this.selectVal); // 初始化对象
+    this.init();
+  },
+  mounted() {},
   methods: {
     async init() {
       /* 获取数据 */
@@ -106,45 +158,40 @@ export default {
         // var eval(`myChart${index}`)
         this.myCharts[`myChart${index}`] = echarts.init(box); // 动态变量不行， 转对象属性
       });
-
-      // 基于准备好的dom，初始化echarts实例
-      // 绘制图表
-      // this.myCharts.myChart0.setOption({
-        //   title: {
-          //     text: "ECharts 入门示例",
-      //   },
-      //   tooltip: {},
-      //   xAxis: {
-        //     data: ["衬衫", "羊毛衫", "雪纺衫", "裤子", "高跟鞋", "袜子"],
-      //   },
-      //   yAxis: {},
-      //   series: [
-        //     {
-          //       name: "销量",
-      //       type: "bar",
-      //       data: [5, 20, 36, 10, 10, 20],
-      //     },
-      //   ],
-      // });
-
-      // this.$nextTick(() => {
-        // });
     },
     async getData() {
-      /* 图表数据 */
-      let res = await getLatestP({ secid: this.selectVal });
-      this.dataObj.byd = res.data;
+      try {
+        /* 图表数据 */
+        let res = await getLatestP({ secid: this.selectVal });
+        this.dataObj.byd = res.data;
+        // let bkLatestP = getbkLatestP({ secid: '90.BK0711' }).then(data => {
+        //   console.log(data, '---------data');
+        // });
+      } catch (error) {
+        console.error(error);
+      }
     },
     /* 下拉切换 */
     handleName(val, activeName) {
-      val = this.toArr(val)
-      this.selectObj = val // 更新下拉选择的对象
+      val = this.toArr(val);
+      this.selectObj = val; // 更新下拉选择的对象
       this.selectVal = val.key;
       this.tabs[activeName](val);
     },
     /* 选项卡切换 */
     handleClick(val, activeName) {
-      this.tabs[activeName](val);
+      if (['first', 'second', 'third', 'sixth'].includes(activeName)) {
+        this.tabs[activeName](val);
+      }
+      activeName === "fifth" && this.triggerRZRQ();
+    },
+    /* 融资融券触发 */
+    async triggerRZRQ() {
+      // if(this.dataObj.rzrq.data) { return }
+      const {data} = await getRZRQ();
+      this.dataObj.rzrq.data = data
+      this.rzrqInit(120)
+      // this.dataObj.rzrq
     },
     /* 即使价格，及boll技术指标 */
     first(val) {
@@ -157,30 +204,30 @@ export default {
       // val = this.toArr(val);
       // this.selectVal = val.key;
       this.stcokCode = `${val.marketT}${val.key.slice(2)}`;
-      this.iframeUrl = `http://quote.eastmoney.com/changes/stocks/${this.stcokCode}.html`
+      this.iframeUrl = `http://quote.eastmoney.com/changes/stocks/${this.stcokCode}.html`;
     },
     /* 筹码分布 */
     third(val) {
       // this.selectVal = val.key;
       this.stcokCode = `${val.marketT}${val.key.slice(2)}`;
-      this.iframeUrl2 = `http://quote.eastmoney.com/concept/${this.stcokCode}.html`
+      this.iframeUrl2 = `http://quote.eastmoney.com/concept/${this.stcokCode}.html`;
+    },
+    sixth(val) {
+      // this.selectVal = val.key;
+      const stcokCode = `${val.key.slice(2)}`;
+      this.iframeUrl5 = `http://data.eastmoney.com/zjlx/${stcokCode}.html`;
     },
     toArr(val) {
       return Array.from(val)[0];
     },
+    handleDetail(row) {
+      console.log(row)
+    }
   },
   components: {
     searchSelect,
     iframePage,
-  },
-  async created() {
-    /* 下拉配置 */
-    const { configsP } = (await getConfigsP()) || [];
-    this.configsP = configsP;
-    this.selectObj = configsP.find(row => row.key === this.selectVal) // 初始化对象
-    this.init();
-  },
-  mounted() {
+    FormTable
   },
   computed: {
     // test() {

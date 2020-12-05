@@ -38,6 +38,9 @@ export default {
                     //     "2020-11-19,168.00,161.62,168.70,159.52,470054,7652210688.00,5.50,-3.22,-5.38,4.10",
                     //     "2020-11-20,164.65,176.06,177.24,163.22,707527,12067220480.00,8.67,8.93,14.44,6.18"
                     // ]
+                },
+                rzrq: {
+
                 }
             },
             bydN: [],
@@ -81,26 +84,27 @@ export default {
     },
     methods: {
         /* 拿到画布处理好的基本数据，并渲染 */
-        mixinInit() {
-            const averages = this.dynamicGet20Day().reverse() || [] // 将时间升序
+        mixinInit(days = 20) {
+            const averages = this.dynamicGet20Day(days).reverse() || [] // 将时间升序
             const date_arr = averages.map(obj => obj.date) || []
             const upper_arr = [
-                {name: '布林上轨', data: averages.map(obj => obj.upper), type: 'line'},
-                {name: '收盘价格', data: averages.map(obj => obj.currentP), type: 'line'},
-                {name: '布林中轨', data: averages.map(obj => obj.average20), type: 'line'},
+                { name: '布林上轨', data: averages.map(obj => obj.upper), type: 'line' },
+                { name: '收盘价格', data: averages.map(obj => obj.currentP), type: 'line' },
+                { name: '布林中轨', data: averages.map(obj => obj.average20), type: 'line' },
+                { name: '布林下轨', data: averages.map(obj => obj.lower), type: 'line' },
             ] || []
             const ratio_arr = [
-                {name: '斜率', data: averages.map(obj => obj.ratio), type: 'line'}, 
+                { name: '斜率', data: averages.map(obj => obj.ratio), type: 'line' },
             ] || []
             /*  5% 以下：窄
                 10% ：正常
                 20% 以上: 宽 (做区间)
             */
             const bollwidth_arr = [
-                {name: '带宽', data: averages.map(obj => obj.bollWidth), type: 'line'},
+                { name: '带宽', data: averages.map(obj => obj.bollWidth), type: 'line' },
             ] || []
             const bollWidthRatio_arr = [
-                {name: '带宽斜率', data: averages.map(obj => obj.bollWidthRatio), type: 'line'},
+                { name: '带宽斜率', data: averages.map(obj => obj.bollWidthRatio), type: 'line' },
             ] || []
             /* 画布个数 */
             const datas = [
@@ -112,14 +116,18 @@ export default {
             /* 循环绘制图表 */
             datas.forEach((every, index) => {
                 const { date, data } = every
-                this.updateConfig({ date, data })
+                this.updateConfig({ date, data, colName: this.dataObj.byd.name })
                 const temp = JSON.parse(JSON.stringify(this.option))
                 setTimeout(() => {
-                    this.myCharts[`myChart${index}`].setOption(temp); // 延时画布生成
-                    // this.myCharts .myChart0.setOption(temp); // 延时画布生成
-                    // this.myCharts .myChart1.setOption(temp); // 延时画布生成
+                    this.renderCanavas(this.myCharts[`myChart${index}`], temp)
                 }, 300)
             })
+        },
+        /* 画布渲染生成数据 */
+        renderCanavas(canavasDom, option) {
+            canavasDom.setOption(option); // 延时画布生成
+            // this.myCharts .myChart0.setOption(temp); // 延时画布生成
+            // this.myCharts .myChart1.setOption(temp); // 延时画布生成
         },
         /* 标准差 */
         getStd(arr) {
@@ -158,13 +166,14 @@ export default {
                 average20: average // 当天20均价格(MD)
             }
         },
-        dynamicGet20Day() {
+        /* days为查看多少天的情况 */
+        dynamicGet20Day(days) {
             const averages = [];
-            if(!this.dataObj.byd) { return }
+            if (!this.dataObj.byd) { return }
             const data = this.dataObj.byd.klines.reverse();
-            for (let i = 0; i < 20; i++) {
+            for (let i = 0; i < days; i++) {
                 const every = data.slice(i, i + 20); // 动态获取每天前20天收盘价
-                const average = this.to20Average(every) // 计算出每天的布林通道上轨
+                const average = this.to20Average(every, days) // 计算出每天的布林通道上轨
                 averages.push(average)
             }
             /* 单独处理加斜率 ratio ， 布林带宽 */
@@ -177,6 +186,42 @@ export default {
                 item.bollWidthRatio = this.getBollWidthRatio(item, averages[index + 1])
             })
             return averages
+        },
+        /* 组装渲染 rzrq*/
+        rzrqInit(days = 20) {
+            if (!this.dataObj.rzrq.data) { return }
+            const data = this.dataObj.rzrq.data;
+            const rzrqArr = data.slice(0, days + 1); // 动态获取每天前20天融资融券
+            const currentData = this.rzrq20Days(rzrqArr).reverse() // 降序排列
+            const date_arr = currentData.map(obj => obj.date) || []
+            const rzrqIncrease_arr = [
+                { name: '融资融券每天净量 (亿)', data: currentData.map(obj => obj.increase), type: 'line' },
+            ]
+            // const canavas = { date: date_arr, data: rzrqIncrease_arr }
+            this.updateConfig({date: date_arr, data: rzrqIncrease_arr})
+            const temp = JSON.parse(JSON.stringify(this.option))
+            setTimeout(() => {
+                this.renderCanavas(this.myCharts[`myChart${4}`], temp)
+            }, 300)
+    },
+        /* 每天增加rzrq */
+        rzrq20Days(rzrqArr) {
+            // if (!this.dataObj.rzrq) { return }
+            // const data = this.dataObj.rzrq.klines;
+            // this.getrzrqIncrase(item)
+            // for (let i = 0; i < days; i++) {
+            
+            // rzrqArr.forEach((item, index) => {
+
+            // })
+            return rzrqArr.map((item, index) => {
+                if (!rzrqArr[index + 1]) { return '-' }
+                 // 后日期数据 减 前一天数据转化为亿的单位
+                return { date: item.DIM_DATE.split(' ')[0], increase: ((item.RZRQYE - rzrqArr[index + 1].RZRQYE) / 10000 / 10000).toFixed(0) }
+            }).slice(0, -1)
+            //     const average = this.to20Average(every) // 计算出每天的布林通道上轨
+            //     averages.push(average)
+            // }
         },
         /* 获取upper的斜率 */
         getRatio(suf, pre) { // pre时间前一天， suf后一天
@@ -203,13 +248,13 @@ export default {
             return `${((ratio) * 100).toFixed(2)}`
         },
         /* 更新画布配置 */
-        updateConfig({ date, data }) {
+        updateConfig({ date, data, colName }) {
             /**
              * 表格头 // 取第一个数据name
              */
             const option = this.option;
             const names = data.map(item => item.name).join('&'); // 多标题
-            option.title.text = `${this.dataObj.byd.name}-(${names})`;
+            option.title.text = colName ? `${colName}-(${names})` : names;
             // 内容
             option.xAxis = [
                 {

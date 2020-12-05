@@ -51,6 +51,9 @@ Vue.prototype.$utils = utils
 import validate from './utils/validate'
 Vue.prototype.$validate  = validate
 
+/* 注入挂载Vue */
+import select2 from '@/components/select2/index'
+Vue.use(select2)
 
 // 引入lodash
 import _ from 'lodash'
