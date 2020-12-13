@@ -33,7 +33,9 @@
           </el-form-item>
         </el-form>
       </el-col>
-      <el-col :span="12" />
+      <el-col :span="12" class="xt-select">
+           <el-button size="small" type="primary" @click="handleQuery">上升三法</el-button>      
+      </el-col>
     </el-row>
     <!-- 表格 -->
     <div style="margin:0 50px 0;">
@@ -41,6 +43,7 @@
         <el-table-column type="index" label="序号" width="50" />
         <el-table-column prop="key" label="编码"> </el-table-column>
         <el-table-column prop="value" label="股票名称"> </el-table-column>
+        <el-table-column prop="region" label="版块"> </el-table-column>
         <el-table-column prop="pym" label="拼音码"> </el-table-column>
         <el-table-column prop="marketT" label="市场类别"> </el-table-column>
         <el-table-column label="操作" width="100px">
@@ -90,4 +93,13 @@ export default {
  .wrap /deep/ .el-input__inner {
   width: 225px;
 }
+.xt-select {
+  border-left: 1px solid;
+  height: 180px;
+  text-align: left;
+  padding: 0 10px 0;
+}
+.wrap /deep/ .xt-select el-button {
+    margin-right: 5px;
+ }
 </style>

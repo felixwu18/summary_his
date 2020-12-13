@@ -93,6 +93,7 @@ export default {
                 { name: '布林中轨', data: averages.map(obj => obj.average20), type: 'line' },
                 { name: '布林下轨', data: averages.map(obj => obj.lower), type: 'line' },
             ] || []
+            /* 布林上轨斜率 */
             const ratio_arr = [
                 { name: '斜率', data: averages.map(obj => obj.ratio), type: 'line' },
             ] || []
@@ -106,12 +107,20 @@ export default {
             const bollWidthRatio_arr = [
                 { name: '带宽斜率', data: averages.map(obj => obj.bollWidthRatio), type: 'line' },
             ] || []
+            /* 最高最低点数及振幅变化 */
+            const TopLowDot_arr = [
+                { name: '最高点数', data: averages.map(obj => obj.topDot), type: 'line' },
+                { name: '最低点数', data: averages.map(obj => obj.lowDot), type: 'line' },
+                { name: '每天振幅', data: averages.map(obj => obj.todayZF), type: 'line' },
+            ] || []
+
             /* 画布个数 */
             const datas = [
                 { date: date_arr, data: upper_arr },
                 { date: date_arr, data: ratio_arr },
                 { date: date_arr, data: bollwidth_arr },
                 { date: date_arr, data: bollWidthRatio_arr },
+                { date: date_arr, data: TopLowDot_arr },
             ]
             /* 循环绘制图表 */
             datas.forEach((every, index) => {
@@ -141,29 +150,42 @@ export default {
         },
         /* 返回基础数据的对象 */
         to20Average(data) {
-            // const temp = []
-            // dataObj.byd.reverse()
-            // const data = dataObj.byd.reverse() // 取前20天
+            // "2020-12-10, 168.00, 169.52, 171.66, 166.02, 370436, 6243808768.00, 3.26, -2.15, -3.72, 3.23"
+            // index 开盘价 1 收盘价 2 最高价 3 最低价 4 成交量 5 成交额 6 振幅(当天最高最低差额/前一天收盘价) 7 涨跌幅 8 涨跌额 9 换手率 10
             let sum20 = null;
-            let average = null
+            let average20 = null
             const price20 = []
             let std = null
+            console.log(data, '======>data');
             data.forEach((str, index) => { // 降序时间
                 const todayPrice = str.split(',')[2] // 取收盘价
-                // todayPrice && temp.push(todayPrice)
                 sum20 += todayPrice * 1
                 price20.push(todayPrice)
             })
-            average = (sum20 / 20).toFixed(2) * 1 // 当天20均
+            /* 计算出当天最高百分点 */
+            const todayTopP = data[0].split(',')[3] // 当天最高价
+            const todayLowP = data[0].split(',')[4] // 当天最低价
+            const yesterdaySPJ = data[1].split(',')[2] // 昨天收盘价
+            const topDot = ((todayTopP - yesterdaySPJ) / yesterdaySPJ * 100).toFixed(2) // 最高价点数
+            const lowDot = ((todayLowP - yesterdaySPJ) / yesterdaySPJ * 100).toFixed(2) // 最低价点数
+
+            /* 每天的振幅 */
+            const todayZF = data[0].split(',')[7]
+
+            average20 = (sum20 / 20).toFixed(2) * 1 // 当天20均
             std = this.getStd(price20) * 1 // 计算标准差
+
             /* 组装数据 */
             const todayInfos = data[0].split(',')
             return {
                 date: todayInfos[0],
-                upper: (average * 1 + 2 * std * 1).toFixed(2),  // 布林通道上轨
-                lower: (average * 1 - 2 * std * 1).toFixed(2),  // 布林通道下轨
+                upper: (average20 * 1 + 2 * std * 1).toFixed(2),  // 布林通道上轨
+                lower: (average20 * 1 - 2 * std * 1).toFixed(2),  // 布林通道下轨
                 currentP: todayInfos[2],
-                average20: average // 当天20均价格(MD)
+                average20, // 当天20均价格(MD)
+                topDot, // 最高点数
+                lowDot, // 最低点数
+                todayZF, // 当天的振幅
             }
         },
         /* days为查看多少天的情况 */
@@ -173,7 +195,7 @@ export default {
             const data = this.dataObj.byd.klines.reverse();
             for (let i = 0; i < days; i++) {
                 const every = data.slice(i, i + 20); // 动态获取每天前20天收盘价
-                const average = this.to20Average(every, days) // 计算出每天的布林通道上轨
+                const average = this.to20Average(every, days) // 计算出每天的布林通道上轨(包括其他指标)
                 averages.push(average)
             }
             /* 单独处理加斜率 ratio ， 布林带宽 */
@@ -219,9 +241,6 @@ export default {
                  // 后日期数据 减 前一天数据转化为亿的单位
                 return { date: item.DIM_DATE.split(' ')[0], increase: ((item.RZRQYE - rzrqArr[index + 1].RZRQYE) / 10000 / 10000).toFixed(0) }
             }).slice(0, -1)
-            //     const average = this.to20Average(every) // 计算出每天的布林通道上轨
-            //     averages.push(average)
-            // }
         },
         /* 获取upper的斜率 */
         getRatio(suf, pre) { // pre时间前一天， suf后一天
@@ -272,7 +291,7 @@ export default {
                 }
             };
             // data[0].name === '斜率' && (option.yAxis.axisLabel.formatter = '{value}%')
-            ['斜率', '带宽斜率'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
+            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
         }
 
     },

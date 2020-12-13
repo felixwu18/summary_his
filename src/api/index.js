@@ -32,10 +32,9 @@ export function getLatestP(params = {}) {
         const queryStr = qs.stringify(params)
         axios.get(`http://127.0.0.1:4000/latestP?${queryStr}`)
             .then(res => {
-                const jsonD = res.data.split('(')[1].split(')')[0]
-                //      const data = res.data
-                const data = JSON.parse(jsonD)
-                resolve(data)
+                // // const jsonD = res.data.split('(')[1].split(')')[0]
+                // const data = JSON.parse(res.data)
+                resolve(res.data)
             })
     }))
 }

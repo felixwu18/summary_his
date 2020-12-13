@@ -23,6 +23,8 @@
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
+        <div class="main" style="width: 90%; height: 400px" />
+        <div class="main" style="width: 90%; height: 400px" />
       </el-tab-pane>
 
       <!-- 2 个股异动 -->
@@ -53,13 +55,24 @@
 
       <!-- 4 版块走势 -->
       <el-tab-pane label="版块" name="forth">
+        <!-- 版块涨跌情况 -->
         <iframePage
           :url="iframeUrl3"
           width="1050px"
           originWidth="1200px"
-          height="1300px"
+          height="1150px"
           originHeight="1430px"
           margin="-400px 0px 0px -210px"
+          style="margin-left: 120px"
+        />
+        <!-- 版块资金流向 -->
+        <iframePage
+          :url="iframeUrl4"
+          width="930px"
+          originWidth="1130px"
+          height="2000px"
+          originHeight="2250px"
+          margin="-540px 0px 0px -210px"
           style="margin-left: 120px"
         />
       </el-tab-pane>
@@ -68,7 +81,7 @@
       <el-tab-pane label="两融余额" name="fifth">
         <div class="main" style="width: 1350px; height: 400px" />
         <iframePage
-          :url="iframeUrl4"
+          :url="iframeUrl5"
           width="1050px"
           originWidth="1000px"
           height="1200"
@@ -81,11 +94,11 @@
       <!-- 跟踪个股 -->
       <el-tab-pane label="个股跟踪" name="sixth">
         <iframePage
-          :url="iframeUrl5"
+          :url="iframeUrl6"
           width="960px"
           originWidth="1000px"
-          height="1800px"
-          originHeight="1830px"
+          height="2000px"
+          originHeight="2000px"
           margin="-400px 0px 0px -210px"
           style="margin-left: 120px"
         />
@@ -120,12 +133,14 @@ export default {
       }.html`,
       // iframeUrl3: `http://quote.eastmoney.com/concept/${this.stcokCode || 'sz002594'}.html`,
       iframeUrl3: `http://quote.eastmoney.com/center/hsbk.html`,
-      iframeUrl4: 'http://data.eastmoney.com/rzrq/total.html',
-      iframeUrl5: 'http://data.eastmoney.com/zjlx/002594.html',
+      iframeUrl4: `http://data.eastmoney.com/bkzj/hy.html`,
+      iframeUrl5: 'http://data.eastmoney.com/rzrq/total.html',
+      iframeUrl6: 'http://data.eastmoney.com/zjlx/002594.html',
       tabs: {
         first: this.first,
         second: this.second,
         third: this.third,
+        forth: this.forth,
         sixth: this.sixth,
       },
       selectObj: {},
@@ -212,10 +227,14 @@ export default {
       this.stcokCode = `${val.marketT}${val.key.slice(2)}`;
       this.iframeUrl2 = `http://quote.eastmoney.com/concept/${this.stcokCode}.html`;
     },
+    /* 版块情况更新 */
+    third(val) {
+      this.iframeUrl3 = `http://quote.eastmoney.com/center/hsbk.html`;
+    },
     sixth(val) {
       // this.selectVal = val.key;
       const stcokCode = `${val.key.slice(2)}`;
-      this.iframeUrl5 = `http://data.eastmoney.com/zjlx/${stcokCode}.html`;
+      this.iframeUrl6 = `http://data.eastmoney.com/zjlx/${stcokCode}.html`;
     },
     toArr(val) {
       return Array.from(val)[0];
