@@ -25,6 +25,7 @@
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
+        <div class="main" style="width: 90%; height: 400px" />
       </el-tab-pane>
 
       <!-- 2 个股异动 -->
@@ -118,7 +119,7 @@ import searchSelect from "@/components/searchSelect/index";
 import iframePage from "@/components/iframePage/index";
 import FormTable from "./components/FormTable";
 
-import { getLatestP, getConfigsP, getbkLatestP, getRZRQ } from "@/api/index";
+import { getLatestP, getFSP, getConfigsP, getbkLatestP, getRZRQ } from "@/api/index";
 
 export default {
   data() {
@@ -178,7 +179,10 @@ export default {
       try {
         /* 图表数据 */
         let res = await getLatestP({ secid: this.selectVal });
+        let resFSP = await getFSP({ secid: this.selectVal, ndays: 5 });
         this.dataObj.byd = res.data;
+        this.dataObj.FSP = resFSP
+
         // let bkLatestP = getbkLatestP({ secid: '90.BK0711' }).then(data => {
         //   console.log(data, '---------data');
         // });

@@ -39,6 +39,7 @@ export default {
                     //     "2020-11-20,164.65,176.06,177.24,163.22,707527,12067220480.00,8.67,8.93,14.44,6.18"
                     // ]
                 },
+                FSP: {},
                 rzrq: {
 
                 }
@@ -108,10 +109,21 @@ export default {
                 { name: '带宽斜率', data: averages.map(obj => obj.bollWidthRatio), type: 'line' },
             ] || []
             /* 最高最低点数及振幅变化 */
-            const TopLowDot_arr = [
+            const TopLowSPDot_arr = [
                 { name: '最高点数', data: averages.map(obj => obj.topDot), type: 'line' },
                 { name: '最低点数', data: averages.map(obj => obj.lowDot), type: 'line' },
+                { name: '每天涨幅', data: averages.map(obj => obj.todayZDF), type: 'line' },
+            ] || []
+
+            /* 振幅变化 */
+            const ZFArr_arr = [
                 { name: '每天振幅', data: averages.map(obj => obj.todayZF), type: 'line' },
+            ] || []
+            
+            /* 最高价 最低价 对应的分时变化 */
+            const TopLowPTime_arr = [
+                { name: '最高价分时', data: averages.map(obj => obj.TopPtime), type: 'line' },
+                { name: '最低价分时', data: averages.map(obj => obj.LowPtime), type: 'line' },
             ] || []
 
             /* 画布个数 */
@@ -120,7 +132,9 @@ export default {
                 { date: date_arr, data: ratio_arr },
                 { date: date_arr, data: bollwidth_arr },
                 { date: date_arr, data: bollWidthRatio_arr },
-                { date: date_arr, data: TopLowDot_arr },
+                { date: date_arr, data: TopLowSPDot_arr },
+                { date: date_arr, data: ZFArr_arr },
+                { date: date_arr, data: TopLowPTime_arr },
             ]
             /* 循环绘制图表 */
             datas.forEach((every, index) => {
@@ -156,7 +170,6 @@ export default {
             let average20 = null
             const price20 = []
             let std = null
-            console.log(data, '======>data');
             data.forEach((str, index) => { // 降序时间
                 const todayPrice = str.split(',')[2] // 取收盘价
                 sum20 += todayPrice * 1
@@ -172,6 +185,16 @@ export default {
             /* 每天的振幅 */
             const todayZF = data[0].split(',')[7]
 
+            /* 每天的涨跌幅 */
+            const todayZDF = data[0].split(',')[8]
+
+            /* 处理当天最高价，对低价 对应的分明 格式： 14:42 => 14-42  */
+            let TopPtime = '-', LowPtime = '-'
+            if (data[0].split(',')[11]) {
+                TopPtime = data[0].split(',')[11].replace(/:/, '.')
+                LowPtime = data[0].split(',')[12].replace(/:/, '.')
+            }
+
             average20 = (sum20 / 20).toFixed(2) * 1 // 当天20均
             std = this.getStd(price20) * 1 // 计算标准差
 
@@ -186,6 +209,9 @@ export default {
                 topDot, // 最高点数
                 lowDot, // 最低点数
                 todayZF, // 当天的振幅
+                todayZDF, // 当天的涨跌幅
+                TopPtime, // 当天最高价对应的分时
+                LowPtime, // 当天最低价对应的分时
             }
         },
         /* days为查看多少天的情况 */
@@ -193,6 +219,23 @@ export default {
             const averages = [];
             if (!this.dataObj.byd) { return }
             const data = this.dataObj.byd.klines.reverse();
+            /* 准备工作 处理分时数据  */
+            this.dataObj.FSP
+            const trends = this.dataObj.FSP.trends
+            const formartTrends = []
+            for(let i = 0; i < 5; i++) {
+                formartTrends.unshift(trends.slice(i * 241, 241 * (i + 1)))
+            }
+            for(let i = 0; i < 5; i++) {
+                const todayTopPStr = formartTrends[i].find(fsitem => fsitem.split(',')[3].search(data[i].split(',')[3]) !== - 1) // 分时最高价 index 3
+                const todayLowPStr = formartTrends[i].find(fsitem => fsitem.split(',')[4].search(data[i].split(',')[4]) !== - 1) // 分时最低价 index 4
+                data[i] += `,${todayTopPStr.slice(10, 16)}` // 组装 kline里 最高价分时 index 11
+                data[i] += `,${todayLowPStr.slice(10, 16)}` // 组装 kline里 最低价分时 index 12
+                // console.log(todayTopPStr, 'todayTopPStr----')
+                // console.log(todayLowPStr, 'todayLowPStr----')
+            }
+
+            /* 进入处理数据主流程 */
             for (let i = 0; i < days; i++) {
                 const every = data.slice(i, i + 20); // 动态获取每天前20天收盘价
                 const average = this.to20Average(every, days) // 计算出每天的布林通道上轨(包括其他指标)
@@ -223,7 +266,7 @@ export default {
             this.updateConfig({date: date_arr, data: rzrqIncrease_arr})
             const temp = JSON.parse(JSON.stringify(this.option))
             setTimeout(() => {
-                this.renderCanavas(this.myCharts[`myChart${4}`], temp)
+                this.renderCanavas(this.myCharts[`myChart${7}`], temp)
             }, 300)
     },
         /* 每天增加rzrq */
@@ -291,7 +334,7 @@ export default {
                 }
             };
             // data[0].name === '斜率' && (option.yAxis.axisLabel.formatter = '{value}%')
-            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
+            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅', '每天涨幅'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
         }
 
     },

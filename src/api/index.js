@@ -23,6 +23,9 @@ export function getConfigsP(params = {}) {
             .then(res => {
                 resolve(res.data)
             })
+            .catch(err => {
+                console.error(err)
+            })
     }))
 }
 /* 最新个股价 */
@@ -35,6 +38,9 @@ export function getLatestP(params = {}) {
                 // // const jsonD = res.data.split('(')[1].split(')')[0]
                 // const data = JSON.parse(res.data)
                 resolve(res.data)
+            })
+            .catch(err => {
+                console.error(err)
             })
     }))
 }
@@ -52,6 +58,9 @@ export function getbkLatestP(params = {}) {
                 const data = res.data.data
                 resolve(data)
             })
+            .catch(err => {
+                console.error(err)
+            })
     }))
 }
 
@@ -66,5 +75,25 @@ export function getRZRQ() {
                 const data = res.data.result
                 resolve(data)
             })
+            .catch(err => {
+                console.error(err)
+            })
     }))
 }
+
+/* 分时价查询 */
+export function getFSP(params = {}) {
+    return new Promise((resolve => {
+        const queryStr = qs.stringify(params)
+        axios.get(`http://127.0.0.1:4000/fenshiLatestP?${queryStr}`)
+            .then(res => {
+                const data = res.data
+                console.log(data, 'data----');
+                resolve(data)
+            })
+            .catch(err => {
+                console.error(err)
+            })
+    }))
+}
+
