@@ -92,10 +92,23 @@
         />
       </el-tab-pane>
 
-      <!-- 跟踪个股 -->
-      <el-tab-pane label="个股跟踪" name="sixth">
+      <!-- 6 北上资金流向 -->
+      <el-tab-pane label="资金流向" name="sixth">
         <iframePage
           :url="iframeUrl6"
+          width="1050px"
+          originWidth="1000px"
+          height="1200px"
+          originHeight="1530px"
+          margin="-620px 0px 0px -300px"
+          style="margin-left: 230px"
+        />
+      </el-tab-pane>
+
+      <!-- 7 跟踪个股 -->
+      <el-tab-pane label="个股跟踪" name="seventh">
+        <iframePage
+          :url="iframeUrl7"
           width="960px"
           originWidth="1000px"
           height="2000px"
@@ -105,7 +118,7 @@
         />
       </el-tab-pane>
       <!-- 条件选股 -->
-      <el-tab-pane label="条件选股" name="seventh">
+      <el-tab-pane label="条件选股" name="eighth">
         <el-button @click="hanldePush">ceshi</el-button>
         <form-table @handle-detail="handleDetail" />
       </el-tab-pane>
@@ -137,13 +150,14 @@ export default {
       iframeUrl3: `http://quote.eastmoney.com/center/hsbk.html`,
       iframeUrl4: `http://data.eastmoney.com/bkzj/hy.html`,
       iframeUrl5: 'http://data.eastmoney.com/rzrq/total.html',
-      iframeUrl6: 'http://data.eastmoney.com/zjlx/002594.html',
+      iframeUrl6: 'http://data.eastmoney.com/hsgt/index.html',
+      iframeUrl7: 'http://data.eastmoney.com/zjlx/002594.html',
       tabs: {
         first: this.first,
         second: this.second,
         third: this.third,
         forth: this.forth,
-        sixth: this.sixth,
+        seventh: this.seventh,
       },
       selectObj: {},
       configsP: [
@@ -183,10 +197,6 @@ export default {
         this.myCharts[`myChart${index}`] = echarts.init(box); // 动态变量不行， 转对象属性
       });
     },
-    /* 更新后端数据 */
-    updateBackend() {
-      
-    },
     async getData() {
       try {
         /* 图表数据 */
@@ -203,7 +213,6 @@ export default {
           })
         } else {
           if (resFSP.slice(-1)[0].slice(0, 10) !== cacheFSP.slice(-1)[0].slice(0, 10)) { // 最新数据一样，不处理
-          debugger
             resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
             if (!resFSP) { return }
             /* 同步推送后台 */
@@ -258,7 +267,7 @@ export default {
     },
     /* 选项卡切换 */
     handleClick(val, activeName) {
-      if (['first', 'second', 'third', 'sixth'].includes(activeName)) {
+      if (['first', 'second', 'third', 'seventh'].includes(activeName)) {
         this.tabs[activeName](val);
       }
       activeName === "fifth" && this.triggerRZRQ();
@@ -290,10 +299,10 @@ export default {
       this.stcokCode = `${val.marketT}${val.key.slice(2)}`;
       this.iframeUrl2 = `http://quote.eastmoney.com/concept/${this.stcokCode}.html`;
     },
-    sixth(val) {
+    seventh(val) {
       // this.selectVal = val.key;
       const stcokCode = `${val.key.slice(2)}`;
-      this.iframeUrl6 = `http://data.eastmoney.com/zjlx/${stcokCode}.html`;
+      this.iframeUrl7 = `http://data.eastmoney.com/zjlx/${stcokCode}.html`;
     },
     toArr(val) {
       return Array.from(val)[0];

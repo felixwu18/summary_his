@@ -3,6 +3,7 @@
  */
 export default {
     data() {
+        console.log(666)
         return {
             dataObj: {
                 byd: {
@@ -182,7 +183,6 @@ export default {
             const yesterdaySPJ = data[1].split(',')[2] // 昨天收盘价
             const topDot = ((todayTopP - yesterdaySPJ) / yesterdaySPJ * 100).toFixed(2) // 最高价点数
             const lowDot = ((todayLowP - yesterdaySPJ) / yesterdaySPJ * 100).toFixed(2) // 最低价点数
-
             /* 每天的振幅 */
             const todayZF = data[0].split(',')[7]
 
@@ -295,7 +295,7 @@ export default {
             return rzrqArr.map((item, index) => {
                 if (!rzrqArr[index + 1]) { return '-' }
                 // 后日期数据 减 前一天数据转化为亿的单位
-                return { date: item.DIM_DATE.split(' ')[0], increase: ((item.RZRQYE - rzrqArr[index + 1].RZRQYE) / 10000 / 10000).toFixed(0) }
+                return { date: item.dim_date.split(' ')[0], increase: ((item.rzrqye - rzrqArr[index + 1].rzrqye) / 10000 / 10000).toFixed(0) }
             }).slice(0, -1)
         },
         /* 获取upper的斜率 */
