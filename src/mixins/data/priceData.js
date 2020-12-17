@@ -112,8 +112,8 @@ export default {
             /* 最高最低点数及振幅变化 */
             const TopLowSPDot_arr = [
                 { name: '最高点数', data: averages.map(obj => obj.topDot), type: 'line' },
-                { name: '最低点数', data: averages.map(obj => obj.lowDot), type: 'line' },
                 { name: '每天涨幅', data: averages.map(obj => obj.todayZDF), type: 'line' },
+                { name: '最低点数', data: averages.map(obj => obj.lowDot), type: 'line' },
             ] || []
 
             /* 振幅变化 及收盘价到20均 偏移量 */

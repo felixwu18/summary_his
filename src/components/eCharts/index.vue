@@ -206,22 +206,27 @@ export default {
         // console.log(resFSP, 'cacheFSP=====')
         // console.log(cacheFSP, 'cacheFSP=====')
         /* 将三方最新5天分时价同步并缓存 */
-        if (cacheFSP == '文件读取失败') {
-          pushLatestFSP({
-            secid: this.selectVal,
-            data: resFSP
-          })
-        } else {
-          if (resFSP.slice(-1)[0].slice(0, 10) !== cacheFSP.slice(-1)[0].slice(0, 10)) { // 最新数据一样，不处理
-            resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
-            if (!resFSP) { return }
-            /* 同步推送后台 */
-            pushLatestFSP({
-              secid: this.selectVal,
-              data: resFSP
-            })
+          if (cacheFSP == '文件读取失败') {
+            if (this.isUpdate(Date.now())) {
+              pushLatestFSP({
+                secid: this.selectVal,
+                data: resFSP
+              })
+            }
+          } else {
+            if (resFSP.slice(-1)[0].slice(0, 10) !== cacheFSP.slice(-1)[0].slice(0, 10)) { // 最新数据一样，不处理
+              resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
+              if (!resFSP) { return }
+              if (this.isUpdate(Date.now())) {
+                /* 同步推送后台 */
+                pushLatestFSP({
+                  secid: this.selectVal,
+                  data: resFSP
+                })
+              }
+            }
           }
-        }
+
         // console.log(resFSP, 'resFSP---')
         /* 数据入口 */
         this.dataObj.byd = res.data;
@@ -232,6 +237,15 @@ export default {
       } catch (error) {
         console.error(error);
       }
+    },
+    /* 限制时间更新后台  当天09:15前 16:00 后更新(数据全) */
+    isUpdate(nowTime) {
+      const year =new Date().getFullYear()
+      const mounth =new Date().getMonth() + 1
+      const day =new Date().getDate()
+      const noUpdateStartTime = `${year}-${mounth}-${day} 09:15`
+      const noUpdateEndTime = `${year}-${mounth}-${day} 16:00`
+      return (nowTime < new Date(noUpdateStartTime).getTime()) || (nowTime > new Date(noUpdateEndTime).getTime())
     },
     /* 同步三方分时价 */
     mergeFSP({resFSP, cacheFSP}) {
