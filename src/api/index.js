@@ -16,6 +16,7 @@ const config = {
 //     });
 // }
 
+
 /* 最新个股下拉配置数据集 */
 export function getConfigsP(params = {}) {
     return new Promise((resolve => {
@@ -81,14 +82,13 @@ export function getRZRQ() {
     }))
 }
 
-/* 分时价查询 */
+/* 分时价查询 三方接口 */
 export function getFSP(params = {}) {
     return new Promise((resolve => {
         const queryStr = qs.stringify(params)
         axios.get(`http://127.0.0.1:4000/fenshiLatestP?${queryStr}`)
             .then(res => {
-                const data = res.data
-                console.log(data, 'data----');
+                const data = res.data.trends
                 resolve(data)
             })
             .catch(err => {
@@ -97,3 +97,29 @@ export function getFSP(params = {}) {
     }))
 }
 
+/* 分时价查询 后台缓存数据接口 */
+export function getCacheFSP(params = {}) {
+    return new Promise((resolve => {
+        const queryStr = qs.stringify(params)
+        axios.get(`http://127.0.0.1:4000/getCacheFSP?${queryStr}`)
+            .then(res => {
+                const data = res.data
+                resolve(data)
+            })
+            .catch(err => {
+                console.error(err)
+            })
+    }))
+}
+
+/* 最新分时间推送后台 */
+export function pushLatestFSP(params = {}) {
+    const url = `http://127.0.0.1:4000/setCacheFSP`
+    axios.post(url, params)
+        .then(res => {
+            const data = res.data
+        })
+        .catch(err => {
+            console.error(err)
+        })
+}

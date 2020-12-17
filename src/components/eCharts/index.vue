@@ -106,6 +106,7 @@
       </el-tab-pane>
       <!-- 条件选股 -->
       <el-tab-pane label="条件选股" name="seventh">
+        <el-button @click="hanldePush">ceshi</el-button>
         <form-table @handle-detail="handleDetail" />
       </el-tab-pane>
     </el-tabs>
@@ -119,20 +120,20 @@ import searchSelect from "@/components/searchSelect/index";
 import iframePage from "@/components/iframePage/index";
 import FormTable from "./components/FormTable";
 
-import { getLatestP, getFSP, getConfigsP, getbkLatestP, getRZRQ } from "@/api/index";
+import { getLatestP, getFSP, getConfigsP, getbkLatestP, getRZRQ, pushLatestFSP, getCacheFSP } from "@/api/index";
 
 export default {
   data() {
     return {
       selectVal: "0.002594",
+      // selectVal: "0.000895",
       stcokCode: "sz002594",
       iframeUrl: `http://quote.eastmoney.com/changes/stocks/${
         this.stcokCode || "sz002594"
       }.html`,
       iframeUrl2: `http://quote.eastmoney.com/concept/${
         this.stcokCode || "sz002594"
-      }.html`,
-      // iframeUrl3: `http://quote.eastmoney.com/concept/${this.stcokCode || 'sz002594'}.html`,
+      }.html`, // 筹码分布
       iframeUrl3: `http://quote.eastmoney.com/center/hsbk.html`,
       iframeUrl4: `http://data.eastmoney.com/bkzj/hy.html`,
       iframeUrl5: 'http://data.eastmoney.com/rzrq/total.html',
@@ -164,6 +165,13 @@ export default {
   },
   mounted() {},
   methods: {
+    hanldePush() {
+      pushLatestFSP({
+        "secid": '0.002594',
+        data: ['2020-10-30 12', '2020-10-12 36']
+    })
+     getCacheFSP({"secid": '0.002594',})
+    },
     async init() {
       /* 获取数据 */
       await this.getData();
@@ -175,20 +183,71 @@ export default {
         this.myCharts[`myChart${index}`] = echarts.init(box); // 动态变量不行， 转对象属性
       });
     },
+    /* 更新后端数据 */
+    updateBackend() {
+      
+    },
     async getData() {
       try {
         /* 图表数据 */
         let res = await getLatestP({ secid: this.selectVal });
-        let resFSP = await getFSP({ secid: this.selectVal, ndays: 5 });
+        let resFSP = await getFSP({ secid: this.selectVal, ndays: 5 }); // 时间降序
+        let cacheFSP = await getCacheFSP({"secid": this.selectVal,});  // 时间降序
+        // console.log(resFSP, 'cacheFSP=====')
+        // console.log(cacheFSP, 'cacheFSP=====')
+        /* 将三方最新5天分时价同步并缓存 */
+        if (cacheFSP == '文件读取失败') {
+          pushLatestFSP({
+            secid: this.selectVal,
+            data: resFSP
+          })
+        } else {
+          if (resFSP.slice(-1)[0].slice(0, 10) !== cacheFSP.slice(-1)[0].slice(0, 10)) { // 最新数据一样，不处理
+          debugger
+            resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
+            if (!resFSP) { return }
+            /* 同步推送后台 */
+            pushLatestFSP({
+              secid: this.selectVal,
+              data: resFSP
+            })
+          }
+        }
+        // console.log(resFSP, 'resFSP---')
+        /* 数据入口 */
         this.dataObj.byd = res.data;
-        this.dataObj.FSP = resFSP
-
+        this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
         // let bkLatestP = getbkLatestP({ secid: '90.BK0711' }).then(data => {
         //   console.log(data, '---------data');
         // });
       } catch (error) {
         console.error(error);
       }
+    },
+    /* 同步三方分时价 */
+    mergeFSP({resFSP, cacheFSP}) {
+      const concatArr = cacheFSP.concat(resFSP)
+      const formartTrends = [] // 二维数组，分时数据一天为一个数组
+      const fsDaysCount = concatArr.length / 241
+      for (let index = 0; index < fsDaysCount; index++) {
+           formartTrends.push(concatArr.slice(index * 241, 241 * (index + 1)))
+      }
+      // const resFSP_reverse = JSON.parse(JSON.stringify(resFSP)).reverse() // 三方
+      // const cacheFSP_reverse = JSON.parse(JSON.stringify(cacheFSP)).reverse() // 后台
+      return this.unique(formartTrends)
+    },
+    /* 去重 */
+    unique(arr) {
+      if (!arr) { return }
+      const signObj = {}
+      const uniqueArr = []
+      arr.forEach(item => {
+        if (!signObj[item[0].slice(0, 10)]) {
+          signObj[item[0].slice(0, 10)] = 1
+          uniqueArr.push(...item) // 二维数组打平
+        }
+      })
+      return uniqueArr
     },
     /* 下拉切换 */
     handleName(val, activeName) {
@@ -230,10 +289,6 @@ export default {
       // this.selectVal = val.key;
       this.stcokCode = `${val.marketT}${val.key.slice(2)}`;
       this.iframeUrl2 = `http://quote.eastmoney.com/concept/${this.stcokCode}.html`;
-    },
-    /* 版块情况更新 */
-    third(val) {
-      this.iframeUrl3 = `http://quote.eastmoney.com/center/hsbk.html`;
     },
     sixth(val) {
       // this.selectVal = val.key;

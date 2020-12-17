@@ -39,7 +39,7 @@ export default {
                     //     "2020-11-20,164.65,176.06,177.24,163.22,707527,12067220480.00,8.67,8.93,14.44,6.18"
                     // ]
                 },
-                FSP: {},
+                FSP: [], //分时价
                 rzrq: {
 
                 }
@@ -115,11 +115,12 @@ export default {
                 { name: '每天涨幅', data: averages.map(obj => obj.todayZDF), type: 'line' },
             ] || []
 
-            /* 振幅变化 */
-            const ZFArr_arr = [
+            /* 振幅变化 及收盘价到20均 偏移量 */
+            const ZFPYArr_arr = [
                 { name: '每天振幅', data: averages.map(obj => obj.todayZF), type: 'line' },
+                { name: '距20均偏移量', data: averages.map(obj => obj.toAverage20Ratio), type: 'line' },
             ] || []
-            
+
             /* 最高价 最低价 对应的分时变化 */
             const TopLowPTime_arr = [
                 { name: '最高价分时', data: averages.map(obj => obj.TopPtime), type: 'line' },
@@ -132,8 +133,8 @@ export default {
                 { date: date_arr, data: ratio_arr },
                 { date: date_arr, data: bollwidth_arr },
                 { date: date_arr, data: bollWidthRatio_arr },
+                { date: date_arr, data: ZFPYArr_arr },
                 { date: date_arr, data: TopLowSPDot_arr },
-                { date: date_arr, data: ZFArr_arr },
                 { date: date_arr, data: TopLowPTime_arr },
             ]
             /* 循环绘制图表 */
@@ -198,6 +199,9 @@ export default {
             average20 = (sum20 / 20).toFixed(2) * 1 // 当天20均
             std = this.getStd(price20) * 1 // 计算标准差
 
+            /* 距20均偏移率 */
+            const toAverage20Ratio = ((data[0].split(',')[2] - average20) / average20 * 100).toFixed(2)
+
             /* 组装数据 */
             const todayInfos = data[0].split(',')
             return {
@@ -212,29 +216,38 @@ export default {
                 todayZDF, // 当天的涨跌幅
                 TopPtime, // 当天最高价对应的分时
                 LowPtime, // 当天最低价对应的分时
+                toAverage20Ratio, // 当天价到20均的偏移量
             }
         },
         /* days为查看多少天的情况 */
         dynamicGet20Day(days) {
             const averages = [];
             if (!this.dataObj.byd) { return }
-            const data = this.dataObj.byd.klines.reverse();
+            const data = this.dataObj.byd.klines.reverse(); // 时间降序
             /* 准备工作 处理分时数据  */
-            this.dataObj.FSP
-            const trends = this.dataObj.FSP.trends
+            const trends = this.dataObj.FSP
             const formartTrends = []
-            for(let i = 0; i < 5; i++) {
-                formartTrends.unshift(trends.slice(i * 241, 241 * (i + 1)))
+            const fsDaysCount = trends.length / 241
+            for (let index = 0; index < fsDaysCount; index++) {
+                formartTrends.unshift(trends.slice(index * 241, 241 * (index + 1)))
             }
-            for(let i = 0; i < 5; i++) {
-                const todayTopPStr = formartTrends[i].find(fsitem => fsitem.split(',')[3].search(data[i].split(',')[3]) !== - 1) // 分时最高价 index 3
-                const todayLowPStr = formartTrends[i].find(fsitem => fsitem.split(',')[4].search(data[i].split(',')[4]) !== - 1) // 分时最低价 index 4
-                data[i] += `,${todayTopPStr.slice(10, 16)}` // 组装 kline里 最高价分时 index 11
-                data[i] += `,${todayLowPStr.slice(10, 16)}` // 组装 kline里 最低价分时 index 12
-                // console.log(todayTopPStr, 'todayTopPStr----')
-                // console.log(todayLowPStr, 'todayLowPStr----')
+            /* 将最高价 最低价对应分时加入对应时间的数据串中 */
+            for (let i = 0; i < fsDaysCount; i++) {
+                const todayTopPStr = formartTrends[i].find(fsitem => fsitem.split(',')[3] === data[i].split(',')[3]) // index 当天，分时最高价 3
+                const todayLowPStr = formartTrends[i].find(fsitem => fsitem.split(',')[4] === data[i].split(',')[4]) // index 当天，分时最低价 4
+                // console.log(todayTopPStr, 'todayTopPStr------');
+                // console.log(data[i], 'data[i]------');
+                // if (!todayTopPStr) { continue }
+                if (todayTopPStr && data[i].slice(0, 10) === todayTopPStr.slice(0, 10)) {
+                    data.slice(0, 20)
+                    for(let j =0; j <20; j++) { // 最近20天的个股信息
+                        if (data[j].slice(0, 10) === todayTopPStr.slice(0, 10)) {
+                            data[j] += `,${todayTopPStr.slice(11, 16)}` // 组装 kline里 最高价分时 index 11
+                            data[j] += `,${todayLowPStr.slice(11, 16)}` // 组装 kline里 最低价分时 index 12
+                        }
+                    }
+                }
             }
-
             /* 进入处理数据主流程 */
             for (let i = 0; i < days; i++) {
                 const every = data.slice(i, i + 20); // 动态获取每天前20天收盘价
@@ -263,25 +276,25 @@ export default {
                 { name: '融资融券每天净量 (亿)', data: currentData.map(obj => obj.increase), type: 'line' },
             ]
             // const canavas = { date: date_arr, data: rzrqIncrease_arr }
-            this.updateConfig({date: date_arr, data: rzrqIncrease_arr})
+            this.updateConfig({ date: date_arr, data: rzrqIncrease_arr })
             const temp = JSON.parse(JSON.stringify(this.option))
             setTimeout(() => {
                 this.renderCanavas(this.myCharts[`myChart${7}`], temp)
             }, 300)
-    },
+        },
         /* 每天增加rzrq */
         rzrq20Days(rzrqArr) {
             // if (!this.dataObj.rzrq) { return }
             // const data = this.dataObj.rzrq.klines;
             // this.getrzrqIncrase(item)
             // for (let i = 0; i < days; i++) {
-            
+
             // rzrqArr.forEach((item, index) => {
 
             // })
             return rzrqArr.map((item, index) => {
                 if (!rzrqArr[index + 1]) { return '-' }
-                 // 后日期数据 减 前一天数据转化为亿的单位
+                // 后日期数据 减 前一天数据转化为亿的单位
                 return { date: item.DIM_DATE.split(' ')[0], increase: ((item.RZRQYE - rzrqArr[index + 1].RZRQYE) / 10000 / 10000).toFixed(0) }
             }).slice(0, -1)
         },
