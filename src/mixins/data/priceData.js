@@ -294,8 +294,9 @@ export default {
             // })
             return rzrqArr.map((item, index) => {
                 if (!rzrqArr[index + 1]) { return '-' }
-                // 后日期数据 减 前一天数据转化为亿的单位
-                return { date: item.dim_date.split(' ')[0], increase: ((item.rzrqye - rzrqArr[index + 1].rzrqye) / 10000 / 10000).toFixed(0) }
+                // 后日期数据 减 前一天数据转化为亿的单E位
+                // return { date: item.dim_date.split(' ')[0], increase: ((item.rzrqye - rzrqArr[index + 1].rzrqye) / 10000 / 10000).toFixed(0) }
+                return { date: item.DIM_DATE.split(' ')[0], increase: ((item.RZRQYE - rzrqArr[index + 1].RZRQYE) / 10000 / 10000).toFixed(0) }
             }).slice(0, -1)
         },
         /* 获取upper的斜率 */

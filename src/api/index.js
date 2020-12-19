@@ -22,7 +22,11 @@ export function getConfigsP(params = {}) {
     return new Promise((resolve => {
         axios.get(`http://127.0.0.1:4000/latestPQuery`)
             .then(res => {
-                resolve(res.data)
+                if ('configsP' in res.data) {
+                    resolve(res.data.configsP)
+                } else {
+                    resolve(res.data)
+                }
             })
             .catch(err => {
                 console.error(err)
@@ -110,6 +114,18 @@ export function getCacheFSP(params = {}) {
                 console.error(err)
             })
     }))
+}
+
+/* latestP 个股最近数据缓存后台 */
+export function setCacheData(params = {}) {
+    const url = `http://127.0.0.1:4000/setCache120Day`
+    axios.post(url, params)
+        .then(res => {
+            const data = res.data
+        })
+        .catch(err => {
+            console.error(err)
+        })
 }
 
 /* 最新分时间推送后台 */

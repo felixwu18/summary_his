@@ -119,7 +119,6 @@
       </el-tab-pane>
       <!-- 条件选股 -->
       <el-tab-pane label="条件选股" name="eighth">
-        <el-button @click="hanldePush">ceshi</el-button>
         <form-table @handle-detail="handleDetail" />
       </el-tab-pane>
     </el-tabs>
@@ -133,7 +132,7 @@ import searchSelect from "@/components/searchSelect/index";
 import iframePage from "@/components/iframePage/index";
 import FormTable from "./components/FormTable";
 
-import { getLatestP, getFSP, getConfigsP, getbkLatestP, getRZRQ, pushLatestFSP, getCacheFSP } from "@/api/index";
+import { getLatestP, getFSP, getConfigsP, getbkLatestP, getRZRQ, pushLatestFSP, getCacheFSP, setCacheData } from "@/api/index";
 
 export default {
   data() {
@@ -172,20 +171,13 @@ export default {
   mixins: [std, priceData],
   async created() {
     /* 下拉配置 */
-    const { configsP } = (await getConfigsP()) || [];
+    const configsP = (await getConfigsP()) || [];
     this.configsP = configsP;
     this.selectObj = configsP.find((row) => row.key === this.selectVal); // 初始化对象
     this.init();
   },
   mounted() {},
   methods: {
-    hanldePush() {
-      pushLatestFSP({
-        "secid": '0.002594',
-        data: ['2020-10-30 12', '2020-10-12 36']
-    })
-     getCacheFSP({"secid": '0.002594',})
-    },
     async init() {
       /* 获取数据 */
       await this.getData();
@@ -205,8 +197,18 @@ export default {
         let cacheFSP = await getCacheFSP({"secid": this.selectVal,});  // 时间降序
         // console.log(resFSP, 'cacheFSP=====')
         // console.log(cacheFSP, 'cacheFSP=====')
+        /* latestP缓存后台 限制时间延时推送 */
+        if (this.isUpdate(Date.now())) {
+          setTimeout(() => {
+            setCacheData({
+              secid: this.selectVal,
+              data: res
+            })
+          }, 500)
+        }
         /* 将三方最新5天分时价同步并缓存 */
           if (cacheFSP == '文件读取失败') {
+            /* 限制时间推送后台 */
             if (this.isUpdate(Date.now())) {
               pushLatestFSP({
                 secid: this.selectVal,
@@ -214,9 +216,11 @@ export default {
               })
             }
           } else {
-            if (resFSP.slice(-1)[0].slice(0, 10) !== cacheFSP.slice(-1)[0].slice(0, 10)) { // 最新数据一样，不处理
+            /* 缓存数据已是最新，不处理 */
+            if (resFSP.slice(-1)[0].slice(0, 10) !== cacheFSP.slice(-1)[0].slice(0, 10)) { 
               resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
               if (!resFSP) { return }
+              /* 限制时间推送后台 */
               if (this.isUpdate(Date.now())) {
                 /* 同步推送后台 */
                 pushLatestFSP({
@@ -224,6 +228,8 @@ export default {
                   data: resFSP
                 })
               }
+            } else {
+              resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
             }
           }
 
@@ -238,14 +244,14 @@ export default {
         console.error(error);
       }
     },
-    /* 限制时间更新后台  当天09:15前 16:00 后更新(数据全) */
+    /* 限制时间更新后台  当天09:15前 16:00 后更新(数据全) 或者星期六星期天 */
     isUpdate(nowTime) {
       const year =new Date().getFullYear()
       const mounth =new Date().getMonth() + 1
       const day =new Date().getDate()
       const noUpdateStartTime = `${year}-${mounth}-${day} 09:15`
       const noUpdateEndTime = `${year}-${mounth}-${day} 16:00`
-      return (nowTime < new Date(noUpdateStartTime).getTime()) || (nowTime > new Date(noUpdateEndTime).getTime())
+      return (nowTime < new Date(noUpdateStartTime).getTime()) || (nowTime > new Date(noUpdateEndTime).getTime()) || [6, 0].includes(new Date().getDay())
     },
     /* 同步三方分时价 */
     mergeFSP({resFSP, cacheFSP}) {
