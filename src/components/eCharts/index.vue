@@ -119,6 +119,7 @@
       </el-tab-pane>
       <!-- 条件选股 -->
       <el-tab-pane label="条件选股" name="eighth">
+        <el-button onclick="window.location.href='myprotocol://H:\\stock\\myprotocol.reg'">open music</el-button>
         <form-table @handle-detail="handleDetail" />
       </el-tab-pane>
     </el-tabs>
@@ -178,6 +179,9 @@ export default {
   },
   mounted() {},
   methods: {
+    handleOpen() {
+      
+    },
     async init() {
       /* 获取数据 */
       await this.getData();

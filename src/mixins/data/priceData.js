@@ -116,8 +116,9 @@ export default {
                 { name: '最低点数', data: averages.map(obj => obj.lowDot), type: 'line' },
             ] || []
 
-            /* 振幅变化 及收盘价到20均 偏移量 */
+            /* 振幅变化 及收盘价到20均 偏移量 累计收益 */
             const ZFPYArr_arr = [
+                { name: '前20天累计点数', data: averages.map(obj => obj.ljrevenue), type: 'line' },
                 { name: '每天振幅', data: averages.map(obj => obj.todayZF), type: 'line' },
                 { name: '距20均偏移量', data: averages.map(obj => obj.toAverage20Ratio), type: 'line' },
             ] || []
@@ -165,7 +166,8 @@ export default {
             return stddev.toFixed(2)
         },
         /* 返回基础数据的对象 */
-        to20Average(data) {
+        to20Average(day21Data) {
+            const data = day21Data.slice(0, 20)
             // "2020-12-10, 168.00, 169.52, 171.66, 166.02, 370436, 6243808768.00, 3.26, -2.15, -3.72, 3.23"
             // index 开盘价 1 收盘价 2 最高价 3 最低价 4 成交量 5 成交额 6 振幅(当天最高最低差额/前一天收盘价) 7 涨跌幅 8 涨跌额 9 换手率 10
             let sum20 = null;
@@ -183,11 +185,17 @@ export default {
             const yesterdaySPJ = data[1].split(',')[2] // 昨天收盘价
             const topDot = ((todayTopP - yesterdaySPJ) / yesterdaySPJ * 100).toFixed(2) // 最高价点数
             const lowDot = ((todayLowP - yesterdaySPJ) / yesterdaySPJ * 100).toFixed(2) // 最低价点数
+
             /* 每天的振幅 */
             const todayZF = data[0].split(',')[7]
-
+            
             /* 每天的涨跌幅 */
             const todayZDF = data[0].split(',')[8]
+            
+            /* 计算累计收益 */
+            const earlistKPJ = day21Data.slice(-1)[0].split(',')[2]
+            const todaySPJ = data[0].split(',')[2]
+            const ljrevenue = ((todaySPJ - earlistKPJ) / earlistKPJ * 100).toFixed(2)
 
             /* 处理当天最高价，对低价 对应的分明 格式： 14:42 => 14-42  */
             let TopPtime = '-', LowPtime = '-'
@@ -201,6 +209,7 @@ export default {
 
             /* 距20均偏移率 */
             const toAverage20Ratio = ((data[0].split(',')[2] - average20) / average20 * 100).toFixed(2)
+
 
             /* 组装数据 */
             const todayInfos = data[0].split(',')
@@ -217,6 +226,7 @@ export default {
                 TopPtime, // 当天最高价对应的分时
                 LowPtime, // 当天最低价对应的分时
                 toAverage20Ratio, // 当天价到20均的偏移量
+                ljrevenue, // 前20天累计收益点数
             }
         },
         /* days为查看多少天的情况 */
@@ -250,8 +260,8 @@ export default {
             }
             /* 进入处理数据主流程 */
             for (let i = 0; i < days; i++) {
-                const every = data.slice(i, i + 20); // 动态获取每天前20天收盘价
-                const average = this.to20Average(every, days) // 计算出每天的布林通道上轨(包括其他指标)
+                const every = data.slice(i, i + 21); // 动态获取每天前20天收盘价
+                const average = this.to20Average(every) // 计算出每天的布林通道上轨(包括其他指标)
                 averages.push(average)
             }
             /* 单独处理加斜率 ratio ， 布林带宽 */
@@ -348,9 +358,14 @@ export default {
                 }
             };
             // data[0].name === '斜率' && (option.yAxis.axisLabel.formatter = '{value}%')
-            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅', '每天涨幅'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
-        }
-
+            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅', '每天涨幅', '前20天累计点数', '距20均偏移量'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
+        },
+        /* 数字累加 */
+        // accumulator(numArr){
+        //     if (!numArr) { numArr = []; return }
+        //     const reducer = (accumulator, currentValue) => (accumulator * 1 + currentValue * 1).toFixed(2);
+        //     return numArr.reduce(reducer)
+        // }
     },
     components: {},
     created() {
