@@ -4,6 +4,8 @@ console.log(ElementUI, 'ElementUI-----');
 // import ComponentLib from 'component-lib'
 // console.log(ComponentLib, 'ComponentLib-----');
 
+import './mixins/data/index' // webpack的读文件功能
+
 import 'element-ui/lib/theme-chalk/index.css'
 
 // 全局注册

@@ -139,3 +139,16 @@ export function pushLatestFSP(params = {}) {
             console.error(err)
         })
 }
+
+/* 缓存名录推送后台 */
+export function pushLatestFileNames(params = {}) {
+    const url = `http://127.0.0.1:4000/setFileNames`
+    axios.post(url, params)
+        .then(res => {
+            const data = res.data
+            console.log(data)
+        })
+        .catch(err => {
+            console.error(err)
+        })
+}

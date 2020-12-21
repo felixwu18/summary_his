@@ -119,7 +119,8 @@
       </el-tab-pane>
       <!-- 条件选股 -->
       <el-tab-pane label="条件选股" name="eighth">
-        <el-button onclick="window.location.href='myprotocol://H:\\stock\\myprotocol.reg'">open music</el-button>
+        <el-button @click="handleOpen">open music</el-button>
+        <span><a href="myprotocol://H:\stock\myprotocol.reg" style="margin: 200px auto;">打开音乐</a></span>
         <form-table @handle-detail="handleDetail" />
       </el-tab-pane>
     </el-tabs>
@@ -180,7 +181,7 @@ export default {
   mounted() {},
   methods: {
     handleOpen() {
-      
+      window.location.href='myprotocol://H:\\stock\\myprotocol.reg'
     },
     async init() {
       /* 获取数据 */
@@ -211,7 +212,7 @@ export default {
           }, 500)
         }
         /* 将三方最新5天分时价同步并缓存 */
-          if (cacheFSP == '文件读取失败') {
+          if (cacheFSP == '文件读取失败' || cacheFSP === '') {
             /* 限制时间推送后台 */
             if (this.isUpdate(Date.now())) {
               pushLatestFSP({
