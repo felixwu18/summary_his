@@ -1,6 +1,7 @@
 /**
  * 比亚迪
  */
+import accumulator  from '@/utils/accumulator'
 export default {
     data() {
         console.log(666)
@@ -41,9 +42,8 @@ export default {
                     // ]
                 },
                 FSP: [], //分时价
-                rzrq: {
-
-                }
+                rzrq: {},
+                historyCashFlow: {}
             },
             bydN: [],
             option: {
@@ -88,6 +88,7 @@ export default {
         /* 拿到画布处理好的基本数据，并渲染 */
         mixinInit(days = 20) {
             const averages = this.dynamicGet20Day(days).reverse() || [] // 将时间升序
+            this.historyCashFlowInit() // 历史资金流
             const date_arr = averages.map(obj => obj.date) || []
             const upper_arr = [
                 { name: '布林上轨', data: averages.map(obj => obj.upper), type: 'line' },
@@ -244,12 +245,15 @@ export default {
             /* 将最高价 最低价对应分时加入对应时间的数据串中 */
             for (let i = 0; i < fsDaysCount; i++) {
                 const todayTopPStr = formartTrends[i].find(fsitem => fsitem.split(',')[3] === data[i].split(',')[3]) // index 当天，分时最高价 3
-                const todayLowPStr = formartTrends[i].find(fsitem => fsitem.split(',')[4] === data[i].split(',')[4]) // index 当天，分时最低价 4
+                const todayLowPStr = formartTrends[i].find(fsitem => {
+
+                   return fsitem.split(',')[4] === data[i].split(',')[4]
+                }) // index 当天，分时最低价 4
                 // console.log(todayTopPStr, 'todayTopPStr------');
                 // console.log(data[i], 'data[i]------');
                 // if (!todayTopPStr) { continue }
                 if (todayTopPStr && data[i].slice(0, 10) === todayTopPStr.slice(0, 10)) {
-                    data.slice(0, 20)
+                    // data.slice(0, 20)
                     for(let j =0; j <20; j++) { // 最近20天的个股信息
                         if (data[j].slice(0, 10) === todayTopPStr.slice(0, 10)) {
                             data[j] += `,${todayTopPStr.slice(11, 16)}` // 组装 kline里 最高价分时 index 11
@@ -308,6 +312,52 @@ export default {
                 // return { date: item.dim_date.split(' ')[0], increase: ((item.rzrqye - rzrqArr[index + 1].rzrqye) / 10000 / 10000).toFixed(0) }
                 return { date: item.DIM_DATE.split(' ')[0], increase: ((item.RZRQYE - rzrqArr[index + 1].RZRQYE) / 10000 / 10000).toFixed(0) }
             }).slice(0, -1)
+        },
+        /* 资金流向（个股即时资金及历史资金流向） */
+        /* 组装渲染 cahsFlow */
+        historyCashFlowInit(days = 20) {
+            if (!this.dataObj.historyCashFlow.klines) { return }
+            // const data = this.dataObj.historyCashFlow.data;
+            const data = this.dataObj.historyCashFlow.klines.reverse(); // 时间降序
+
+            // const historyCashFlowArr = data.slice(0, days + 1); 
+            /* 进入处理历史资金流数据主流程 */
+            const averages = []
+            for (let i = 0; i < days; i++) {
+                const every = data.slice(i, i + 21); // 动态获取每天前20天个股资金流
+                const average = this.historyCashFlow20Days(every) // 计算出每天的前20天主力净累计
+                averages.push(average)
+            }
+            // const currentData = this.historyCashFlow20Days(historyCashFlowArr).reverse() // 降序排列
+            // const date_arr = currentData.map(obj => obj.date) || []
+            // const historyCashFlowIncrease_arr = [
+            //     { name: '融资融券每天净量 (亿)', data: currentData.map(obj => obj.increase), type: 'line' },
+            // ]
+            // this.updateConfig({ date: date_arr, data: historyCashFlowIncrease_arr })
+            // const temp = JSON.parse(JSON.stringify(this.option))
+            // setTimeout(() => {
+            //     this.renderCanavas(this.myCharts[`myChart${7}`], temp)
+            // }, 300)
+        },
+        /* 每天cashFlow 相关*/
+        historyCashFlow20Days(historyCashFlowArr) {
+            // 2020-12-31, 615996768.0, -255824464.0, -360172304.0, -119660544.0, 735657312.0, 6.37, -2.65, -3.73, -1.24, 7.61, 194.30, 4.46, 0.00,0.00
+            // index 主力净额 1 主力净占比 6 超大单净额 5 超大单净占比 10  大单净额 4 大单净占比 9 中单净额 3 中单净占比 8 小单净额 2 小单净占比 7 现股价 11 涨跌幅 12
+            
+            const majorPureArr = historyCashFlowArr.map(cashFlowStr => cashFlowStr.split(',')[1])
+            /* 主力前20天净额累计 */
+            debugger
+            const cashFlowaverage20 = accumulator(majorPureArr)
+            debugger
+            // return historyCashFlowArr.map((item, index) => {
+            //     if (!historyCashFlowArr[index + 1]) { return '-' }
+            //     // 后日期数据 减 前一天数据转化为亿的单E位
+            //     // return { date: item.dim_date.split(' ')[0], increase: ((item.rzrqye - rzrqArr[index + 1].rzrqye) / 10000 / 10000).toFixed(0) }
+            //     return { date: item.split(',')[0], increase: ((item.RZRQYE - rzrqArr[index + 1].RZRQYE) / 10000 / 10000).toFixed(0) }
+            // }).slice(0, -1)
+            return {
+                cashFlowaverage20
+            }
         },
         /* 获取upper的斜率 */
         getRatio(suf, pre) { // pre时间前一天， suf后一天

@@ -7,5 +7,5 @@ function importAll(r) {
 }
 importAll(require.context("./fenshi", false, /\.json/));
 
-console.log(fileNames, 'fileNames------------')
-pushLatestFileNames({data: fileNames})
+// console.log(fileNames, 'fileNames------------')
+// pushLatestFileNames({data: fileNames})

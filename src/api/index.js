@@ -152,3 +152,29 @@ export function pushLatestFileNames(params = {}) {
             console.error(err)
         })
 }
+
+/* 个股历史资金流接口 */
+export function getHistoryCashFlow(params = {}) {
+    const queryStr = qs.stringify(params)
+   return axios.get(`http://127.0.0.1:4000/historyCashFlow?${queryStr}`, params)
+        // .then(res => {
+        //     const data = res.data
+        //     console.log(data)
+        // })
+        // .catch(err => {
+        //     console.error(err)
+        // })
+}
+
+/* 个股即时资金流接口 */
+export function getImediateCashFlow(params = {}) {
+    const queryStr = qs.stringify(params)
+   return axios.get(`http://127.0.0.1:4000/imediateCashFlow?${queryStr}`, params)
+        // .then(res => {
+        //     const data = res.data
+        //     console.log(data)
+        // })
+        // .catch(err => {
+        //     console.error(err)
+        // })
+}

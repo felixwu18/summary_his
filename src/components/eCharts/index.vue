@@ -120,6 +120,7 @@
       <!-- 条件选股 -->
       <el-tab-pane label="条件选股" name="eighth">
         <el-button @click="handleOpen">open music</el-button>
+        <el-button @click="handleOpen">ceshi</el-button>
         <span><a href="myprotocol://H:\stock\myprotocol.reg" style="margin: 200px auto;">打开音乐</a></span>
         <form-table @handle-detail="handleDetail" />
       </el-tab-pane>
@@ -134,7 +135,7 @@ import searchSelect from "@/components/searchSelect/index";
 import iframePage from "@/components/iframePage/index";
 import FormTable from "./components/FormTable";
 
-import { getLatestP, getFSP, getConfigsP, getbkLatestP, getRZRQ, pushLatestFSP, getCacheFSP, setCacheData } from "@/api/index";
+import { getLatestP, getFSP, getConfigsP, getbkLatestP, getRZRQ, pushLatestFSP, getCacheFSP, setCacheData, getHistoryCashFlow,  getImediateCashFlow } from "@/api/index";
 
 export default {
   data() {
@@ -180,8 +181,10 @@ export default {
   },
   mounted() {},
   methods: {
-    handleOpen() {
-      window.location.href='myprotocol://H:\\stock\\myprotocol.reg'
+    async handleOpen() {
+      // window.location.href='myprotocol://H:\\stock\\myprotocol.reg'
+      //   let { data: HistoryCashFlow } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
+      // console.log(HistoryCashFlow, 'HistoryCashFlow')
     },
     async init() {
       /* 获取数据 */
@@ -200,8 +203,13 @@ export default {
         let res = await getLatestP({ secid: this.selectVal });
         let resFSP = await getFSP({ secid: this.selectVal, ndays: 5 }); // 时间降序
         let cacheFSP = await getCacheFSP({"secid": this.selectVal,});  // 时间降序
+        let { data: { data: historyCashFlow } } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
+        // debugger
         // console.log(resFSP, 'cacheFSP=====')
         // console.log(cacheFSP, 'cacheFSP=====')
+        // this.dataObj.byd = res.data;
+        // this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
+        // return
         /* latestP缓存后台 限制时间延时推送 */
         if (this.isUpdate(Date.now())) {
           setTimeout(() => {
@@ -242,6 +250,8 @@ export default {
         /* 数据入口 */
         this.dataObj.byd = res.data;
         this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
+        this.dataObj.historyCashFlow = historyCashFlow
+        debugger
         // let bkLatestP = getbkLatestP({ secid: '90.BK0711' }).then(data => {
         //   console.log(data, '---------data');
         // });
@@ -254,8 +264,8 @@ export default {
       const year =new Date().getFullYear()
       const mounth =new Date().getMonth() + 1
       const day =new Date().getDate()
-      const noUpdateStartTime = `${year}-${mounth}-${day} 09:15`
-      const noUpdateEndTime = `${year}-${mounth}-${day} 16:00`
+      const noUpdateStartTime = `${year}-${mounth}-${day} 09:00`
+      const noUpdateEndTime = `${year}-${mounth}-${day} 13:00`
       return (nowTime < new Date(noUpdateStartTime).getTime()) || (nowTime > new Date(noUpdateEndTime).getTime()) || [6, 0].includes(new Date().getDay())
     },
     /* 同步三方分时价 */
