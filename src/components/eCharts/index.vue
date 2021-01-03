@@ -25,6 +25,7 @@
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
+        <div class="main" style="width: 90%; height: 400px" />
       </el-tab-pane>
 
       <!-- 2 个股异动 -->
@@ -187,6 +188,9 @@ export default {
     },
     async init() {
       /* 获取数据 */
+      let { data: szzsP } = await getLatestP({ secid: 1.000001 });
+      this.dataObj.szzsP = szzsP;  // 上证指数
+
       await this.getData();
       this.mixinInit();
       var boxes = document.getElementsByClassName("main");
@@ -203,7 +207,6 @@ export default {
         let resFSP = await getFSP({ secid: this.selectVal, ndays: 5 }); // 时间降序
         let cacheFSP = await getCacheFSP({"secid": this.selectVal,});  // 时间降序
         let { data: { data: historyCashFlow } } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
-        // debugger
         // console.log(resFSP, 'cacheFSP=====')
         // console.log(cacheFSP, 'cacheFSP=====')
         // this.dataObj.byd = res.data;

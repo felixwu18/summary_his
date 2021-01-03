@@ -89,6 +89,7 @@ export default {
         mixinInit(days = 20) {
             const averages = this.dynamicGet20Day(days).reverse() || [] // 将时间升序
             this.historyCashFlowInit() // 历史资金流
+            this.judgeStrongWeekInit() // 判断个股强弱
             const date_arr = averages.map(obj => obj.date) || []
             const upper_arr = [
                 { name: '布林上轨', data: averages.map(obj => obj.upper), type: 'line' },
@@ -113,7 +114,7 @@ export default {
             /* 最高最低点数及振幅变化 */
             const TopLowSPDot_arr = [
                 { name: '最高点数', data: averages.map(obj => obj.topDot), type: 'line' },
-                { name: '每天涨幅', data: averages.map(obj => obj.todayZDF), type: 'line' },
+                { name: '当天涨幅', data: averages.map(obj => obj.todayZDF), type: 'line' },
                 { name: '最低点数', data: averages.map(obj => obj.lowDot), type: 'line' },
             ] || []
 
@@ -140,7 +141,7 @@ export default {
                 { date: date_arr, data: TopLowSPDot_arr },
                 { date: date_arr, data: TopLowPTime_arr },
             ]
-            /* 循环绘制图表 */
+            /* 1 循环绘制图表 */
             datas.forEach((every, index) => {
                 const { date, data } = every
                 this.updateConfig({ date, data, colName: this.dataObj.byd.name })
@@ -150,7 +151,7 @@ export default {
                 }, 300)
             })
         },
-        /* 画布渲染生成数据 */
+        /* 1 画布渲染生成数据 */
         renderCanavas(canavasDom, option) {
             canavasDom.setOption(option); // 延时画布生成
             // this.myCharts .myChart0.setOption(temp); // 延时画布生成
@@ -234,7 +235,7 @@ export default {
         dynamicGet20Day(days) {
             const averages = [];
             if (!this.dataObj.byd) { return }
-            const data = this.dataObj.byd.klines.reverse(); // 时间降序
+            const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
             /* 准备工作 处理分时数据  */
             const trends = this.dataObj.FSP
             const formartTrends = []
@@ -292,8 +293,9 @@ export default {
             // const canavas = { date: date_arr, data: rzrqIncrease_arr }
             this.updateConfig({ date: date_arr, data: rzrqIncrease_arr })
             const temp = JSON.parse(JSON.stringify(this.option))
+            /* 4 绘制融资融券画布 */
             setTimeout(() => {
-                this.renderCanavas(this.myCharts[`myChart${9}`], temp)
+                this.renderCanavas(this.myCharts[`myChart${10}`], temp)
             }, 300)
         },
         /* 每天增加rzrq */
@@ -338,9 +340,9 @@ export default {
             ] || []
             /* 净额累计均线 */
             const majorCashAverage_arr = [
-                { name: '5日', data: averages.map(obj => obj.cashFlowaverage5), type: 'line' },
-                { name: '13日', data: averages.map(obj => obj.cashFlowaverage13), type: 'line' },
-                { name: '20日', data: averages.map(obj => obj.cashFlowaverage20), type: 'line' },
+                { name: '5均', data: averages.map(obj => obj.cashFlowaverage5), type: 'line' },
+                { name: '13均', data: averages.map(obj => obj.cashFlowaverage13), type: 'line' },
+                { name: '20均', data: averages.map(obj => obj.cashFlowaverage20), type: 'line' },
             ] || []
 
             /* 2 资金流画布 */
@@ -349,7 +351,7 @@ export default {
                 { date: date_arr, data: majorCashAverage_arr },
             ]
 
-            /* 渲染资金流画布 */
+            /* 2 绘制资金流画布 */
             datas.forEach((every, index) => {
                 const { date, data } = every
                 this.updateConfig({ date, data, colName: this.dataObj.byd.name })
@@ -358,24 +360,6 @@ export default {
                     this.renderCanavas(this.myCharts[`myChart${index + 7}`], temp)
                 }, 300)
             })
-
-            // this.updateConfig({ date: date_arr, data: majorCash_arr })
-
-            // const temp = JSON.parse(JSON.stringify(this.option))
-
-            // setTimeout(() => {
-            //     this.renderCanavas(this.myCharts[`myChart${7}`], temp)
-            // }, 300)
-
-            // const currentData = this.historyCashFlow20Days(historyCashFlowArr).reverse() // 降序排列
-            // const historyCashFlowIncrease_arr = [
-            //     { name: '融资融券每天净量 (亿)', data: currentData.map(obj => obj.increase), type: 'line' },
-            // ]
-            // this.updateConfig({ date: date_arr, data: historyCashFlowIncrease_arr })
-            // const temp = JSON.parse(JSON.stringify(this.option))
-            // setTimeout(() => {
-            //     this.renderCanavas(this.myCharts[`myChart${7}`], temp)
-            // }, 300)
         },
         /* 每天cashFlow 相关*/
         historyCashFlow20Days(historyCashFlowArr) {
@@ -392,12 +376,7 @@ export default {
             const cashFlowaverage5 = accumulator(majorPureArr.slice(0, 5))
             const cashFlowaverage13 = accumulator(majorPureArr.slice(0, 10))
             const cashFlowaverage20 = accumulator(majorPureArr)
-            // return historyCashFlowArr.map((item, index) => {
-            //     if (!historyCashFlowArr[index + 1]) { return '-' }
-            //     // 后日期数据 减 前一天数据转化为亿的单E位
-            //     // return { date: item.dim_date.split(' ')[0], increase: ((item.rzrqye - rzrqArr[index + 1].rzrqye) / 10000 / 10000).toFixed(0) }
-            //     return { date: item.split(',')[0], increase: ((item.RZRQYE - rzrqArr[index + 1].RZRQYE) / 10000 / 10000).toFixed(0) }
-            // }).slice(0, -1)
+
             return {
                 date: dateArr[0],
                 majorPureCurrentRatio,
@@ -405,6 +384,49 @@ export default {
                 cashFlowaverage5,
                 cashFlowaverage13,
                 cashFlowaverage20,
+            }
+        },
+        /* 判断个股强弱 */
+        judgeStrongWeekInit() {
+            if(!this.dataObj.szzsP.klines || !this.dataObj.byd.klines) { return }
+            const dataStock = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
+            const dataSZZS = JSON.parse(JSON.stringify(this.dataObj.szzsP.klines)).reverse(); // 时间降序
+            /* 处理数据 取20大盘天下跌 个股表现 */
+            const formatData = this.handleStrong({dataStock, dataSZZS})
+            /* 日期对应 */
+            const date_arr = formatData.date_arr || []
+
+            /* 最高价 最低价 对应的分时变化 */
+            const stockStrongWeek_arr = [
+                { name: '个股', data: formatData.stockZDF20DaysDatas, type: 'line' },
+                { name: '大盘跌幅', data: formatData.szzsDF20DaysDatas, type: 'line' },
+            ] || []
+
+
+            /* 3 绘制个股强弱画布 */
+            this.updateConfig({ date: date_arr, data: stockStrongWeek_arr, colName: this.dataObj.byd.name })
+            const temp = JSON.parse(JSON.stringify(this.option))
+            /* 3 渲染融资融券画布 */
+            setTimeout(() => {
+                this.renderCanavas(this.myCharts[`myChart${9}`], temp)
+            }, 300)
+        },
+        handleStrong({dataStock, dataSZZS}) {
+            // 2020-12-31, 3419.73, 3473.07, 3474.92, 3419.73, 335673925, 450482319360.00, 1.62, 1.72, 58.62, 0.89
+            // 大盘 index 日期 0 涨跌幅 8
+            const szzsDFArr = dataSZZS.filter(SZZS => SZZS.split(',')[8] < 0)
+            /* 20天跌幅 */
+            const szzsDF20DaysArr = szzsDFArr.slice(0, 20).reverse() // 最近大盘下跌20天数据
+            const szzsDFDateArr = szzsDF20DaysArr.map(DFStr => DFStr.split(',')[0]) // 上证跌幅对应日期数组 用于匹配个股用
+            const stockZDF20DaysArr = dataStock.filter(stockStr => szzsDFDateArr.includes(stockStr.split(',')[0])).reverse() 
+            /* 最终数据 */
+            const date_arr = szzsDFDateArr
+            const szzsDF20DaysDatas = szzsDF20DaysArr.map(DFStr => DFStr.split(',')[8])
+            const stockZDF20DaysDatas = stockZDF20DaysArr.map(ZDFStr => ZDFStr.split(',')[8])
+            return {
+                date_arr,
+                szzsDF20DaysDatas,
+                stockZDF20DaysDatas,
             }
         },
         /* 获取upper的斜率 */
@@ -456,7 +478,7 @@ export default {
                 }
             };
             // data[0].name === '斜率' && (option.yAxis.axisLabel.formatter = '{value}%')
-            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅', '每天涨幅', '前20天累计点数', '距20均偏移量'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
+            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅', '当天涨幅', '前20天累计点数', '距20均偏移量', '大盘跌幅', '个股'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
         },
         /* 数字累加 */
         // accumulator(numArr){
