@@ -16,10 +16,9 @@
     >
       <!-- 1 即时价格跟踪 -->
       <el-tab-pane label="个股boll" name="first">
-        <!-- <p>比亚迪</p> -->
-        <!-- 为了方便页面搜索关键字 -->
         <div class="main" style="width: 90%; height: 400px" />
-        <!-- <p>比亚迪</p> -->
+        <div class="main" style="width: 90%; height: 400px" />
+        <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
@@ -251,7 +250,6 @@ export default {
         this.dataObj.byd = res.data;
         this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
         this.dataObj.historyCashFlow = historyCashFlow
-        debugger
         // let bkLatestP = getbkLatestP({ secid: '90.BK0711' }).then(data => {
         //   console.log(data, '---------data');
         // });

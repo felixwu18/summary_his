@@ -1,7 +1,7 @@
 /**
  * 比亚迪
  */
-import accumulator  from '@/utils/accumulator'
+import { accumulator }  from '@/utils/accumulator'
 export default {
     data() {
         console.log(666)
@@ -130,7 +130,7 @@ export default {
                 { name: '最低价分时', data: averages.map(obj => obj.LowPtime), type: 'line' },
             ] || []
 
-            /* 画布个数 */
+            /* 1 画布个数 */
             const datas = [
                 { date: date_arr, data: upper_arr },
                 { date: date_arr, data: ratio_arr },
@@ -293,7 +293,7 @@ export default {
             this.updateConfig({ date: date_arr, data: rzrqIncrease_arr })
             const temp = JSON.parse(JSON.stringify(this.option))
             setTimeout(() => {
-                this.renderCanavas(this.myCharts[`myChart${7}`], temp)
+                this.renderCanavas(this.myCharts[`myChart${9}`], temp)
             }, 300)
         },
         /* 每天增加rzrq */
@@ -324,12 +324,50 @@ export default {
             /* 进入处理历史资金流数据主流程 */
             const averages = []
             for (let i = 0; i < days; i++) {
-                const every = data.slice(i, i + 21); // 动态获取每天前20天个股资金流
+                const every = data.slice(i, i + 20); // 动态获取每天前20天个股资金流
                 const average = this.historyCashFlow20Days(every) // 计算出每天的前20天主力净累计
-                averages.push(average)
+                averages.unshift(average)
             }
+            /* 日期对应 */
+            const date_arr = averages.map(obj => obj.date) || []
+
+            /* 最高价 最低价 对应的分时变化 */
+            const majorCash_arr = [
+                { name: '净额占比', data: averages.map(obj => obj.majorPureCurrentRatio), type: 'line' },
+                { name: '净额', data: averages.map(obj => obj.cashFlowCurrent), type: 'line' },
+            ] || []
+            /* 净额累计均线 */
+            const majorCashAverage_arr = [
+                { name: '5日', data: averages.map(obj => obj.cashFlowaverage5), type: 'line' },
+                { name: '13日', data: averages.map(obj => obj.cashFlowaverage13), type: 'line' },
+                { name: '20日', data: averages.map(obj => obj.cashFlowaverage20), type: 'line' },
+            ] || []
+
+            /* 2 资金流画布 */
+            const datas = [
+                { date: date_arr, data: majorCash_arr },
+                { date: date_arr, data: majorCashAverage_arr },
+            ]
+
+            /* 渲染资金流画布 */
+            datas.forEach((every, index) => {
+                const { date, data } = every
+                this.updateConfig({ date, data, colName: this.dataObj.byd.name })
+                const temp = JSON.parse(JSON.stringify(this.option))
+                setTimeout(() => {
+                    this.renderCanavas(this.myCharts[`myChart${index + 7}`], temp)
+                }, 300)
+            })
+
+            // this.updateConfig({ date: date_arr, data: majorCash_arr })
+
+            // const temp = JSON.parse(JSON.stringify(this.option))
+
+            // setTimeout(() => {
+            //     this.renderCanavas(this.myCharts[`myChart${7}`], temp)
+            // }, 300)
+
             // const currentData = this.historyCashFlow20Days(historyCashFlowArr).reverse() // 降序排列
-            // const date_arr = currentData.map(obj => obj.date) || []
             // const historyCashFlowIncrease_arr = [
             //     { name: '融资融券每天净量 (亿)', data: currentData.map(obj => obj.increase), type: 'line' },
             // ]
@@ -342,13 +380,18 @@ export default {
         /* 每天cashFlow 相关*/
         historyCashFlow20Days(historyCashFlowArr) {
             // 2020-12-31, 615996768.0, -255824464.0, -360172304.0, -119660544.0, 735657312.0, 6.37, -2.65, -3.73, -1.24, 7.61, 194.30, 4.46, 0.00,0.00
-            // index 主力净额 1 主力净占比 6 超大单净额 5 超大单净占比 10  大单净额 4 大单净占比 9 中单净额 3 中单净占比 8 小单净额 2 小单净占比 7 现股价 11 涨跌幅 12
+            // index 日期 0 主力净额 1 主力净占比 6 超大单净额 5 超大单净占比 10  大单净额 4 大单净占比 9 中单净额 3 中单净占比 8 小单净额 2 小单净占比 7 现股价 11 涨跌幅 12
             
-            const majorPureArr = historyCashFlowArr.map(cashFlowStr => cashFlowStr.split(',')[1])
+            /* 单位转化为亿 */
+            const majorPureArr = historyCashFlowArr.map(cashFlowStr => cashFlowStr.split(',')[1] / 10000 / 10000)
+            const majorPureRatioArr = historyCashFlowArr.map(cashFlowStr => cashFlowStr.split(',')[6])
+            const dateArr = historyCashFlowArr.map(cashFlowStr => cashFlowStr.split(',')[0])
             /* 主力前20天净额累计 */
-            debugger
+            const majorPureCurrentRatio = majorPureRatioArr[0]
+            const cashFlowCurrent = majorPureArr[0].toFixed(2)
+            const cashFlowaverage5 = accumulator(majorPureArr.slice(0, 5))
+            const cashFlowaverage13 = accumulator(majorPureArr.slice(0, 10))
             const cashFlowaverage20 = accumulator(majorPureArr)
-            debugger
             // return historyCashFlowArr.map((item, index) => {
             //     if (!historyCashFlowArr[index + 1]) { return '-' }
             //     // 后日期数据 减 前一天数据转化为亿的单E位
@@ -356,7 +399,12 @@ export default {
             //     return { date: item.split(',')[0], increase: ((item.RZRQYE - rzrqArr[index + 1].RZRQYE) / 10000 / 10000).toFixed(0) }
             // }).slice(0, -1)
             return {
-                cashFlowaverage20
+                date: dateArr[0],
+                majorPureCurrentRatio,
+                cashFlowCurrent,
+                cashFlowaverage5,
+                cashFlowaverage13,
+                cashFlowaverage20,
             }
         },
         /* 获取upper的斜率 */
