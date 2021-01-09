@@ -179,7 +179,8 @@ export default {
     this.selectObj = configsP.find((row) => row.key === this.selectVal); // 初始化对象
     this.init();
   },
-  mounted() {},
+  mounted() {
+  },
   methods: {
     async handleOpen() {
       // window.location.href='myprotocol://H:\\stock\\myprotocol.reg'

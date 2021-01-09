@@ -188,7 +188,7 @@ export function removeClass(ele, cls) {
  */
 export function uniqueObjArr(objArr, propStr, addProp) {
   var obj = {};
-  return objArr.reduce(function(acc, cur) {
+  return objArr.reduce(function (acc, cur) {
     obj[cur[propStr]]
       ? mergeRefObj(acc, cur, propStr, addProp)
       : (obj[cur[propStr]] = true && acc.push(cur));
@@ -324,7 +324,7 @@ export function deepClone(source) {
  * @param {Array, Object, Number, String} value
  * @param {String} storeName(sessionStorage or localStorage)
  */
-export const handleSave = (function() {
+export const handleSave = (function () {
   const storeApiName = { sessionStorage, localStorage };
   function get(key, storeName = "sessionStorage") {
     let value = storeApiName[storeName].getItem(key);
@@ -356,3 +356,10 @@ export const confugureFormatter = (configure, key) => {
     }
   }
 }
+
+/* 汉字转拼音码 */
+export function getPinyin(str, type = 0, charCase = 0) {
+  getPinyin.setOptions({ checkPolyphone: false, charCase })
+  return type === 0 ? pinyin.getCamelChars(str) : pinyin.getFullChars(str)
+}
+// npm-check 包升级管理
