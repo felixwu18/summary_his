@@ -208,20 +208,21 @@ export default {
         let resFSP = await getFSP({ secid: this.selectVal, ndays: 5 }); // 时间降序
         let cacheFSP = await getCacheFSP({"secid": this.selectVal,});  // 时间降序
         let { data: { data: historyCashFlow } } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
+        debugger
         // console.log(resFSP, 'cacheFSP=====')
         // console.log(cacheFSP, 'cacheFSP=====')
         // this.dataObj.byd = res.data;
         // this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
         // return
         /* latestP缓存后台 限制时间延时推送 */
-        if (this.isUpdate(Date.now())) {
-          setTimeout(() => {
-            setCacheData({
-              secid: this.selectVal,
-              data: res
-            })
-          }, 500)
-        }
+        // if (this.isUpdate(Date.now())) {
+        //   setTimeout(() => {
+        //     setCacheData({
+        //       secid: this.selectVal,
+        //       data: res
+        //     })
+        //   }, 500)
+        // }
         /* 将三方最新5天分时价同步并缓存 */
           if (cacheFSP == '文件读取失败' || cacheFSP === '') {
             /* 限制时间推送后台 */
@@ -233,7 +234,7 @@ export default {
             }
           } else {
             /* 缓存数据已是最新，不处理 */
-            if (resFSP.slice(-1)[0].slice(0, 10) !== cacheFSP.slice(-1)[0].slice(0, 10)) { 
+            if (resFSP.slice(-1)[0].slice(0, 10) !== cacheFSP.slice(-1)[0].slice(0, 10)) {
               resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
               if (!resFSP) { return }
               /* 限制时间推送后台 */
@@ -245,7 +246,7 @@ export default {
                 })
               }
             } else {
-              resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
+              resFSP = cacheFSP // 同步三方重写
             }
           }
 

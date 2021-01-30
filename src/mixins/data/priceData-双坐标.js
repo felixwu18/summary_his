@@ -423,13 +423,35 @@ export default {
 
             /* 个股及大盘指数变化 */
             const stockStrongWeek_arr = [
-                { name: '个股走势', data: formatData.stockZDF20DaysDatas, type: 'line' },
-                { name: '大盘走势', data: formatData.szzsZDF20DaysDatas, type: 'line' },
+                { name: '个股走势', data: formatData.stockSPJ20DaysDatas, type: 'line' },
+                { name: '大盘走势', yAxisIndex: 1, data: formatData.szzsSPJ20DaysDatas, type: 'line' },
             ] || []
 
 
             /* 4 绘制个股强弱画布 */
-            this.updateConfig({ date: date_arr, data: stockStrongWeek_arr, colName: this.dataObj.byd.name })
+            const yAxis = [
+                {
+                  type: 'value',
+                  name: '个股',
+                //   min: 0,
+                  max: 300,
+                  interval: 15,
+                  axisLabel: {
+                      formatter: '{value}'
+                  }
+                },
+                {
+                    type: 'value',
+                    name: '大盘',
+                    // min: 0,
+                    max: 4000,
+                    interval: 200,
+                    axisLabel: {
+                        formatter: '{value}'
+                    }
+                  },
+              ]; 
+            this.updateConfig({ date: date_arr, data: stockStrongWeek_arr, colName: this.dataObj.byd.name, yAxis })
             const temp = JSON.parse(JSON.stringify(this.option))
             /* 4 渲染融资融券画布 */
             setTimeout(() => {
@@ -454,22 +476,23 @@ export default {
                 stockZDF20DaysDatas,
             }
         },
+        /* 个股 大盘走势对比 */
         handleCompare({dataStock, dataSZZS}){
             // 2020-12-31, 3419.73, 3473.07, 3474.92, 3419.73, 335673925, 450482319360.00, 1.62, 1.72, 58.62, 0.89
-            // 大盘 index 日期 0 涨跌幅 8
-            const szzsZDFArr = dataSZZS.filter(SZZS => SZZS.split(',')[8])
+            // 大盘 index 日期 0 涨跌幅 8 收盘价 2
+            const szzsSPJArr = dataSZZS.map(SZZS => SZZS.split(',')[2])
             /* 20天跌幅 */
-            const szzsZDF20DaysArr = szzsZDFArr.slice(0, 20).reverse() // 最近大盘下跌20天数据
-            const szzsZDFDateArr = szzsZDF20DaysArr.map(DFStr => DFStr.split(',')[0]) // 上证跌幅对应日期数组
-            const stockZDF20DaysArr = dataStock.slice(0, 20).reverse() 
+            const DateArr = dataSZZS.slice(0, 20).reverse().map(Str => Str.split(',')[0]) // 上证跌幅对应日期数组
+            const szzsSPJ20DaysArr = dataSZZS.slice(0, 20).reverse() // 最近大盘下跌20天数据
+            const stockSPJ20DaysArr = dataStock.slice(0, 20).reverse() 
             /* 最终数据 */
-            const date_arr = szzsZDFDateArr
-            const szzsZDF20DaysDatas = szzsZDF20DaysArr.map(DFStr => DFStr.split(',')[8])
-            const stockZDF20DaysDatas = stockZDF20DaysArr.map(ZDFStr => ZDFStr.split(',')[8])
+            const date_arr = DateArr
+            const szzsSPJ20DaysDatas = szzsSPJ20DaysArr.map(DFStr => DFStr.split(',')[2])
+            const stockSPJ20DaysDatas = stockSPJ20DaysArr.map(ZDFStr => ZDFStr.split(',')[2])
             return {
                 date_arr,
-                szzsZDF20DaysDatas,
-                stockZDF20DaysDatas,
+                szzsSPJ20DaysDatas,
+                stockSPJ20DaysDatas,
             }
         },
         /* 获取upper的斜率 */
@@ -497,7 +520,7 @@ export default {
             return `${((ratio) * 100).toFixed(2)}`
         },
         /* 更新画布配置 */
-        updateConfig({ date, data, colName }) {
+        updateConfig({ date, data, colName, yAxis }) {
             /**
              * 表格头 // 取第一个数据name
              */
@@ -514,12 +537,24 @@ export default {
             // 纵坐标数据可能多个类
             option.series = data;
             /* 纵坐标 值类型设置 */
-            option.yAxis = {
-                type: 'value',
-                axisLabel: {
-                    formatter: '{value}'
-                }
-            };
+            if(!yAxis) {
+                yAxis = {
+                    type: 'value',
+                    axisLabel: {
+                        formatter: '{value}'
+                    }
+                }; 
+           }
+            option.yAxis = yAxis
+            console.log(yAxis, 'yAxis---');
+            console.log(option.yAxis, 'option.yAxis---');
+
+        // option.yAxis = {
+        //     type: 'value',
+        //     axisLabel: {
+        //         formatter: '{value}'
+        //     }
+        // };
             // data[0].name === '斜率' && (option.yAxis.axisLabel.formatter = '{value}%')
             ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅', '当天涨幅', '前20天累计点数', '距20均偏移量', '大盘跌幅', '个股'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
         },
