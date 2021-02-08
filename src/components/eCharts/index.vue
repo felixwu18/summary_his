@@ -27,6 +27,10 @@
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
+        <div class="ROE_warp">
+          <div class="main" style="width: 50%; height: 400px" />
+          <div class="main" style="width: 50%; height: 400px" />
+        </div>
       </el-tab-pane>
 
       <!-- 2 个股异动 -->
@@ -136,7 +140,7 @@ import searchSelect from "@/components/searchSelect/index";
 import iframePage from "@/components/iframePage/index";
 import FormTable from "./components/FormTable";
 
-import { getLatestP, getFSP, getConfigsP, getbkLatestP, getRZRQ, pushLatestFSP, getCacheFSP, setCacheData, getHistoryCashFlow,  getImediateCashFlow } from "@/api/index";
+import { getLatestP, getFSP, getConfigsP, getbkLatestP, getRZRQ, pushLatestFSP, getCacheFSP, setCacheData, getHistoryCashFlow,  getImediateCashFlow, yearROE } from "@/api/index";
 
 export default {
   data() {
@@ -208,6 +212,7 @@ export default {
         let resFSP = await getFSP({ secid: this.selectVal, ndays: 5 }); // 时间降序
         let cacheFSP = await getCacheFSP({"secid": this.selectVal,});  // 时间降序
         let { data: { data: historyCashFlow } } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
+        let { data: financeReport } = await yearROE({"secid": this.selectVal,});  // 时间降序
         // console.log(resFSP, 'cacheFSP=====')
         // console.log(cacheFSP, 'cacheFSP=====')
         // this.dataObj.byd = res.data;
@@ -254,6 +259,7 @@ export default {
         this.dataObj.byd = res.data;
         this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
         this.dataObj.historyCashFlow = historyCashFlow
+        this.dataObj.financeReport = financeReport // 财务报表 年净资产收益率
         // let bkLatestP = getbkLatestP({ secid: '90.BK0711' }).then(data => {
         //   console.log(data, '---------data');
         // });
@@ -367,5 +373,8 @@ div {
 }
 p {
   text-align: left;
+}
+.ROE_warp {
+  display: flex;
 }
 </style>

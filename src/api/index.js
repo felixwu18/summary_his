@@ -170,7 +170,7 @@ export function getHistoryCashFlow(params = {}) {
 /* 个股即时资金流接口 */
 export function getImediateCashFlow(params = {}) {
     const queryStr = qs.stringify(params)
-   return axios.get(`http://127.0.0.1:4000/imediateCashFlow?${queryStr}`, params)
+   return axios.get(`http://127.0.0.1:4000/imediateCashFlow?${queryStr}`)
         // .then(res => {
         //     const data = res.data
         //     console.log(data)
@@ -178,4 +178,10 @@ export function getImediateCashFlow(params = {}) {
         // .catch(err => {
         //     console.error(err)
         // })
+}
+
+/* 个股年资产收益率 */
+export function yearROE(params = {}) {
+    const queryStr = qs.stringify(params)
+   return axios.get(`http://127.0.0.1:4000/yearROE?${queryStr}`)
 }

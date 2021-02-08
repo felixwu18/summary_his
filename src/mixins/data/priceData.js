@@ -43,7 +43,8 @@ export default {
                 },
                 FSP: [], //分时价
                 rzrq: {},
-                historyCashFlow: {}
+                historyCashFlow: {},
+                financeReport: {}, //财务数据
             },
             bydN: [],
             option: {
@@ -91,6 +92,8 @@ export default {
             this.historyCashFlowInit() // 历史资金流
             this.judgeStrongWeekInit() // 判断个股强弱-1 大盘跌时 个股表现
             this.judgeStrongZSAndStockInit() // 判断个股强弱-2 大盘与个股走势比较
+            this.financeReportYearInit() // 财务数据 年净资产收益率
+            this.financeReportMonthInit() // 财务数据 月净资产收益率
             const date_arr = averages.map(obj => obj.date) || []
             const upper_arr = [
                 { name: '布林上轨', data: averages.map(obj => obj.upper), type: 'line' },
@@ -142,7 +145,7 @@ export default {
                 { date: date_arr, data: TopLowSPDot_arr },
                 { date: date_arr, data: TopLowPTime_arr },
             ]
-            /* 1 渲染融资融券画布 */
+            /* 1 渲染融资融券画布 各指标*/
             datas.forEach((every, index) => {
                 const { date, data } = every
                 this.updateConfig({ date, data, colName: this.dataObj.byd.name })
@@ -294,9 +297,9 @@ export default {
             // const canavas = { date: date_arr, data: rzrqIncrease_arr }
             this.updateConfig({ date: date_arr, data: rzrqIncrease_arr })
             const temp = JSON.parse(JSON.stringify(this.option))
-            /* 5 渲染融资融券画布 */
+            /* 5 渲染融资融券画布 融资融券 */
             setTimeout(() => {
-                this.renderCanavas(this.myCharts[`myChart${11}`], temp)
+                this.renderCanavas(this.myCharts[`myChart${13}`], temp)
             }, 300)
         },
         /* 每天增加rzrq */
@@ -352,7 +355,7 @@ export default {
                 { date: date_arr, data: majorCashAverage_arr },
             ]
 
-            /* 2 渲染融资融券画布 */
+            /* 2 渲染融资融券画布 个股资金流*/
             datas.forEach((every, index) => {
                 const { date, data } = every
                 this.updateConfig({ date, data, colName: this.dataObj.byd.name })
@@ -404,10 +407,9 @@ export default {
             ] || []
 
 
-            /* 3 绘制个股强弱画布 */
             this.updateConfig({ date: date_arr, data: stockStrongWeek_arr, colName: this.dataObj.byd.name })
             const temp = JSON.parse(JSON.stringify(this.option))
-            /* 3 渲染融资融券画布 */
+            /* 3 渲染融资融券画布 判断个股强弱-1*/
             setTimeout(() => {
                 this.renderCanavas(this.myCharts[`myChart${9}`], temp)
             }, 300)
@@ -428,12 +430,48 @@ export default {
             ] || []
 
 
-            /* 4 绘制个股强弱画布 */
             this.updateConfig({ date: date_arr, data: stockStrongWeek_arr, colName: this.dataObj.byd.name })
             const temp = JSON.parse(JSON.stringify(this.option))
-            /* 4 渲染融资融券画布 */
+            /* 4 渲染融资融券画布 判断个股强弱-2*/
             setTimeout(() => {
                 this.renderCanavas(this.myCharts[`myChart${10}`], temp)
+            }, 300)
+        },
+        /* 年净资产收益率 杜邦分析 */
+        financeReportYearInit() {
+            if(!this.dataObj.financeReport.nd) { return }
+            const data = this.dataObj.financeReport.nd || []
+             /* 日期对应 */
+             const date_arr = data.map(item => item.date).reverse()
+             /* 个股年净资产收益率变化 */
+             const formartROE_arr = data.map(item => item.jzcsyl.slice(0, -1)).reverse()
+            const yearROE_arr = [
+                { name: '年净资产收益率(ROE)', data: formartROE_arr, type: 'bar' },
+            ] || []
+            this.updateConfig({ date: date_arr, data: yearROE_arr, colName: this.dataObj.byd.name })
+            const temp = JSON.parse(JSON.stringify(this.option))
+            /* 6 渲染融资融券画布 年净资产收益率*/
+            setTimeout(() => {
+                this.renderCanavas(this.myCharts[`myChart${11}`], temp)
+            }, 300)
+        },
+        /* 月净资产收益率 杜邦分析 */
+        financeReportMonthInit() {
+            if(!this.dataObj.financeReport.bgq) { return }
+            // debugger
+            const data = this.dataObj.financeReport.bgq || []
+             /* 日期对应 */
+             const date_arr = data.map(item => item.date).reverse()
+             /* 个股年净资产收益率变化 */
+             const formartROE_arr = data.map(item => item.jzcsyl.slice(0, -1)).reverse()
+            const yearROE_arr = [
+                { name: '月净资产收益率(ROE)', data: formartROE_arr, type: 'bar' },
+            ] || []
+            this.updateConfig({ date: date_arr, data: yearROE_arr, colName: this.dataObj.byd.name })
+            const temp = JSON.parse(JSON.stringify(this.option))
+            /* 7 渲染融资融券画布 月净资产收益率*/
+            setTimeout(() => {
+                this.renderCanavas(this.myCharts[`myChart${12}`], temp)
             }, 300)
         },
         handleStrong({dataStock, dataSZZS}) {
@@ -497,7 +535,8 @@ export default {
             return `${((ratio) * 100).toFixed(2)}`
         },
         /* 更新画布配置 */
-        updateConfig({ date, data, colName }) {
+        updateConfig({ date, data, colName}) {
+
             /**
              * 表格头 // 取第一个数据name
              */
@@ -521,7 +560,7 @@ export default {
                 }
             };
             // data[0].name === '斜率' && (option.yAxis.axisLabel.formatter = '{value}%')
-            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅', '当天涨幅', '前20天累计点数', '距20均偏移量', '大盘跌幅', '个股'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
+            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅', '当天涨幅', '前20天累计点数', '距20均偏移量', '大盘跌幅', '个股', '个股走势', '大盘走势', '资产收益率'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
         },
         /* 数字累加 */
         // accumulator(numArr){
