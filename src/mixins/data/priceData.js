@@ -1,7 +1,7 @@
 /**
  * 比亚迪
  */
-import { accumulator }  from '@/utils/accumulator'
+import { accumulator } from '@/utils/accumulator'
 export default {
     data() {
         console.log(666)
@@ -45,6 +45,7 @@ export default {
                 rzrq: {},
                 historyCashFlow: {},
                 financeReport: {}, //财务数据
+                financeTableData: {}, //财务数据 营业收入， 净利润等
             },
             bydN: [],
             option: {
@@ -94,6 +95,9 @@ export default {
             this.judgeStrongZSAndStockInit() // 判断个股强弱-2 大盘与个股走势比较
             this.financeReportYearInit() // 财务数据 年净资产收益率
             this.financeReportMonthInit() // 财务数据 月净资产收益率
+            this.financeTableDataInit() // 财务数据 营业收入增长率， 净利润增长率, 现金流等
+            this.LJZFDayInit() // 累计每天涨幅度数量统计 半年 季度 月份 周情况
+            this.LJDFDayInit() // 累计每天跌幅幅度数量统计 半年 季度 月份 周情况
             const date_arr = averages.map(obj => obj.date) || []
             const upper_arr = [
                 { name: '布林上轨', data: averages.map(obj => obj.upper), type: 'line' },
@@ -194,10 +198,10 @@ export default {
 
             /* 每天的振幅 */
             const todayZF = data[0].split(',')[7]
-            
+
             /* 每天的涨跌幅 */
             const todayZDF = data[0].split(',')[8]
-            
+
             /* 计算累计收益 */
             const earlistKPJ = day21Data.slice(-1)[0].split(',')[2]
             const todaySPJ = data[0].split(',')[2]
@@ -252,14 +256,14 @@ export default {
                 const todayTopPStr = formartTrends[i].find(fsitem => fsitem.split(',')[3] === data[i].split(',')[3]) // index 当天，分时最高价 3
                 const todayLowPStr = formartTrends[i].find(fsitem => {
 
-                   return fsitem.split(',')[4] === data[i].split(',')[4]
+                    return fsitem.split(',')[4] === data[i].split(',')[4]
                 }) // index 当天，分时最低价 4
                 // console.log(todayTopPStr, 'todayTopPStr------');
                 // console.log(data[i], 'data[i]------');
                 // if (!todayTopPStr) { continue }
                 if (todayTopPStr && data[i].slice(0, 10) === todayTopPStr.slice(0, 10)) {
                     // data.slice(0, 20)
-                    for(let j =0; j <20; j++) { // 最近20天的个股信息
+                    for (let j = 0; j < 20; j++) { // 最近20天的个股信息
                         if (data[j].slice(0, 10) === todayTopPStr.slice(0, 10)) {
                             data[j] += `,${todayTopPStr.slice(11, 16)}` // 组装 kline里 最高价分时 index 11
                             data[j] += `,${todayLowPStr.slice(11, 16)}` // 组装 kline里 最低价分时 index 12
@@ -299,7 +303,7 @@ export default {
             const temp = JSON.parse(JSON.stringify(this.option))
             /* 5 渲染融资融券画布 融资融券 */
             setTimeout(() => {
-                this.renderCanavas(this.myCharts[`myChart${13}`], temp)
+                this.renderCanavas(this.myCharts[`myChart${24}`], temp)
             }, 300)
         },
         /* 每天增加rzrq */
@@ -369,7 +373,7 @@ export default {
         historyCashFlow20Days(historyCashFlowArr) {
             // 2020-12-31, 615996768.0, -255824464.0, -360172304.0, -119660544.0, 735657312.0, 6.37, -2.65, -3.73, -1.24, 7.61, 194.30, 4.46, 0.00,0.00
             // index 日期 0 主力净额 1 主力净占比 6 超大单净额 5 超大单净占比 10  大单净额 4 大单净占比 9 中单净额 3 中单净占比 8 小单净额 2 小单净占比 7 现股价 11 涨跌幅 12
-            
+
             /* 单位转化为亿 */
             const majorPureArr = historyCashFlowArr.map(cashFlowStr => cashFlowStr.split(',')[1] / 10000 / 10000)
             const majorPureRatioArr = historyCashFlowArr.map(cashFlowStr => cashFlowStr.split(',')[6])
@@ -392,11 +396,11 @@ export default {
         },
         /* 判断个股强弱-1 大盘跌 个股表现 */
         judgeStrongWeekInit() {
-            if(!this.dataObj.szzsP.klines || !this.dataObj.byd.klines) { return }
+            if (!this.dataObj.szzsP.klines || !this.dataObj.byd.klines) { return }
             const dataStock = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
             const dataSZZS = JSON.parse(JSON.stringify(this.dataObj.szzsP.klines)).reverse(); // 时间降序
             /* 处理数据 取20大盘天下跌 个股表现 */
-            const formatData = this.handleStrong({dataStock, dataSZZS})
+            const formatData = this.handleStrong({ dataStock, dataSZZS })
             /* 日期对应 */
             const date_arr = formatData.date_arr || []
 
@@ -415,11 +419,11 @@ export default {
             }, 300)
         },
         /* 判断个股强弱-2 大盘与个股走势比较 */
-        judgeStrongZSAndStockInit(){
-            if(!this.dataObj.szzsP.klines || !this.dataObj.byd.klines) { return }
+        judgeStrongZSAndStockInit() {
+            if (!this.dataObj.szzsP.klines || !this.dataObj.byd.klines) { return }
             const dataStock = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
             const dataSZZS = JSON.parse(JSON.stringify(this.dataObj.szzsP.klines)).reverse(); // 时间降序
-            const formatData = this.handleCompare({dataStock, dataSZZS})
+            const formatData = this.handleCompare({ dataStock, dataSZZS })
             /* 日期对应 */
             const date_arr = formatData.date_arr || []
 
@@ -439,12 +443,12 @@ export default {
         },
         /* 年净资产收益率 杜邦分析 */
         financeReportYearInit() {
-            if(!this.dataObj.financeReport.nd) { return }
+            if (!this.dataObj.financeReport.nd) { return }
             const data = this.dataObj.financeReport.nd || []
-             /* 日期对应 */
-             const date_arr = data.map(item => item.date).reverse()
-             /* 个股年净资产收益率变化 */
-             const formartROE_arr = data.map(item => item.jzcsyl.slice(0, -1)).reverse()
+            /* 日期对应 */
+            const date_arr = data.map(item => item.date).reverse()
+            /* 个股年净资产收益率变化 */
+            const formartROE_arr = data.map(item => item.jzcsyl.slice(0, -1)).reverse()
             const yearROE_arr = [
                 { name: '年净资产收益率(ROE)', data: formartROE_arr, type: 'bar' },
             ] || []
@@ -457,13 +461,13 @@ export default {
         },
         /* 月净资产收益率 杜邦分析 */
         financeReportMonthInit() {
-            if(!this.dataObj.financeReport.bgq) { return }
+            if (!this.dataObj.financeReport.bgq) { return }
             // debugger
             const data = this.dataObj.financeReport.bgq || []
-             /* 日期对应 */
-             const date_arr = data.map(item => item.date).reverse()
-             /* 个股年净资产收益率变化 */
-             const formartROE_arr = data.map(item => item.jzcsyl.slice(0, -1)).reverse()
+            /* 日期对应 */
+            const date_arr = data.map(item => item.date).reverse()
+            /* 个股年净资产收益率变化 */
+            const formartROE_arr = data.map(item => item.jzcsyl.slice(0, -1)).reverse()
             const yearROE_arr = [
                 { name: '月净资产收益率(ROE)', data: formartROE_arr, type: 'bar' },
             ] || []
@@ -474,14 +478,195 @@ export default {
                 this.renderCanavas(this.myCharts[`myChart${12}`], temp)
             }, 300)
         },
-        handleStrong({dataStock, dataSZZS}) {
+        /* 财务数据分析基本面， 营业收入增长率， 净利润增长率等 */
+        financeTableDataInit() {
+            if (!this.dataObj.financeTableData) { return }
+
+            const data = JSON.parse(JSON.stringify(this.dataObj.financeTableData)).reverse() || []
+            debugger
+            /* 日期对应 */
+            const date_arr = data.map(item => item.date).slice(1)
+            /* 年营业总收入 */
+            const yearIncome_arr = data.map(item => {
+                if (item.yyzsr.slice(-1) === '万') {
+                    return item.yyzsr.slice(0, -1) / 10000
+                } else {
+                    return item.yyzsr.slice(0, -1)
+                }
+            })
+            const yearIncomeGrowRate_arr = yearIncome_arr.map((item, index) => ((yearIncome_arr[index + 1] - item) / item * 100).toFixed(1)).slice(0, -1)
+
+            /* 年归属净利润 */
+            const pureIncome_arr = data.map(item => {
+                if (item.gsjlr.slice(-1) === '万') {
+                    return (item.gsjlr.slice(0, -1) / 10000).toFixed(1)
+                } else {
+                    return item.gsjlr.slice(0, -1)
+                }
+            })
+            const pureIncomeGrowRate_arr = pureIncome_arr.map((item, index) => ((pureIncome_arr[index + 1] - item) / item * 100).toFixed(1)).slice(0, -1)
+
+            //  debugger
+            const Income_arr = [
+                { name: '年营业总收入增长率', data: yearIncomeGrowRate_arr, type: 'line' },
+                { name: '年净利润增长率', data: pureIncomeGrowRate_arr, type: 'line' },
+            ] || []
+            this.updateConfig({ date: date_arr, data: Income_arr, colName: this.dataObj.byd.name })
+            const temp = JSON.parse(JSON.stringify(this.option))
+            /* 10 渲染融资融券画布 年营业总收入增长率*/
+            setTimeout(() => {
+                this.renderCanavas(this.myCharts[`myChart${23}`], temp)
+            }, 300)
+        },
+        /* 累计每天涨幅度数量统计 半年 季度 月份 周情况 */
+        LJZFDayInit() {
+            // "2020-12-10, 168.00, 169.52, 171.66, 166.02, 370436, 6243808768.00, 3.26, -2.15, -3.72, 3.23"
+            // index 开盘价 1 收盘价 2 最高价 3 最低价 4 成交量 5 成交额 6 振幅(当天最高最低差额/前一天收盘价) 7 涨跌幅 8 涨跌额 9 换手率 10
+            if (!this.dataObj.byd) { return }
+            const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
+
+            /* 一年 */
+            const yearStatistic3Percent = data.slice(0, 240).map(item => item.split(',')[8]).filter(zdf => zdf > 3 && zdf < 5).length
+            const yearStatistic5Percent = data.slice(0, 240).map(item => item.split(',')[8]).filter(zdf => zdf > 5 && zdf < 9).length
+            const yearStatistic10Percent = data.slice(0, 240).map(item => item.split(',')[8]).filter(zdf => zdf > 9).length
+            const year_arr = [
+                { name: '一年次数', data: [yearStatistic10Percent, yearStatistic5Percent, yearStatistic3Percent], type: 'bar' },
+            ]
+
+            /* 半年 */
+            const halfYearStatistic3Percent = data.slice(0, 120).map(item => item.split(',')[8]).filter(zdf => zdf > 3 && zdf < 5).length
+            const halfYearStatistic5Percent = data.slice(0, 120).map(item => item.split(',')[8]).filter(zdf => zdf > 5 && zdf < 9).length
+            const halfYearStatistic10Percent = data.slice(0, 120).map(item => item.split(',')[8]).filter(zdf => zdf > 9).length
+            const halfYear_arr = [
+                { name: '半年次数', data: [halfYearStatistic10Percent, halfYearStatistic5Percent, halfYearStatistic3Percent], type: 'bar' },
+            ]
+
+            /* 季度 */
+            const Month3Statistic3Percent = data.slice(0, 60).map(item => item.split(',')[8]).filter(zdf => zdf > 3 && zdf < 5).length
+            const Month3Statistic5Percent = data.slice(0, 60).map(item => item.split(',')[8]).filter(zdf => zdf > 5 && zdf < 9).length
+            const Month3Statistic10Percent = data.slice(0, 60).map(item => item.split(',')[8]).filter(zdf => zdf > 9).length
+            const Month3_arr = [
+                { name: '季度次数', data: [Month3Statistic10Percent, Month3Statistic5Percent, Month3Statistic3Percent], type: 'bar' },
+            ]
+
+            /* 月 */
+            const oneMonthStatistic3Percent = data.slice(0, 21).map(item => item.split(',')[8]).filter(zdf => zdf > 3 && zdf < 5).length
+            const oneMonthStatistic5Percent = data.slice(0, 21).map(item => item.split(',')[8]).filter(zdf => zdf > 5 && zdf < 9).length
+            const oneMonthStatistic10Percent = data.slice(0, 21).map(item => item.split(',')[8]).filter(zdf => zdf > 9).length
+            const oneMonth_arr = [
+                { name: '一月次数', data: [oneMonthStatistic10Percent, oneMonthStatistic5Percent, oneMonthStatistic3Percent], type: 'bar' },
+            ]
+
+            /* 2周 */
+            const Week2Statistic3Percent = data.slice(0, 13).map(item => item.split(',')[8]).filter(zdf => zdf > 3 && zdf < 5).length
+            const Week2Statistic5Percent = data.slice(0, 13).map(item => item.split(',')[8]).filter(zdf => zdf > 5 && zdf < 9).length
+            const Week2Statistic10Percent = data.slice(0, 13).map(item => item.split(',')[8]).filter(zdf => zdf > 9).length
+            const Week2_arr = [
+                { name: '两周次数', data: [Week2Statistic10Percent, Week2Statistic5Percent, Week2Statistic3Percent], type: 'bar' },
+            ]
+
+            /* 横坐标 点数 */
+            const date = ['10点次数', '5点次数', '3点次数']
+
+            /* 2 画布个数 */
+            const datas = [
+                { date, data: year_arr },
+                { date, data: halfYear_arr },
+                { date, data: Month3_arr },
+                { date, data: oneMonth_arr },
+                { date, data: Week2_arr },
+            ]
+            /* 8 渲染融资融券画布 涨幅度数量统计*/
+            datas.forEach((every, index) => {
+                const { date, data } = every
+                this.updateConfig({ date, data, colName: this.dataObj.byd.name })
+                const temp = JSON.parse(JSON.stringify(this.option))
+                setTimeout(() => {
+                    this.renderCanavas(this.myCharts[`myChart${index + 13}`], temp)
+                }, 300)
+            })
+        },
+        /* 累计每天跌幅度数量统计 半年 季度 月份 周情况 */
+        LJDFDayInit() {
+            // "2020-12-10, 168.00, 169.52, 171.66, 166.02, 370436, 6243808768.00, 3.26, -2.15, -3.72, 3.23"
+            // index 开盘价 1 收盘价 2 最高价 3 最低价 4 成交量 5 成交额 6 振幅(当天最高最低差额/前一天收盘价) 7 涨跌幅 8 涨跌额 9 换手率 10
+            if (!this.dataObj.byd) { return }
+            const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
+
+            /* 一年 跌幅次数统计*/
+            const yearStatistic3Percent = data.slice(0, 240).map(item => item.split(',')[8]).filter(zdf => zdf > -3 && zdf < 0).length
+            const yearStatistic4Percent = data.slice(0, 240).map(item => item.split(',')[8]).filter(zdf => zdf > -5 && zdf < -3).length
+            const yearStatistic5Percent = data.slice(0, 240).map(item => item.split(',')[8]).filter(zdf => zdf < -5 && zdf > -9).length
+            const yearStatistic10Percent = data.slice(0, 240).map(item => item.split(',')[8]).filter(zdf => zdf < -9).length
+            const year_arr = [
+                { name: '一年次数', data: [yearStatistic10Percent, yearStatistic5Percent, yearStatistic4Percent, yearStatistic3Percent], type: 'bar' },
+            ]
+
+            /* 半年 跌幅次数统计*/
+            const halfYearStatistic3Percent = data.slice(0, 120).map(item => item.split(',')[8]).filter(zdf => zdf > -3 && zdf < 0).length
+            const halfYearStatistic4Percent = data.slice(0, 120).map(item => item.split(',')[8]).filter(zdf => zdf > -5 && zdf < -3).length
+            const halfYearStatistic5Percent = data.slice(0, 120).map(item => item.split(',')[8]).filter(zdf => zdf < -5 && zdf > -9).length
+            const halfYearStatistic10Percent = data.slice(0, 120).map(item => item.split(',')[8]).filter(zdf => zdf < -9).length
+            const halfYear_arr = [
+                { name: '半年次数', data: [halfYearStatistic10Percent, halfYearStatistic5Percent, halfYearStatistic4Percent, halfYearStatistic3Percent], type: 'bar' },
+            ]
+
+            /* 季度 跌幅次数统计*/
+            const Month3Statistic3Percent = data.slice(0, 60).map(item => item.split(',')[8]).filter(zdf => zdf > -3 && zdf < 0).length
+            const Month3Statistic4Percent = data.slice(0, 60).map(item => item.split(',')[8]).filter(zdf => zdf > -5 && zdf < -3).length
+            const Month3Statistic5Percent = data.slice(0, 60).map(item => item.split(',')[8]).filter(zdf => zdf < -5 && zdf > -9).length
+            const Month3Statistic10Percent = data.slice(0, 60).map(item => item.split(',')[8]).filter(zdf => zdf < -9).length
+            const Month3_arr = [
+                { name: '季度次数', data: [Month3Statistic10Percent, Month3Statistic5Percent, Month3Statistic4Percent, Month3Statistic3Percent], type: 'bar' },
+            ]
+
+            /* 月 跌幅次数统计*/
+            const oneMonthStatistic3Percent = data.slice(0, 21).map(item => item.split(',')[8]).filter(zdf => zdf > -3 && zdf < 0).length
+            const oneMonthStatistic4Percent = data.slice(0, 21).map(item => item.split(',')[8]).filter(zdf => zdf > -5 && zdf < -3).length
+            const oneMonthStatistic5Percent = data.slice(0, 21).map(item => item.split(',')[8]).filter(zdf => zdf < -5 && zdf > -9).length
+            const oneMonthStatistic10Percent = data.slice(0, 21).map(item => item.split(',')[8]).filter(zdf => zdf < -9).length
+            const oneMonth_arr = [
+                { name: '一月次数', data: [oneMonthStatistic10Percent, oneMonthStatistic5Percent, oneMonthStatistic4Percent, oneMonthStatistic3Percent], type: 'bar' },
+            ]
+
+            /* 2周 跌幅次数统计*/
+            const Week2Statistic3Percent = data.slice(0, 13).map(item => item.split(',')[8]).filter(zdf => zdf > -3 && zdf < 0).length
+            const Week2Statistic4Percent = data.slice(0, 13).map(item => item.split(',')[8]).filter(zdf => zdf > -5 && zdf < -3).length
+            const Week2Statistic5Percent = data.slice(0, 13).map(item => item.split(',')[8]).filter(zdf => zdf < -5 && zdf > -9).length
+            const Week2Statistic10Percent = data.slice(0, 13).map(item => item.split(',')[8]).filter(zdf => zdf < -9).length
+            const Week2_arr = [
+                { name: '两周次数', data: [Week2Statistic10Percent, Week2Statistic5Percent, Week2Statistic4Percent, Week2Statistic3Percent], type: 'bar' },
+            ]
+
+            /* 横坐标 点数 */
+            const date = ['-10点次数', '-5点上次数', '-4内点次数', '-3点内次数']
+
+            /* 2 画布个数 */
+            const datas = [
+                { date, data: year_arr },
+                { date, data: halfYear_arr },
+                { date, data: Month3_arr },
+                { date, data: oneMonth_arr },
+                { date, data: Week2_arr },
+            ]
+            /* 9 渲染融资融券画布 跌幅度数量统计*/
+            datas.forEach((every, index) => {
+                const { date, data } = every
+                this.updateConfig({ date, data, colName: this.dataObj.byd.name })
+                const temp = JSON.parse(JSON.stringify(this.option))
+                setTimeout(() => {
+                    this.renderCanavas(this.myCharts[`myChart${index + 18}`], temp)
+                }, 300)
+            })
+        },
+        handleStrong({ dataStock, dataSZZS }) {
             // 2020-12-31, 3419.73, 3473.07, 3474.92, 3419.73, 335673925, 450482319360.00, 1.62, 1.72, 58.62, 0.89
             // 大盘 index 日期 0 涨跌幅 8
             const szzsDFArr = dataSZZS.filter(SZZS => SZZS.split(',')[8] < 0)
             /* 20天跌幅 */
             const szzsDF20DaysArr = szzsDFArr.slice(0, 20).reverse() // 最近大盘下跌20天数据
             const szzsDFDateArr = szzsDF20DaysArr.map(DFStr => DFStr.split(',')[0]) // 上证跌幅对应日期数组 用于匹配个股用
-            const stockZDF20DaysArr = dataStock.filter(stockStr => szzsDFDateArr.includes(stockStr.split(',')[0])).reverse() 
+            const stockZDF20DaysArr = dataStock.filter(stockStr => szzsDFDateArr.includes(stockStr.split(',')[0])).reverse()
             /* 最终数据 */
             const date_arr = szzsDFDateArr
             const szzsDF20DaysDatas = szzsDF20DaysArr.map(DFStr => DFStr.split(',')[8])
@@ -492,14 +677,14 @@ export default {
                 stockZDF20DaysDatas,
             }
         },
-        handleCompare({dataStock, dataSZZS}){
+        handleCompare({ dataStock, dataSZZS }) {
             // 2020-12-31, 3419.73, 3473.07, 3474.92, 3419.73, 335673925, 450482319360.00, 1.62, 1.72, 58.62, 0.89
             // 大盘 index 日期 0 涨跌幅 8
             const szzsZDFArr = dataSZZS.filter(SZZS => SZZS.split(',')[8])
             /* 20天跌幅 */
             const szzsZDF20DaysArr = szzsZDFArr.slice(0, 20).reverse() // 最近大盘下跌20天数据
             const szzsZDFDateArr = szzsZDF20DaysArr.map(DFStr => DFStr.split(',')[0]) // 上证跌幅对应日期数组
-            const stockZDF20DaysArr = dataStock.slice(0, 20).reverse() 
+            const stockZDF20DaysArr = dataStock.slice(0, 20).reverse()
             /* 最终数据 */
             const date_arr = szzsZDFDateArr
             const szzsZDF20DaysDatas = szzsZDF20DaysArr.map(DFStr => DFStr.split(',')[8])
@@ -535,7 +720,7 @@ export default {
             return `${((ratio) * 100).toFixed(2)}`
         },
         /* 更新画布配置 */
-        updateConfig({ date, data, colName}) {
+        updateConfig({ date, data, colName }) {
 
             /**
              * 表格头 // 取第一个数据name
@@ -560,7 +745,7 @@ export default {
                 }
             };
             // data[0].name === '斜率' && (option.yAxis.axisLabel.formatter = '{value}%')
-            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅', '当天涨幅', '前20天累计点数', '距20均偏移量', '大盘跌幅', '个股', '个股走势', '大盘走势', '资产收益率'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
+            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅', '当天涨幅', '前20天累计点数', '距20均偏移量', '大盘跌幅', '个股', '个股走势', '大盘走势', '资产收益率', '年营业收入增长率'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
         },
         /* 数字累加 */
         // accumulator(numArr){

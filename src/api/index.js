@@ -185,3 +185,10 @@ export function yearROE(params = {}) {
     const queryStr = qs.stringify(params)
    return axios.get(`http://127.0.0.1:4000/yearROE?${queryStr}`)
 }
+
+
+/* 财务分析数据 */
+export function financeTableData(params = {}) {
+    const queryStr = qs.stringify(params)
+   return axios.get(`http://127.0.0.1:4000/financeTableData?${queryStr}`)
+}

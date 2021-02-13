@@ -31,6 +31,22 @@
           <div class="main" style="width: 50%; height: 400px" />
           <div class="main" style="width: 50%; height: 400px" />
         </div>
+        <div class="ZFS_warp">
+          <div class="main" style="width: 20%; height: 400px" />
+          <div class="main" style="width: 20%; height: 400px" />
+          <div class="main" style="width: 20%; height: 400px" />
+          <div class="main" style="width: 20%; height: 400px" />
+          <div class="main" style="width: 20%; height: 400px" />
+        </div>
+        <div class="DFS_warp">
+          <div class="main" style="width: 20%; height: 400px" />
+          <div class="main" style="width: 20%; height: 400px" />
+          <div class="main" style="width: 20%; height: 400px" />
+          <div class="main" style="width: 20%; height: 400px" />
+          <div class="main" style="width: 20%; height: 400px" />
+        </div>
+        <div class="main" style="width: 90%; height: 400px" />
+        <!-- <div class="main" style="width: 90%; height: 400px" /> -->
       </el-tab-pane>
 
       <!-- 2 个股异动 -->
@@ -140,7 +156,13 @@ import searchSelect from "@/components/searchSelect/index";
 import iframePage from "@/components/iframePage/index";
 import FormTable from "./components/FormTable";
 
-import { getLatestP, getFSP, getConfigsP, getbkLatestP, getRZRQ, pushLatestFSP, getCacheFSP, setCacheData, getHistoryCashFlow,  getImediateCashFlow, yearROE } from "@/api/index";
+import { 
+  // getbkLatestP, getImediateCashFlow, 
+  getLatestP, getFSP, getConfigsP, 
+  getRZRQ, pushLatestFSP, 
+  getCacheFSP, setCacheData, getHistoryCashFlow,  
+  yearROE, financeTableData,
+} from "@/api/index";
 
 export default {
   data() {
@@ -213,6 +235,7 @@ export default {
         let cacheFSP = await getCacheFSP({"secid": this.selectVal,});  // 时间降序
         let { data: { data: historyCashFlow } } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
         let { data: financeReport } = await yearROE({"secid": this.selectVal,});  // 时间降序
+        let { data: financeTable } = await financeTableData({"secid": this.selectVal,});  // 时间降序
         // console.log(resFSP, 'cacheFSP=====')
         // console.log(cacheFSP, 'cacheFSP=====')
         // this.dataObj.byd = res.data;
@@ -260,6 +283,7 @@ export default {
         this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
         this.dataObj.historyCashFlow = historyCashFlow
         this.dataObj.financeReport = financeReport // 财务报表 年净资产收益率
+        this.dataObj.financeTableData = financeTable // 财务分析数据， 
         // let bkLatestP = getbkLatestP({ secid: '90.BK0711' }).then(data => {
         //   console.log(data, '---------data');
         // });
@@ -374,7 +398,9 @@ div {
 p {
   text-align: left;
 }
-.ROE_warp {
+.ROE_warp,
+.ZFS_warp,
+.DFS_warp {
   display: flex;
 }
 </style>
