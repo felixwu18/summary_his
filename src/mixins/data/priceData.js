@@ -45,7 +45,8 @@ export default {
                 rzrq: {},
                 historyCashFlow: {},
                 financeReport: {}, //财务数据
-                financeTableData: {}, //财务数据 营业收入， 净利润等
+                financeTableDataYear: {}, //财务数据 营业年收入， 年净利润等
+                financeTableDataQuarter: {}, //财务数据 营业季度收入， 季度净利润等
             },
             bydN: [],
             option: {
@@ -94,10 +95,12 @@ export default {
             this.judgeStrongWeekInit() // 判断个股强弱-1 大盘跌时 个股表现
             this.judgeStrongZSAndStockInit() // 判断个股强弱-2 大盘与个股走势比较
             this.financeReportYearInit() // 财务数据 年净资产收益率
-            this.financeReportMonthInit() // 财务数据 月净资产收益率
-            this.financeTableDataInit() // 财务数据 营业收入增长率， 净利润增长率, 现金流等
+            this.financeReportMonthInit() // 财务数据 季度净资产收益率
+            this.financeTableDataYearInit() // 财务数据 年营业收入增长率， 净利润增长率, 现金流等
+            this.financeTableDataQuarterInit() // 财务数据 季度 营业收入增长率， 净利润增长率, 现金流等
             this.LJZFDayInit() // 累计每天涨幅度数量统计 半年 季度 月份 周情况
             this.LJDFDayInit() // 累计每天跌幅幅度数量统计 半年 季度 月份 周情况
+            // this.profitIncomRateInit() // 每年 利润占总营业收入比率变化
             const date_arr = averages.map(obj => obj.date) || []
             const upper_arr = [
                 { name: '布林上轨', data: averages.map(obj => obj.upper), type: 'line' },
@@ -303,7 +306,7 @@ export default {
             const temp = JSON.parse(JSON.stringify(this.option))
             /* 5 渲染融资融券画布 融资融券 */
             setTimeout(() => {
-                this.renderCanavas(this.myCharts[`myChart${24}`], temp)
+                this.renderCanavas(this.myCharts[`myChart${25}`], temp)
             }, 300)
         },
         /* 每天增加rzrq */
@@ -459,7 +462,7 @@ export default {
                 this.renderCanavas(this.myCharts[`myChart${11}`], temp)
             }, 300)
         },
-        /* 月净资产收益率 杜邦分析 */
+        /* 季度净资产收益率 杜邦分析 */
         financeReportMonthInit() {
             if (!this.dataObj.financeReport.bgq) { return }
             // debugger
@@ -469,21 +472,20 @@ export default {
             /* 个股年净资产收益率变化 */
             const formartROE_arr = data.map(item => item.jzcsyl.slice(0, -1)).reverse()
             const yearROE_arr = [
-                { name: '月净资产收益率(ROE)', data: formartROE_arr, type: 'bar' },
+                { name: '季度净资产收益率(ROE)', data: formartROE_arr, type: 'bar' },
             ] || []
             this.updateConfig({ date: date_arr, data: yearROE_arr, colName: this.dataObj.byd.name })
             const temp = JSON.parse(JSON.stringify(this.option))
-            /* 7 渲染融资融券画布 月净资产收益率*/
+            /* 7 渲染融资融券画布 季度净资产收益率*/
             setTimeout(() => {
                 this.renderCanavas(this.myCharts[`myChart${12}`], temp)
             }, 300)
         },
-        /* 财务数据分析基本面， 营业收入增长率， 净利润增长率等 */
-        financeTableDataInit() {
-            if (!this.dataObj.financeTableData) { return }
+        /* 年度 --- 财务数据分析基本面， 年 营业收入增长率， 净利润增长率等 */
+        financeTableDataYearInit() {
+            if (!this.dataObj.financeTableDataYear) { return }
 
-            const data = JSON.parse(JSON.stringify(this.dataObj.financeTableData)).reverse() || []
-            debugger
+            const data = JSON.parse(JSON.stringify(this.dataObj.financeTableDataYear)).reverse() || []
             /* 日期对应 */
             const date_arr = data.map(item => item.date).slice(1)
             /* 年营业总收入 */
@@ -516,6 +518,44 @@ export default {
             /* 10 渲染融资融券画布 年营业总收入增长率*/
             setTimeout(() => {
                 this.renderCanavas(this.myCharts[`myChart${23}`], temp)
+            }, 300)
+        },
+       /* 季度 --- 财务数据分析基本面， 季度 营业收入增长率， 净利润增长率等 */
+        financeTableDataQuarterInit() {
+            if (!this.dataObj.financeTableDataQuarter) { return }
+            const data = JSON.parse(JSON.stringify(this.dataObj.financeTableDataQuarter)).reverse() || []
+            /* 日期对应 */
+            const date_arr = data.map(item => item.date).slice(1)
+            /* 季度营业总收入 亿为单位*/
+            const quarterIncome_arr = data.map(item => {
+                if (item.yyzsr.slice(-1) === '万') {
+                    return item.yyzsr.slice(0, -1) / 10000
+                } else {
+                    return item.yyzsr.slice(0, -1)
+                }
+            })
+            const quaterIncomeGrowRate_arr = quarterIncome_arr.map((item, index) => ((quarterIncome_arr[index + 1] - item) / item * 100).toFixed(1)).slice(0, -1)
+
+            /* 季度归属净利润 */
+            const pureIncome_arr = data.map(item => {
+                if (item.gsjlr.slice(-1) === '万') {
+                    return (item.gsjlr.slice(0, -1) / 10000).toFixed(1)
+                } else {
+                    return item.gsjlr.slice(0, -1)
+                }
+            })
+            const pureIncomeGrowRate_arr = pureIncome_arr.map((item, index) => ((pureIncome_arr[index + 1] - item) / item * 100).toFixed(1)).slice(0, -1)
+
+            //  debugger
+            const Income_arr = [
+                { name: '季度营业总收入增长率', data: quaterIncomeGrowRate_arr, type: 'line' },
+                { name: '季度净利润增长率', data: pureIncomeGrowRate_arr, type: 'line' },
+            ] || []
+            this.updateConfig({ date: date_arr, data: Income_arr, colName: this.dataObj.byd.name })
+            const temp = JSON.parse(JSON.stringify(this.option))
+            /* 11 渲染融资融券画布 季度营业总收入增长率*/
+            setTimeout(() => {
+                this.renderCanavas(this.myCharts[`myChart${24}`], temp)
             }, 300)
         },
         /* 累计每天涨幅度数量统计 半年 季度 月份 周情况 */
@@ -658,6 +698,45 @@ export default {
                     this.renderCanavas(this.myCharts[`myChart${index + 18}`], temp)
                 }, 300)
             })
+        },
+        /* 历年利润占总收入比率变化 */
+        profitIncomRateInit() {
+            // if (!this.dataObj.financeTableDataYear) { return }
+
+            // const data = JSON.parse(JSON.stringify(this.dataObj.financeTableDataYear)).reverse() || []
+            // /* 日期对应 */
+            // const date_arr = data.map(item => item.date)
+            // debugger
+            // /* 年利润 */
+            // const yearProfits_arr = data.map(item => {
+            //     if (item.yyzsr.slice(-1) === '万') {
+            //         return item.yyzsr.slice(0, -1) / 10000
+            //     } else {
+            //         return item.yyzsr.slice(0, -1)
+            //     }
+            // })
+            // const yearProfitsFormat_arr = yearProfits_arr.map((item, index) => ((yearProfits_arr[index + 1] - item) / item * 100).toFixed(1)).slice(0, -1)
+
+            // /* 年营业总收入 */
+            // const yearIncome_arr = data.map(item => {
+            //     if (item.gsjlr.slice(-1) === '万') {
+            //         return (item.gsjlr.slice(0, -1) / 10000).toFixed(1)
+            //     } else {
+            //         return item.gsjlr.slice(0, -1)
+            //     }
+            // })
+            // const yearProfitIncomeRate_arr = yearIncome_arr.map((item, index) => ((yearIncome_arr[index + 1] - item) / item * 100).toFixed(1)).slice(0, -1)
+
+            // //  debugger
+            // const Income_arr = [
+            //     { name: '年利润营业总收入比率', data: yearProfitIncomeRate_arr, type: 'line' },
+            // ] || []
+            // this.updateConfig({ date: date_arr, data: Income_arr, colName: this.dataObj.byd.name })
+            // const temp = JSON.parse(JSON.stringify(this.option))
+            // /* 10 渲染融资融券画布 年营业总收入增长率*/
+            // setTimeout(() => {
+            //     this.renderCanavas(this.myCharts[`myChart${23}`], temp)
+            // }, 300)
         },
         handleStrong({ dataStock, dataSZZS }) {
             // 2020-12-31, 3419.73, 3473.07, 3474.92, 3419.73, 335673925, 450482319360.00, 1.62, 1.72, 58.62, 0.89

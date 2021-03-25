@@ -435,6 +435,7 @@ export default {
   },
   data() {
     return {
+      // ipReg: /^([1-9]\d{0, 1}|1\d\d|2[0, 4]\d|25[0, 5])\.([1, 9]\d{0, 1}|1\d\d|2[0,4]\d|25[0, 5])\.([1-9]\d{0, 1}|1\d\d|2[0, 4]\d|25[0, 5])\.([1, 9]\d{0, 1}|1\d\d|2[0, 4]\d|25[0, 5])$))/
       dataFromFather: [{title: '独孤九剑', children: [{title: '紫霞神功', children: [{title: '冲灵剑法'}]}]},
                        {title: '六脉神剑'},
                        {title: '一阳指', children: [{title: '玄铁重剑'}]}

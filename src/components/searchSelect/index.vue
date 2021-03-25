@@ -10,9 +10,6 @@
         v-bind="$attrs"
         filterable
       >
-        <!-- :filter-method="selectFilterVal" -->
-        <!-- <el-option v-for="(item,key) in configure_obj?configure_obj[config_name]:{}" :key="key" :label="item" :value="key">
-        </el-option>-->
         <el-option
           v-for="(item, index) in (options.length ? options : [])"
           :key="index"
@@ -20,6 +17,7 @@
           :value="item.key"
         ></el-option>
       </el-select>
+      <!--   :filter-method="selectFilterVal" -->
     <!-- </searchInput> -->
   </div>
 </template>
@@ -59,19 +57,20 @@ export default {
     // },
     /* 自定义搜索 */
     selectFilterVal(val) {
-      const configure = JSON.parse(JSON.stringify(this.configure));
-      if (val.trim()) {
-        const fieldsArr = Object.keys(configure[0]);
-        this.options = this.filterObjArray(
-          configure,
-          val,
-          fieldsArr,
-          );
-          // if (this.options) { this.$emit("update:insertValue", ''); } // 编码 
-      } else {
-        // val 为空时， 还原数组
-        this.options = JSON.parse(JSON.stringify(configure));
-      }
+      this.$emit('handleSearch', val)
+      // const configure = JSON.parse(JSON.stringify(this.configure));
+      // if (val.trim()) {
+      //   const fieldsArr = Object.keys(configure[0]);
+      //   this.options = this.filterObjArray(
+      //     configure,
+      //     val,
+      //     fieldsArr,
+      //     );
+      //     // if (this.options) { this.$emit("update:insertValue", ''); } // 编码 
+      // } else {
+      //   // val 为空时， 还原数组
+      //   this.options = JSON.parse(JSON.stringify(configure));
+      // }
     },
     filterObjArray(ObjArr, valInput, keyMap) {
       const temp = ObjArr.filter(this.filterItem(valInput, keyMap));
@@ -97,6 +96,7 @@ export default {
   computed: {
     value: {
       get() {
+        console.log(this.insertValue, 'get--')
         return this.insertValue;
       },
       set(key) {
@@ -106,6 +106,8 @@ export default {
         const { value, marketT } = selectObj
         this.$emit("update:insertValue", key); // 编码
         this.$emit("change", { key, value, marketT }); // 传编码及值
+        console.log(key, 'set--key')
+        console.log(this.insertValue, 'set--insertValue')
       },
     },
   },

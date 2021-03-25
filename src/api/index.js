@@ -51,6 +51,22 @@ export function getLatestP(params = {}) {
     }))
 }
 
+/* latestPAll 模糊查询远程所有数据 不缓存 */
+export function getLatestPAll(params = {}) {
+        return new Promise((resolve => {
+            params = { updateTime: Date.now(), ...params }
+            const queryStr = qs.stringify(params)
+            axios.get(`http://127.0.0.1:4000/latestPAll?${queryStr}`)
+                .then(res => {
+                    const { QuotationCodeTable: data } = res.data
+                    resolve(data)
+                })
+                .catch(err => {
+                    console.error(err)
+                })
+        }))
+    }
+
 /* 最新版块价 */
 export function getbkLatestP(params = {}) {
     return new Promise((resolve => {
@@ -58,9 +74,6 @@ export function getbkLatestP(params = {}) {
         const queryStr = qs.stringify(params)
         axios.get(`http://127.0.0.1:4000/bkLatestPQuery?${queryStr}`)
             .then(res => {
-                //  debugger
-                //  const jsonD = res.data.split('(')[1].split(')')[0]
-                //      const data = res.data
                 const data = res.data.data
                 resolve(data)
             })

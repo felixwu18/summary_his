@@ -8,6 +8,15 @@
           @change="handleName(arguments, activeName)"
         />
       </el-form-item>
+      <el-form-item label="名称-all：" label-width="120px">
+        <el-autocomplete
+          v-model="selectValAll"
+          :fetch-suggestions="handleSelectInput"
+          placeholder="请输入内容"
+          clearable
+          @select="val => handleNameVall(val, activeName)"
+        ></el-autocomplete>        
+      </el-form-item>
     </el-form>
     <el-tabs
       class="margin"
@@ -46,7 +55,7 @@
           <div class="main" style="width: 20%; height: 400px" />
         </div>
         <div class="main" style="width: 90%; height: 400px" />
-        <!-- <div class="main" style="width: 90%; height: 400px" /> -->
+        <div class="main" style="width: 90%; height: 400px" />
       </el-tab-pane>
 
       <!-- 2 个股异动 -->
@@ -161,14 +170,14 @@ import {
   getLatestP, getFSP, getConfigsP, 
   getRZRQ, pushLatestFSP, 
   getCacheFSP, setCacheData, getHistoryCashFlow,  
-  yearROE, financeTableData,
+  yearROE, financeTableData, getLatestPAll
 } from "@/api/index";
 
 export default {
   data() {
     return {
       selectVal: "0.002594",
-      // selectVal: "0.000895",
+      selectValAll: "",
       stcokCode: "sz002594",
       iframeUrl: `http://quote.eastmoney.com/changes/stocks/${
         this.stcokCode || "sz002594"
@@ -194,14 +203,21 @@ export default {
         { key: "2", value: "二级城市" },
         { key: "3", value: "三级城市" },
       ],
+      configsPAll: [], // 实时模糊查询匹配下拉
       myCharts: {},
       activeName: "first",
+      select_input_flag: 'select'
     };
   },
   mixins: [std, priceData],
   async created() {
     /* 下拉配置 */
     const configsP = (await getConfigsP()) || [];
+    // // 加入拼音简写
+    // configsP.forEach(ele => {
+    //   const pinYingCode = this.$utils.getPinyin(ele.value)
+    //   ele.pinyin = pinYingCode.replace(/\s/g, '')
+    // })
     this.configsP = configsP;
     this.selectObj = configsP.find((row) => row.key === this.selectVal); // 初始化对象
     this.init();
@@ -214,7 +230,7 @@ export default {
       //   let { data: HistoryCashFlow } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
       // console.log(HistoryCashFlow, 'HistoryCashFlow')
     },
-    async init() {
+    async init(val) {
       /* 获取数据 */
       let { data: szzsP } = await getLatestP({ secid: 1.000001 });
       this.dataObj.szzsP = szzsP;  // 上证指数
@@ -235,14 +251,15 @@ export default {
         let cacheFSP = await getCacheFSP({"secid": this.selectVal,});  // 时间降序
         let { data: { data: historyCashFlow } } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
         let { data: financeReport } = await yearROE({"secid": this.selectVal,});  // 时间降序
-        let { data: financeTable } = await financeTableData({"secid": this.selectVal,});  // 时间降序
+        let { data: financeTableDataYear } = await financeTableData({"secid": this.selectVal,});  // 时间降序
+        let { data: financeTableDataQuarter } = await financeTableData({"secid": this.selectVal, type: 0});  // 时间降序
         // console.log(resFSP, 'cacheFSP=====')
         // console.log(cacheFSP, 'cacheFSP=====')
         // this.dataObj.byd = res.data;
         // this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
         // return
         /* latestP缓存后台 限制时间延时推送 */
-        if (this.isUpdate(Date.now())) {
+        if (this.isUpdate(Date.now()) && this.select_input_flag === 'select') {
           setTimeout(() => {
             setCacheData({
               secid: this.selectVal,
@@ -251,31 +268,32 @@ export default {
           }, 500)
         }
         /* 将三方最新5天分时价同步并缓存 */
-          if (cacheFSP == '文件读取失败' || cacheFSP === '') {
+        if ((cacheFSP == '文件读取失败' || cacheFSP === '') && this.select_input_flag === 'select') {
+          /* 限制时间推送后台 */
+          if (this.isUpdate(Date.now())) {
+            pushLatestFSP({
+              secid: this.selectVal,
+              data: resFSP
+            })
+          }
+        } else {
+          /* 缓存数据已是最新，不处理 */
+          if (resFSP.slice(-1)[0].slice(0, 10) !== cacheFSP.slice(-1)[0].slice(0, 10)) { 
+            resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
+            if (!resFSP) { return }
             /* 限制时间推送后台 */
-            if (this.isUpdate(Date.now())) {
+            if (this.isUpdate(Date.now()) && this.select_input_flag === 'select') {
+              /* 同步推送后台 */
               pushLatestFSP({
                 secid: this.selectVal,
                 data: resFSP
               })
             }
           } else {
-            /* 缓存数据已是最新，不处理 */
-            if (resFSP.slice(-1)[0].slice(0, 10) !== cacheFSP.slice(-1)[0].slice(0, 10)) { 
-              resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
-              if (!resFSP) { return }
-              /* 限制时间推送后台 */
-              if (this.isUpdate(Date.now())) {
-                /* 同步推送后台 */
-                pushLatestFSP({
-                  secid: this.selectVal,
-                  data: resFSP
-                })
-              }
-            } else {
-              resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
-            }
+            // resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
+            resFSP = cacheFSP // 同步三方重写
           }
+        }
 
         // console.log(resFSP, 'resFSP---')
         /* 数据入口 */
@@ -283,7 +301,8 @@ export default {
         this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
         this.dataObj.historyCashFlow = historyCashFlow
         this.dataObj.financeReport = financeReport // 财务报表 年净资产收益率
-        this.dataObj.financeTableData = financeTable // 财务分析数据， 
+        this.dataObj.financeTableDataYear = financeTableDataYear // 财务分析数据 年数据， 
+        this.dataObj.financeTableDataQuarter = financeTableDataQuarter // 财务分析数据 年数据， 
         // let bkLatestP = getbkLatestP({ secid: '90.BK0711' }).then(data => {
         //   console.log(data, '---------data');
         // });
@@ -297,7 +316,10 @@ export default {
       const mounth =new Date().getMonth() + 1
       const day =new Date().getDate()
       const noUpdateStartTime = `${year}-${mounth}-${day} 09:00`
-      const noUpdateEndTime = `${year}-${mounth}-${day} 13:00`
+      const noUpdateEndTime = `${year}-${mounth}-${day} 15:10`
+      // console.log(nowTime, 'nowTime');
+      // console.log(noUpdateStartTime, 'noUpdateStartTime');
+      // console.log(noUpdateStartTime, 'noUpdateStartTime');
       return (nowTime < new Date(noUpdateStartTime).getTime()) || (nowTime > new Date(noUpdateEndTime).getTime()) || [6, 0].includes(new Date().getDay())
     },
     /* 同步三方分时价 */
@@ -331,6 +353,30 @@ export default {
       this.selectObj = val; // 更新下拉选择的对象
       this.selectVal = val.key;
       this.tabs[activeName](val);
+      /* 普通下拉组件路径 */
+      this.select_input_flag = 'select'
+    },
+    /* 选中后处理 */
+    handleNameVall(val, activeName) {
+      this.selectObj = val; // 更新下拉选择的对象
+      this.selectVal = val.key;
+      this.tabs[activeName](val);
+      /* el-autocomplete 输入框下拉组件路径 */
+      this.select_input_flag = 'input'
+    },
+    /* 远程模糊搜索所有最新 */
+    async handleSelectInput(val, cb) {
+      const res = await getLatestPAll({ input: val })
+      const configsPAll = (res.Data || [])
+      .map(ele => {
+          const _boolean = ele.Code[0] === '6'
+          return {
+                  key: _boolean ? `1.${ele.Code}` : `0.${ele.Code}`, 
+                  value: ele.Name,
+                  marketT: _boolean ? 'sh' : 'sz'
+                }
+      })
+      cb(configsPAll)
     },
     /* 选项卡切换 */
     handleClick(val, activeName) {
@@ -355,6 +401,7 @@ export default {
     },
     /* 个股异动情况 */
     second(val) {
+      console.log(val, 'val----')
       // val = this.toArr(val);
       // this.selectVal = val.key;
       this.stcokCode = `${val.marketT}${val.key.slice(2)}`;

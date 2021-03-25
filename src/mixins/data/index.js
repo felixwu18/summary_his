@@ -10,4 +10,4 @@ function importAll(r) {
 importAll(require.context("./fenshi", false, /\.json/));
 
 // console.log(fileNames, 'fileNames------------')
-// pushLatestFileNames({data: fileNames})
+// pushLatestFileNames({data: fileNames.replace(/\s+/g,'')})

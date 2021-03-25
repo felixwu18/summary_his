@@ -1,5 +1,6 @@
 import { Message, Notification } from "element-ui";
 import { log } from "util";
+import pinyin from "js-pinyin";
 // 失败消息的提示
 export function showError(message) {
   Message({
@@ -359,7 +360,7 @@ export const confugureFormatter = (configure, key) => {
 
 /* 汉字转拼音码 */
 export function getPinyin(str, type = 0, charCase = 0) {
-  getPinyin.setOptions({ checkPolyphone: false, charCase })
+  pinyin.setOptions({ checkPolyphone: false, charCase })
   return type === 0 ? pinyin.getCamelChars(str) : pinyin.getFullChars(str)
 }
 // npm-check 包升级管理
