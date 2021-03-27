@@ -23,6 +23,11 @@
           <el-radio v-model="radioVal" :label="scope.$index" @change="radioChange">&nbsp;</el-radio>
         </template>
       </el-table-column>
+      <el-table-column fixed label="ceshi" width="60px">
+        <template slot="header" scope="scope">
+        999
+        </template>
+      </el-table-column>
       <!-- 多选设置 -->
       <el-table-column v-if="selection" label="选择" type="selection" width="60px"></el-table-column>
       <!-- 序号 -->

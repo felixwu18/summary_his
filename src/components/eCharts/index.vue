@@ -213,11 +213,11 @@ export default {
   async created() {
     /* 下拉配置 */
     const configsP = (await getConfigsP()) || [];
-    // // 加入拼音简写
-    // configsP.forEach(ele => {
-    //   const pinYingCode = this.$utils.getPinyin(ele.value)
-    //   ele.pinyin = pinYingCode.replace(/\s/g, '')
-    // })
+    // 加入拼音简写
+    configsP.forEach(ele => {
+      const pinYingCode = this.$utils.getPinyin(ele.value)
+      ele.value = `${ele.value} (${pinYingCode.replace(/\s/g, '')})`
+    })
     this.configsP = configsP;
     this.selectObj = configsP.find((row) => row.key === this.selectVal); // 初始化对象
     this.init();
