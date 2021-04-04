@@ -7,6 +7,9 @@
           :configure="configsP"
           @change="handleName(arguments, activeName)"
         />
+        <div>
+          <el-button size="medium " @click="getSelectConfig">更新下拉</el-button>
+        </div>
       </el-form-item>
       <el-form-item label="名称-all：" label-width="120px">
         <el-autocomplete
@@ -212,19 +215,32 @@ export default {
   mixins: [std, priceData],
   async created() {
     /* 下拉配置 */
-    const configsP = (await getConfigsP()) || [];
-    // 加入拼音简写
-    configsP.forEach(ele => {
-      const pinYingCode = this.$utils.getPinyin(ele.value)
-      ele.value = `${ele.value} (${pinYingCode.replace(/\s/g, '')})`
-    })
-    this.configsP = configsP;
-    this.selectObj = configsP.find((row) => row.key === this.selectVal); // 初始化对象
+    await this.getSelectConfig();
+    // console.log(configsP, 'configsP')
+    // this.configsP = configsP
+
+    // // 加入拼音简写
+    // configsP.forEach(ele => {
+    //   const pinYingCode = this.$utils.getPinyin(ele.value)
+    //   ele.value = `${ele.value} (${pinYingCode.replace(/\s/g, '')})`
+    // })
+    // this.configsP = configsP;
+    this.selectObj = this.configsP.find((row) => row.key === this.selectVal); // 初始化对象
     this.init();
   },
   mounted() {
   },
   methods: {
+    /* 下拉配置 */
+    async getSelectConfig() {
+    const configsP = (await getConfigsP()) || [];
+          // 加入拼音简写
+    configsP.forEach(ele => {
+      const pinYingCode = this.$utils.getPinyin(ele.value)
+      ele.value = `${ele.value} (${pinYingCode.replace(/\s/g, '')})`
+    })
+    this.configsP = configsP
+    },
     async handleOpen() {
       // window.location.href='myprotocol://H:\\stock\\myprotocol.reg'
       //   let { data: HistoryCashFlow } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
@@ -450,4 +466,5 @@ p {
 .DFS_warp {
   display: flex;
 }
+
 </style>
