@@ -59,6 +59,9 @@
         </div>
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
+        <div class="main" style="width: 90%; height: 400px" />
+        <div class="main" style="width: 90%; height: 400px" />
+        <div class="main" style="width: 90%; height: 400px" />
       </el-tab-pane>
 
       <!-- 2 个股异动 -->
@@ -246,7 +249,7 @@ export default {
       //   let { data: HistoryCashFlow } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
       // console.log(HistoryCashFlow, 'HistoryCashFlow')
     },
-    async init(val) {
+    async init() {
       /* 获取数据 */
       let { data: szzsP } = await getLatestP({ secid: 1.000001 });
       this.dataObj.szzsP = szzsP;  // 上证指数
@@ -284,9 +287,9 @@ export default {
           }, 500)
         }
         /* 将三方最新5天分时价同步并缓存 */
-        if ((cacheFSP == '文件读取失败' || cacheFSP === '') && this.select_input_flag === 'select') {
+        if ((cacheFSP == '文件读取失败' || cacheFSP === '')) {
           /* 限制时间推送后台 */
-          if (this.isUpdate(Date.now())) {
+          if (this.isUpdate(Date.now())&&this.select_input_flag === 'select') {
             pushLatestFSP({
               secid: this.selectVal,
               data: resFSP

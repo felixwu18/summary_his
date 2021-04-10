@@ -35,6 +35,8 @@
       </el-col>
       <el-col :span="12" class="xt-select">
            <el-button size="small" type="primary" @click="handleQuery">上升三法</el-button>      
+          <!--  <el-input v-model="inputVal" placeholder="0.618上方卖价" @blur="handleCompute" />
+           {{ computedVal }} -->
       </el-col>
     </el-row>
     <!-- 表格 -->
@@ -65,11 +67,17 @@ export default {
   },
   data() {
     return {
+      inputVal: '',
+      computedVal: '',
       form: {},
       tableData: [],
     };
   },
   methods: {
+    // handleCompute() {
+    //   // this.inputVal
+    //   // if() {}
+    // },
     handleQuery() {
        getConfigsP()
           .then(res => {

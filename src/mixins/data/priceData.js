@@ -98,6 +98,10 @@ export default {
             this.financeReportMonthInit() // 财务数据 季度净资产收益率
             this.financeTableDataYearInit() // 财务数据 年营业收入增长率， 净利润增长率, 现金流等
             this.financeTableDataQuarterInit() // 财务数据 季度 营业收入增长率， 净利润增长率, 现金流等
+            this.financeYSZKYearInit() // 财务数据 年应收账款增长率 -- 产品订单情况 直接关系营业收入
+            this.financeKCYearInit() // 财务数据 年库存增长率  -- 产品交付能力
+            this.financeYFZKYearInit() // 财务数据 年预付账款增长率 -- 生产的积极性 向上游采购原材料
+
             this.LJZFDayInit() // 累计每天涨幅度数量统计 半年 季度 月份 周情况
             this.LJDFDayInit() // 累计每天跌幅幅度数量统计 半年 季度 月份 周情况
             // this.profitIncomRateInit() // 每年 利润占总营业收入比率变化
@@ -152,7 +156,7 @@ export default {
                 { date: date_arr, data: TopLowSPDot_arr },
                 { date: date_arr, data: TopLowPTime_arr },
             ]
-            /* 1 渲染融资融券画布 各指标*/
+            /* 1 渲染各指标画布 各指标*/
             datas.forEach((every, index) => {
                 const { date, data } = every
                 this.updateConfig({ date, data, colName: this.dataObj.byd.name })
@@ -306,7 +310,7 @@ export default {
             const temp = JSON.parse(JSON.stringify(this.option))
             /* 5 渲染融资融券画布 融资融券 */
             setTimeout(() => {
-                this.renderCanavas(this.myCharts[`myChart${25}`], temp)
+                this.renderCanavas(this.myCharts[`myChart${28}`], temp)
             }, 300)
         },
         /* 每天增加rzrq */
@@ -362,7 +366,7 @@ export default {
                 { date: date_arr, data: majorCashAverage_arr },
             ]
 
-            /* 2 渲染融资融券画布 个股资金流*/
+            /* 2 渲染个股资金流画布 个股资金流*/
             datas.forEach((every, index) => {
                 const { date, data } = every
                 this.updateConfig({ date, data, colName: this.dataObj.byd.name })
@@ -416,7 +420,7 @@ export default {
 
             this.updateConfig({ date: date_arr, data: stockStrongWeek_arr, colName: this.dataObj.byd.name })
             const temp = JSON.parse(JSON.stringify(this.option))
-            /* 3 渲染融资融券画布 判断个股强弱-1*/
+            /* 3 渲染判断个股强弱画布 判断个股强弱-1*/
             setTimeout(() => {
                 this.renderCanavas(this.myCharts[`myChart${9}`], temp)
             }, 300)
@@ -439,7 +443,7 @@ export default {
 
             this.updateConfig({ date: date_arr, data: stockStrongWeek_arr, colName: this.dataObj.byd.name })
             const temp = JSON.parse(JSON.stringify(this.option))
-            /* 4 渲染融资融券画布 判断个股强弱-2*/
+            /* 4 渲染判断个股强弱画布 判断个股强弱-2*/
             setTimeout(() => {
                 this.renderCanavas(this.myCharts[`myChart${10}`], temp)
             }, 300)
@@ -457,7 +461,7 @@ export default {
             ] || []
             this.updateConfig({ date: date_arr, data: yearROE_arr, colName: this.dataObj.byd.name })
             const temp = JSON.parse(JSON.stringify(this.option))
-            /* 6 渲染融资融券画布 年净资产收益率*/
+            /* 6 渲染年净资产收益率画布 年净资产收益率*/
             setTimeout(() => {
                 this.renderCanavas(this.myCharts[`myChart${11}`], temp)
             }, 300)
@@ -476,7 +480,7 @@ export default {
             ] || []
             this.updateConfig({ date: date_arr, data: yearROE_arr, colName: this.dataObj.byd.name })
             const temp = JSON.parse(JSON.stringify(this.option))
-            /* 7 渲染融资融券画布 季度净资产收益率*/
+            /* 7 渲染季度净资产收益率画布 季度净资产收益率*/
             setTimeout(() => {
                 this.renderCanavas(this.myCharts[`myChart${12}`], temp)
             }, 300)
@@ -515,7 +519,7 @@ export default {
             ] || []
             this.updateConfig({ date: date_arr, data: Income_arr, colName: this.dataObj.byd.name })
             const temp = JSON.parse(JSON.stringify(this.option))
-            /* 10 渲染融资融券画布 年营业总收入增长率*/
+            /* 10 渲染年营业总收入画布 年营业总收入增长率*/
             setTimeout(() => {
                 this.renderCanavas(this.myCharts[`myChart${23}`], temp)
             }, 300)
@@ -553,10 +557,101 @@ export default {
             ] || []
             this.updateConfig({ date: date_arr, data: Income_arr, colName: this.dataObj.byd.name })
             const temp = JSON.parse(JSON.stringify(this.option))
-            /* 11 渲染融资融券画布 季度营业总收入增长率*/
+            /* 11 渲染季度营业总收入画布 季度营业总收入增长率*/
             setTimeout(() => {
                 this.renderCanavas(this.myCharts[`myChart${24}`], temp)
             }, 300)
+        },
+        /* 一, 年应收账款增长率 -- 产品订单情况 直接关系营业收入 */
+        financeYSZKYearInit() {
+            if (!this.dataObj.financeReport.nd) { return }
+            const data = this.dataObj.financeReport.nd || []
+            /* 日期对应 */
+            const date_arr = data.map(item => item.date).reverse().slice(1)
+            /* 个股年年应收账款数组 */
+            const formartYSZK_arr = data.map((item) => { 
+                let temp_YSZK = item.yszk.slice(0, -1)
+                if(item.ch.slice(-1) === '万') {
+                    temp_YSZK = temp_YSZK / 1000
+                }
+                return temp_YSZK
+            })
+            /* 年应收账款增长率 */
+            const formartCKRatio_arr = this.getRatioFromArr(formartYSZK_arr).reverse()
+            const yearYSZK_arr = [
+                { name: '年应收账款增长率', data: formartCKRatio_arr, type: 'line' },
+            ] || []
+            this.updateConfig({ date: date_arr, data: yearYSZK_arr, colName: this.dataObj.byd.name })
+            const temp = JSON.parse(JSON.stringify(this.option))
+            /* 12 渲染应收账款画布 年应收账款增长率*/
+            setTimeout(() => {
+                this.renderCanavas(this.myCharts[`myChart${25}`], temp)
+            }, 300)
+        },
+        /* 二, 年库存增长率  -- 产品交付能力 */
+        financeKCYearInit() {
+            if (!this.dataObj.financeReport.nd) { return }
+            const data = this.dataObj.financeReport.nd || []
+            /* 日期对应 */
+            const date_arr = data.map(item => item.date).reverse().slice(1)
+            /* 个股年库存数组 */
+            const formartKC_arr = data.map((item) => { 
+                let temp_CK = item.ch.slice(0, -1)
+                if(item.ch.slice(-1) === '万') {
+                    temp_CK = temp_CK / 1000
+                }
+                return temp_CK
+            })
+            /* 个股年库存增长率变化 */
+            const formartCKRatio_arr = this.getRatioFromArr(formartKC_arr).reverse()
+
+            const yearYSZK_arr = [
+                { name: '年库存增长率', data: formartCKRatio_arr, type: 'line' },
+            ] || []
+            this.updateConfig({ date: date_arr, data: yearYSZK_arr, colName: this.dataObj.byd.name })
+            const temp = JSON.parse(JSON.stringify(this.option))
+            /* 13 渲染库存增长画布 年库存增长率*/
+            setTimeout(() => {
+                this.renderCanavas(this.myCharts[`myChart${26}`], temp)
+            }, 300)
+        },
+        /* 三, 年预付账款增长率 -- 生产的积极性 向上游采购原材料 */
+        financeYFZKYearInit() {
+            if (!this.dataObj.financeReport.nd) { return }
+            const data = this.dataObj.financeReport.nd || []
+            /* 日期对应 */
+            const date_arr = data.map(item => item.date).reverse().slice(1)
+            /* 个股年年应收账款数组 */
+            const formartYFZK_arr = data.map((item) => { 
+                let temp_yfzk = item.yfzk.slice(0, -1)
+                if(item.yfzk.slice(-1) === '万') {
+                    temp_yfzk = temp_yfzk / 1000
+                }
+                return temp_yfzk
+            })
+            /* 个股年年应收账款增长率变化 */
+            const formartYFZKRatio_arr = this.getRatioFromArr(formartYFZK_arr).reverse()
+            // formartYFZK_arr.map((ele, index) => {
+            //     const baseYFZK = formartYFZK_arr[index + 1]
+            //    return ((ele - baseYFZK) / baseYFZK).toFixed(2)
+            // })
+            
+            const yearYSZK_arr = [
+                { name: '年预付账款增长率', data: formartYFZKRatio_arr, type: 'line' },
+            ] || []
+            this.updateConfig({ date: date_arr, data: yearYSZK_arr, colName: this.dataObj.byd.name })
+            const temp = JSON.parse(JSON.stringify(this.option))
+            /* 14 渲染预付账款增长画布 年预付账款增长率*/
+            setTimeout(() => {
+                this.renderCanavas(this.myCharts[`myChart${27}`], temp)
+            }, 300)
+        },
+        getRatioFromArr(arr) {
+           return arr.map((ele, index) => {
+               if(index + 1 === arr.length) { return false }
+                const base = arr[index + 1]
+               return ((ele - base) / base * 100).toFixed(2)
+            }).slice(0, -1)
         },
         /* 累计每天涨幅度数量统计 半年 季度 月份 周情况 */
         LJZFDayInit() {
@@ -616,7 +711,7 @@ export default {
                 { date, data: oneMonth_arr },
                 { date, data: Week2_arr },
             ]
-            /* 8 渲染融资融券画布 涨幅度数量统计*/
+            /* 8 渲染涨幅度画布 涨幅度数量统计*/
             datas.forEach((every, index) => {
                 const { date, data } = every
                 this.updateConfig({ date, data, colName: this.dataObj.byd.name })
@@ -689,7 +784,7 @@ export default {
                 { date, data: oneMonth_arr },
                 { date, data: Week2_arr },
             ]
-            /* 9 渲染融资融券画布 跌幅度数量统计*/
+            /* 9 渲染跌幅度画布 跌幅度数量统计*/
             datas.forEach((every, index) => {
                 const { date, data } = every
                 this.updateConfig({ date, data, colName: this.dataObj.byd.name })
@@ -824,7 +919,27 @@ export default {
                 }
             };
             // data[0].name === '斜率' && (option.yAxis.axisLabel.formatter = '{value}%')
-            ['斜率', '带宽斜率', '最高点数', '最低点数', '每天振幅', '当天涨幅', '前20天累计点数', '距20均偏移量', '大盘跌幅', '个股', '个股走势', '大盘走势', '资产收益率', '年营业收入增长率'].includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
+            const ratioIncludes = [
+                '斜率',
+                '带宽斜率',
+                '最高点数',
+                '最低点数',
+                '每天振幅',
+                '当天涨幅',
+                '前20天累计点数',
+                '距20均偏移量',
+                '大盘跌幅',
+                '个股',
+                '个股走势',
+                '大盘走势',
+                '资产收益率',
+                '年营业收入增长率',
+                '年应收账款增长率',
+                '年库存增长率',
+                '年预付账款增长率',
+            ]
+
+            ratioIncludes.includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
         },
         /* 数字累加 */
         // accumulator(numArr){
