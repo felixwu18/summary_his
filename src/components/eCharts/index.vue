@@ -62,6 +62,7 @@
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
         <div class="main" style="width: 90%; height: 400px" />
+        <div class="main" style="width: 90%; height: 400px" />
       </el-tab-pane>
 
       <!-- 2 个股异动 -->

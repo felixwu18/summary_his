@@ -101,6 +101,7 @@ export default {
             this.financeYSZKYearInit() // 财务数据 年应收账款增长率 -- 产品订单情况 直接关系营业收入
             this.financeKCYearInit() // 财务数据 年库存增长率  -- 产品交付能力
             this.financeYFZKYearInit() // 财务数据 年预付账款增长率 -- 生产的积极性 向上游采购原材料
+            this.financeYSZKAndYYSRYearInit() // 财务数据 年应收账款占营业收入比率 -- 未来收益预期
 
             this.LJZFDayInit() // 累计每天涨幅度数量统计 半年 季度 月份 周情况
             this.LJDFDayInit() // 累计每天跌幅幅度数量统计 半年 季度 月份 周情况
@@ -310,7 +311,7 @@ export default {
             const temp = JSON.parse(JSON.stringify(this.option))
             /* 5 渲染融资融券画布 融资融券 */
             setTimeout(() => {
-                this.renderCanavas(this.myCharts[`myChart${28}`], temp)
+                this.renderCanavas(this.myCharts[`myChart${29}`], temp)
             }, 300)
         },
         /* 每天增加rzrq */
@@ -646,6 +647,35 @@ export default {
                 this.renderCanavas(this.myCharts[`myChart${27}`], temp)
             }, 300)
         },
+        /* 四, 年应收账款占营业收入比率 -- 未来收入的预期 */
+        financeYSZKAndYYSRYearInit() {
+            if (!this.dataObj.financeReport.nd) { return }
+            const data = this.dataObj.financeReport.nd || []
+            /* 日期对应 */
+            const date_arr = data.map(item => item.date).reverse()
+            /* 个股年年应收账款数组 */
+            const YSZKAndYYSRRatio_arr = data.map((item, i) => { 
+                let temp_yszk = item.yszk.slice(0, -1)
+                let temp_yysr = item.yysr.slice(0, -1)
+                if(item.yszk.slice(-1) === '万') {
+                    temp_yszk = temp_yszk / 1000
+                }
+                if(item.yysr.slice(-1) === '万') {
+                    temp_yysr = temp_yysr / 1000
+                }
+                return (temp_yszk / temp_yysr * 100).toFixed(2)
+            })
+            
+            const yearYSZK_arr = [
+                { name: '年应收账款营业收入比', data: YSZKAndYYSRRatio_arr.reverse(), type: 'line' },
+            ] || []
+            this.updateConfig({ date: date_arr, data: yearYSZK_arr, colName: this.dataObj.byd.name })
+            const temp = JSON.parse(JSON.stringify(this.option))
+            /* 14 渲染应收账款营业收入比画布 年应收账款营业收入比率*/
+            setTimeout(() => {
+                this.renderCanavas(this.myCharts[`myChart${28}`], temp)
+            }, 300)
+        },
         getRatioFromArr(arr) {
            return arr.map((ele, index) => {
                if(index + 1 === arr.length) { return false }
@@ -937,6 +967,7 @@ export default {
                 '年应收账款增长率',
                 '年库存增长率',
                 '年预付账款增长率',
+                '年应收账款营业收入比',
             ]
 
             ratioIncludes.includes(data[0].name) && (option.yAxis.axisLabel.formatter = '{value}%')
