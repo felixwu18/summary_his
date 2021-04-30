@@ -230,6 +230,12 @@
          </template>
          <span slot="test" style="color: red">test</span>
      </EditDiv> -->
+     <div style="padding: 100px; border: 1px solid red" @mouseover="handleMouseover"  @mouseenter="handleMouseenter">
+     outer
+     <div style="height: 300px; border: 1px solid green">
+       inner
+     </div>
+     </div>
   </div>
 </template>
 <script>
@@ -517,6 +523,12 @@ export default {
     };
   },
   methods: {
+    handleMouseover() {
+    console.log('Mouseover')
+    },
+    handleMouseenter() {
+    console.log('Mouseenter')
+    },
   ceshiClick() {
     console.log('ceshiClick')
   },
@@ -895,10 +907,15 @@ export default {
     //  console.log('watch-val',val)
     // }
   },
-  created() {
+  async created() {
     this.timeDefault = ["2019-6-8", "2019-7-8"];
     // window.that = this.timeDefault
     // __this = this
+    var a1 = function() { console.log('a1') }
+    var a2 = function() { console.log('a2') }
+    var a3 = function() { console.log('a3') }
+    const result  = await Promise.all([a1, a2, a3])
+    console.log('result', result)
   },
   mounted() {
     this.table_top = this.$refs.singleTable.$el.offsetTop
