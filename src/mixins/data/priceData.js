@@ -44,6 +44,7 @@ export default {
                 FSP: [], //分时价
                 rzrq: {},
                 historyCashFlow: {},
+                historyCashFlowOFBanKuai: {}, // 历史资金流
                 financeReport: {}, //财务数据
                 financeTableDataYear: {}, //财务数据 营业年收入， 年净利润等
                 financeTableDataQuarter: {}, //财务数据 营业季度收入， 季度净利润等
@@ -91,7 +92,8 @@ export default {
         /* 拿到画布处理好的基本数据，并渲染 */
         mixinInit(days = 20) {
             const averages = this.dynamicGet20Day(days).reverse() || [] // 将时间升序
-            this.historyCashFlowInit() // 历史资金流
+            this.historyCashFlowInit() // 个股历史资金流
+            this.historyCashFlowOFBanKuaiInit() // 板块历史资金流
             this.judgeStrongWeekInit() // 判断个股强弱-1 大盘跌时 个股表现
             this.judgeStrongZSAndStockInit() // 判断个股强弱-2 大盘与个股走势比较
             this.financeReportYearInit() // 财务数据 年净资产收益率
@@ -309,9 +311,9 @@ export default {
             // const canavas = { date: date_arr, data: rzrqIncrease_arr }
             this.updateConfig({ date: date_arr, data: rzrqIncrease_arr })
             const temp = JSON.parse(JSON.stringify(this.option))
-            /* 5 渲染融资融券画布 融资融券 */
+            /* 5-2 渲染融资融券画布 融资融券 */
             setTimeout(() => {
-                this.renderCanavas(this.myCharts[`myChart${29}`], temp)
+                this.renderCanavas(this.myCharts[`myChart${32}`], temp)
             }, 300)
         },
         /* 每天增加rzrq */
@@ -349,7 +351,7 @@ export default {
             /* 日期对应 */
             const date_arr = averages.map(obj => obj.date) || []
 
-            /* 最高价 最低价 对应的分时变化 */
+            /* 资金净额 */
             const majorCash_arr = [
                 { name: '净额占比', data: averages.map(obj => obj.majorPureCurrentRatio), type: 'line' },
                 { name: '净额', data: averages.map(obj => obj.cashFlowCurrent), type: 'line' },
@@ -376,6 +378,95 @@ export default {
                     this.renderCanavas(this.myCharts[`myChart${index + 7}`], temp)
                 }, 300)
             })
+        },
+        /* 板块资金流向（板块即时资金及历史资金流向）*/
+        historyCashFlowOFBanKuaiInit(days = 20) {
+            // 2021-04-30,2936391680.0,-1112835584.0,-1823556096.0,-1122026752.0,4058418432.0,6.63,-2.51,-4.12,-2.53,9.17,1918.91,4.87,0.00,0.00
+            // index 日期 0 主力净额 1 主力净占比 6 超大单净额 5 超大单净占比 10  大单净额 4 大单净占比 9 中单净额 3 中单净占比 8 小单净额 2 小单净占比 7 现股价 11 涨跌幅 12
+            const arr =this.dataObj.historyCashFlowOFBanKuai
+            if (!arr&&Array.isArray(arr)) { return }
+            const bankuai1_temp = JSON.parse(this.dataObj.historyCashFlowOFBanKuai[0])
+            const bankuai2_temp = JSON.parse(this.dataObj.historyCashFlowOFBanKuai[1])
+            const bankuai3_temp = JSON.parse(this.dataObj.historyCashFlowOFBanKuai[2])
+            // const data = this.dataObj.historyCashFlow.data;
+            // const data = bankuai1.klines.reverse(); // 时间降序
+            /* 进入处理板块历史资金流数据主流程 */
+            const averages_bankuai1 = []
+            const averages_bankuai2 = []
+            const averages_bankuai3 = []
+            try {
+                const bankuai1 = bankuai1_temp.klines.reverse(); // 时间降序
+                const bankuai2 = bankuai2_temp.klines.reverse(); // 时间降序
+                const bankuai3 = bankuai3_temp.klines.reverse(); // 时间降序
+                for (let i = 0; i < days; i++) {
+                    // const every1 = bankuai1.slice(i, i + 20); // 动态获取每天前20天个股资金流
+                    // const averages_bankuai1 = this.historyCashFlow20Days(every1) // 计算出每天的前20天主力净累计
+                    // const averages_bankuai2 = this.historyCashFlow20Days(every1) // 计算出每天的前20天主力净累计
+                    // const averages_bankuai3 = this.historyCashFlow20Days(every1) // 计算出每天的前20天主力净累计
+                    // averages.unshift(averages_bankuai1)
+                    this.handleEvery(bankuai1, averages_bankuai1, i)
+                    this.handleEvery(bankuai2, averages_bankuai2, i)
+                    this.handleEvery(bankuai3, averages_bankuai3, i)
+                }
+                console.log(averages_bankuai1, 'averages_bankuai1====');
+                // debugger
+            } catch (error) {
+                console.log(error);
+            }
+
+            /* 日期对应 */
+            const date_arr = averages_bankuai1.map(obj => obj.date) || []
+
+            /* 资金净额 */
+            // const majorCash_bankuai1_arr = [
+            //     // { name: '净额占比', data: bankuai1.map(obj => obj.majorPureCurrentRatio), type: 'line' },
+            //     { name: '净额', data: bankuai1.map(obj => obj.cashFlowCurrent), type: 'line' },
+            // ] || []
+            // const majorCash_bankuai2_arr = [
+            //     // { name: '净额占比', data: bankuai2.map(obj => obj.majorPureCurrentRatio), type: 'line' },
+            //     { name: '净额', data: bankuai2.map(obj => obj.cashFlowCurrent), type: 'line' },
+            // ] || []
+            // const majorCash_bankuai3_arr = [
+            //     // { name: '净额占比', data: bankuai3.map(obj => obj.majorPureCurrentRatio), type: 'line' },
+            //     { name: '净额', data: bankuai3.map(obj => obj.cashFlowCurrent), type: 'line' },
+            // ] || []
+            /* 净额累计均线 */
+            const majorCashAverage_bankuai1_arr = [
+                { name: '5均', data: averages_bankuai1.map(obj => obj.cashFlowaverage5), type: 'line' },
+                { name: '13均', data: averages_bankuai1.map(obj => obj.cashFlowaverage13), type: 'line' },
+                { name: '20均', data: averages_bankuai1.map(obj => obj.cashFlowaverage20), type: 'line' },
+            ] || []
+            const majorCashAverage_bankuai2_arr = [
+                { name: '5均', data: averages_bankuai2.map(obj => obj.cashFlowaverage5), type: 'line' },
+                { name: '13均', data: averages_bankuai2.map(obj => obj.cashFlowaverage13), type: 'line' },
+                { name: '20均', data: averages_bankuai2.map(obj => obj.cashFlowaverage20), type: 'line' },
+            ] || []
+            const majorCashAverage_bankuai3_arr = [
+                { name: '5均', data: averages_bankuai3.map(obj => obj.cashFlowaverage5), type: 'line' },
+                { name: '13均', data: averages_bankuai3.map(obj => obj.cashFlowaverage13), type: 'line' },
+                { name: '20均', data: averages_bankuai3.map(obj => obj.cashFlowaverage20), type: 'line' },
+            ] || []
+
+            /* 2 板块 资金流画布 */
+            const datas_bankuai = [
+                { date: date_arr, data: majorCashAverage_bankuai1_arr, name: bankuai1_temp.name },
+                { date: date_arr, data: majorCashAverage_bankuai2_arr, name: bankuai2_temp.name },
+                { date: date_arr, data: majorCashAverage_bankuai3_arr, name: bankuai3_temp.name },
+            ]
+            /* 5-1 渲染板块资金流画布 板块资金流*/
+            datas_bankuai.forEach((every, index) => {
+                const { date, data, name } = every
+                this.updateConfig({ date, data, colName: name })
+                const temp = JSON.parse(JSON.stringify(this.option))
+                setTimeout(() => {
+                    this.renderCanavas(this.myCharts[`myChart${index + 29}`], temp)
+                }, 300)
+            })
+        },
+        handleEvery(bankuai, averages_bankuai, i) {
+            const every = bankuai.slice(i, i + 20); // 动态获取每天前20天个股资金流
+            const averages = this.historyCashFlow20Days(every) // 计算出每天的前20天主力净累计
+            averages_bankuai.unshift(averages)
         },
         /* 每天cashFlow 相关*/
         historyCashFlow20Days(historyCashFlowArr) {

@@ -93,6 +93,10 @@
 
       <!-- 4 版块走势 -->
       <el-tab-pane label="版块" name="forth">
+        <!-- 版块资金流向 -->
+        <div class="main" style="width: 1350px; height: 400px" />
+        <div class="main" style="width: 1350px; height: 400px" />
+        <div class="main" style="width: 1350px; height: 400px" />
         <!-- 版块涨跌情况 -->
         <iframePage
           :url="iframeUrl3"
@@ -176,7 +180,7 @@ import {
   // getbkLatestP, getImediateCashFlow, 
   getLatestP, getFSP, getConfigsP, 
   getRZRQ, pushLatestFSP, 
-  getCacheFSP, setCacheData, getHistoryCashFlow,  
+  getCacheFSP, setCacheData, getHistoryCashFlow,  getHistoryCashFlowOFBanKuai,
   yearROE, financeTableData, getLatestPAll
 } from "@/api/index";
 
@@ -270,6 +274,7 @@ export default {
         let resFSP = await getFSP({ secid: this.selectVal, ndays: 5 }); // 时间降序
         let cacheFSP = await getCacheFSP({"secid": this.selectVal,});  // 时间降序
         let { data: { data: historyCashFlow } } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
+        let { data: historyCashFlowOFBanKuai } = await getHistoryCashFlowOFBanKuai();  // 时间降序 板块资金流历史
         let { data: financeReport } = await yearROE({"secid": this.selectVal,});  // 时间降序
         let { data: financeTableDataYear } = await financeTableData({"secid": this.selectVal,});  // 时间降序
         let { data: financeTableDataQuarter } = await financeTableData({"secid": this.selectVal, type: 0});  // 时间降序
@@ -320,6 +325,7 @@ export default {
         this.dataObj.byd = res.data;
         this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
         this.dataObj.historyCashFlow = historyCashFlow
+        this.dataObj.historyCashFlowOFBanKuai = historyCashFlowOFBanKuai // 板块历史资金流
         this.dataObj.financeReport = financeReport // 财务报表 年净资产收益率
         this.dataObj.financeTableDataYear = financeTableDataYear // 财务分析数据 年数据， 
         this.dataObj.financeTableDataQuarter = financeTableDataQuarter // 财务分析数据 年数据， 

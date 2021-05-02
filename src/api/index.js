@@ -180,6 +180,11 @@ export function getHistoryCashFlow(params = {}) {
         // })
 }
 
+/* 板块历史资金流接口 */
+export function getHistoryCashFlowOFBanKuai() {
+   return axios.get(`http://127.0.0.1:4000/historyCashFlowOfBanKuai`)
+}
+
 /* 个股即时资金流接口 */
 export function getImediateCashFlow(params = {}) {
     const queryStr = qs.stringify(params)
