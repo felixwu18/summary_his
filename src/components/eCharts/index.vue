@@ -94,6 +94,9 @@
       <!-- 4 版块走势 -->
       <el-tab-pane label="版块" name="forth">
         <!-- 版块资金流向 -->
+        <div>
+          <el-button size="medium " @click="updateData" :loading="updateLoading">更新数据</el-button>
+        </div>
         <div class="main" style="width: 1350px; height: 400px" />
         <div class="main" style="width: 1350px; height: 400px" />
         <div class="main" style="width: 1350px; height: 400px" />
@@ -187,6 +190,7 @@ import {
 export default {
   data() {
     return {
+      updateLoading: false, // 更新板块历史资金流
       selectVal: "0.002594",
       selectValAll: "",
       stcokCode: "sz002594",
@@ -239,6 +243,14 @@ export default {
   mounted() {
   },
   methods: {
+    /* 更新板块数据 */
+    async updateData(){
+        this.updateLoading = true;
+        let { data: historyCashFlowOFBanKuai } = await getHistoryCashFlowOFBanKuai();  // 时间降序 板块资金流历史
+        this.dataObj.historyCashFlowOFBanKuai = historyCashFlowOFBanKuai // 板块历史资金流
+        this.historyCashFlowOFBanKuaiInit() // 板块历史资金流
+        this.updateLoading = false;
+    },
     /* 下拉配置 */
     async getSelectConfig() {
     const configsP = (await getConfigsP()) || [];
