@@ -138,6 +138,7 @@ export default {
 
             /* 振幅变化 及收盘价到20均 偏移量 累计收益 */
             const ZFPYArr_arr = [
+                { name: '前5天累计点数', data: averages.map(obj => obj.ljrevenue5), type: 'line' },
                 { name: '前20天累计点数', data: averages.map(obj => obj.ljrevenue), type: 'line' },
                 { name: '每天振幅', data: averages.map(obj => obj.todayZF), type: 'line' },
                 { name: '距20均偏移量', data: averages.map(obj => obj.toAverage20Ratio), type: 'line' },
@@ -191,12 +192,14 @@ export default {
             // "2020-12-10, 168.00, 169.52, 171.66, 166.02, 370436, 6243808768.00, 3.26, -2.15, -3.72, 3.23"
             // index 开盘价 1 收盘价 2 最高价 3 最低价 4 成交量 5 成交额 6 振幅(当天最高最低差额/前一天收盘价) 7 涨跌幅 8 涨跌额 9 换手率 10
             let sum20 = null;
+            let sum5 = null;
             let average20 = null
             const price20 = []
             let std = null
             data.forEach((str, index) => { // 降序时间
                 const todayPrice = str.split(',')[2] // 取收盘价
                 sum20 += todayPrice * 1
+                if(index < 5) { sum5 +=  todayPrice * 1 }
                 price20.push(todayPrice)
             })
             /* 计算出当天最高百分点 */
@@ -213,9 +216,11 @@ export default {
             const todayZDF = data[0].split(',')[8]
 
             /* 计算累计收益 */
-            const earlistKPJ = day21Data.slice(-1)[0].split(',')[2]
+            const earlistKPJ = day21Data.slice(-1)[0].split(',')[2] // 21天前收盘价
+            const earlistKPJ5 = day21Data.slice(0, 6).slice(-1)[0].split(',')[2] // 6天前收盘价
             const todaySPJ = data[0].split(',')[2]
             const ljrevenue = ((todaySPJ - earlistKPJ) / earlistKPJ * 100).toFixed(2)
+            const ljrevenue5 = ((todaySPJ - earlistKPJ5) / earlistKPJ5 * 100).toFixed(2)
 
             /* 处理当天最高价，对低价 对应的分明 格式： 14:42 => 14-42  */
             let TopPtime = '-', LowPtime = '-'
@@ -247,6 +252,7 @@ export default {
                 LowPtime, // 当天最低价对应的分时
                 toAverage20Ratio, // 当天价到20均的偏移量
                 ljrevenue, // 前20天累计收益点数
+                ljrevenue5, // 前5天累计收益点数
             }
         },
         /* days为查看多少天的情况 */
@@ -1048,6 +1054,7 @@ export default {
                 '每天振幅',
                 '当天涨幅',
                 '前20天累计点数',
+                '前5天累计点数',
                 '距20均偏移量',
                 '大盘跌幅',
                 '个股',

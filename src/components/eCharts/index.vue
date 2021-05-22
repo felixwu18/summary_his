@@ -248,7 +248,7 @@ export default {
         this.updateLoading = true;
         let { data: historyCashFlowOFBanKuai } = await getHistoryCashFlowOFBanKuai();  // 时间降序 板块资金流历史
         this.dataObj.historyCashFlowOFBanKuai = historyCashFlowOFBanKuai // 板块历史资金流
-        this.historyCashFlowOFBanKuaiInit() // 板块历史资金流
+        this.historyCashFlowOFBanKuaiInit(33) // 板块历史资金流
         this.updateLoading = false;
     },
     /* 下拉配置 */
@@ -271,7 +271,7 @@ export default {
       let { data: szzsP } = await getLatestP({ secid: 1.000001 });
       this.dataObj.szzsP = szzsP;  // 上证指数
       await this.getData();
-      this.mixinInit();
+      this.mixinInit(20); // 默认20天
       var boxes = document.getElementsByClassName("main");
       boxes = Array.prototype.slice.apply(boxes); // 或者 Array.from(boxes) 对象转数组
       boxes.forEach((box, index) => {

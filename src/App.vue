@@ -230,12 +230,19 @@
          </template>
          <span slot="test" style="color: red">test</span>
      </EditDiv> -->
-     <div style="padding: 100px; border: 1px solid red" @mouseover="handleMouseover"  @mouseenter="handleMouseenter">
+     <div style="padding: 100px; border: 1px solid red">
      outer
-     <div style="height: 300px; border: 1px solid green">
-       inner
+      <div style="height: 300px; border: 1px solid green; padding: 50px" @mouseover="handleMouseover"  @mouseenter="handleMouseenter">
+        inner
+        <div style="height: 300px; border: 1px solid">
+          innerinner
+        </div>
+      </div>
      </div>
-     </div>
+     <fieldset style="text-align: left;">
+        <legend>标题</legend>
+        6666
+     </fieldset>
   </div>
 </template>
 <script>
