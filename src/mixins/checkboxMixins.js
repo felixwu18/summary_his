@@ -1,5 +1,13 @@
 /**
- * 标准差 standard deviation
+ * table checkbox勾选分页缓存
+ * table组件上添加
+ * @select="selectRow(arguments, arguments, 'CBM')"
+ * @selec-all="selectAll(arguments, tableData, 'CBM')"
+ * 在分页中添加：
+ * initList(page) {
+ * ......
+ *   this.handleCheckData()
+ * }
  */
  export default {
               data() {
@@ -17,12 +25,13 @@
                       this.multipleSelection.splice(index, 1)
                   }
                 },
-                handleCheckData(tableData, tableRef, key) {
+                // 分页调用
+                handleCheckData(tableData, tableRefs, key) {
                             tableData.forEach(item => {
                                 this.multipleSelection.forEach(mItem => {        
                                           if(item[key] === mItem[key]) {
                                              this.$next(() => {
-                                                 this.toggleRowSelection(item, true)          
+                                                tableRefs.toggleRowSelection(item, true)          
                                              })
                                           }
                                 })
