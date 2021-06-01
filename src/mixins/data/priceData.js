@@ -138,6 +138,7 @@ export default {
 
             /* 振幅变化 及收盘价到20均 偏移量 累计收益 */
             const ZFPYArr_arr = [
+                { name: '前3天累计点数', data: averages.map(obj => obj.ljrevenue3), type: 'line' },
                 { name: '前5天累计点数', data: averages.map(obj => obj.ljrevenue5), type: 'line' },
                 { name: '前20天累计点数', data: averages.map(obj => obj.ljrevenue), type: 'line' },
                 { name: '每天振幅', data: averages.map(obj => obj.todayZF), type: 'line' },
@@ -218,9 +219,11 @@ export default {
             /* 计算累计收益 */
             const earlistKPJ = day21Data.slice(-1)[0].split(',')[2] // 21天前收盘价
             const earlistKPJ5 = day21Data.slice(0, 6).slice(-1)[0].split(',')[2] // 6天前收盘价
+            const earlistKPJ3 = day21Data.slice(0, 4).slice(-1)[0].split(',')[2] // 4天前收盘价
             const todaySPJ = data[0].split(',')[2]
             const ljrevenue = ((todaySPJ - earlistKPJ) / earlistKPJ * 100).toFixed(2)
             const ljrevenue5 = ((todaySPJ - earlistKPJ5) / earlistKPJ5 * 100).toFixed(2)
+            const ljrevenue3 = ((todaySPJ - earlistKPJ3) / earlistKPJ3 * 100).toFixed(2)
 
             /* 处理当天最高价，对低价 对应的分明 格式： 14:42 => 14-42  */
             let TopPtime = '-', LowPtime = '-'
@@ -253,56 +256,66 @@ export default {
                 toAverage20Ratio, // 当天价到20均的偏移量
                 ljrevenue, // 前20天累计收益点数
                 ljrevenue5, // 前5天累计收益点数
+                ljrevenue3, // 前3天累计收益点数
             }
         },
         /* days为查看多少天的情况 */
         dynamicGet20Day(days) {
+            console.log(this.dataObj, 'this.dataObj--1');
             const averages = [];
-            if (!this.dataObj.byd) { return }
-            const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
-            /* 准备工作 处理分时数据  */
-            const trends = this.dataObj.FSP
-            const formartTrends = []
-            const fsDaysCount = trends.length / 241
-            for (let index = 0; index < fsDaysCount; index++) {
-                formartTrends.unshift(trends.slice(index * 241, 241 * (index + 1)))
-            }
-            /* 将最高价 最低价对应分时加入对应时间的数据串中 */
-            for (let i = 0; i < fsDaysCount; i++) {
-                const todayTopPStr = formartTrends[i].find(fsitem => fsitem.split(',')[3] === data[i].split(',')[3]) // index 当天，分时最高价 3
-                const todayLowPStr = formartTrends[i].find(fsitem => {
+            try {
+                if (!this.dataObj.byd) { return }
+                const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
+                /* 准备工作 处理分时数据  */
+                const trends = this.dataObj.FSP
+                const formartTrends = []
+                const fsDaysCount = trends.length / 241
+                for (let index = 0; index < fsDaysCount; index++) {
+                    formartTrends.unshift(trends.slice(index * 241, 241 * (index + 1)))
+                }
+                console.log(this.dataObj, 'this.dataObj--2');
 
-                    return fsitem.split(',')[4] === data[i].split(',')[4]
-                }) // index 当天，分时最低价 4
-                // console.log(todayTopPStr, 'todayTopPStr------');
-                // console.log(data[i], 'data[i]------');
-                // if (!todayTopPStr) { continue }
-                if (todayTopPStr && data[i].slice(0, 10) === todayTopPStr.slice(0, 10)) {
-                    // data.slice(0, 20)
-                    for (let j = 0; j < 20; j++) { // 最近20天的个股信息
-                        if (data[j].slice(0, 10) === todayTopPStr.slice(0, 10)) {
-                            data[j] += `,${todayTopPStr.slice(11, 16)}` // 组装 kline里 最高价分时 index 11
-                            data[j] += `,${todayLowPStr.slice(11, 16)}` // 组装 kline里 最低价分时 index 12
+                /* 将最高价 最低价对应分时加入对应时间的数据串中 */
+                for (let i = 0; i < fsDaysCount; i++) {
+                    const todayTopPStr = formartTrends[i].find(fsitem => fsitem.split(',')[3] === data[i].split(',')[3]) // index 当天，分时最高价 3
+                    const todayLowPStr = formartTrends[i].find(fsitem => {
+
+                        return fsitem.split(',')[4] === data[i].split(',')[4]
+                    }) // index 当天，分时最低价 4
+                    // console.log(todayTopPStr, 'todayTopPStr------');
+                    // console.log(data[i], 'data[i]------');
+                    // if (!todayTopPStr) { continue }
+                    if (todayTopPStr && data[i].slice(0, 10) === todayTopPStr.slice(0, 10)) {
+                        // data.slice(0, 20)
+                        for (let j = 0; j < 20; j++) { // 最近20天的个股信息
+                            if (data[j].slice(0, 10) === todayTopPStr.slice(0, 10)) {
+                                data[j] += `,${todayTopPStr.slice(11, 16)}` // 组装 kline里 最高价分时 index 11
+                                data[j] += `,${todayLowPStr.slice(11, 16)}` // 组装 kline里 最低价分时 index 12
+                            }
                         }
                     }
                 }
+                console.log(this.dataObj, 'this.dataObj--3');
+                /* 进入处理数据主流程 */
+                for (let i = 0; i < days; i++) {
+                    const every = data.slice(i, i + 21); // 动态获取每天前20天收盘价
+                    const average = this.to20Average(every) // 计算出每天的布林通道上轨(包括其他指标)
+                    averages.push(average)
+                }
+                /* 单独处理加斜率 ratio ， 布林带宽 */
+                averages.forEach((item, index) => {
+                    item.ratio = this.getRatio(item, averages[index + 1])
+                    item.bollWidth = this.getBollWidth(item)
+                })
+                /* 单独处理带宽斜率 */
+                averages.forEach((item, index) => {
+                    item.bollWidthRatio = this.getBollWidthRatio(item, averages[index + 1])
+                })
+                
+            } catch (error) {
+                console.log(error); 
             }
-            /* 进入处理数据主流程 */
-            for (let i = 0; i < days; i++) {
-                const every = data.slice(i, i + 21); // 动态获取每天前20天收盘价
-                const average = this.to20Average(every) // 计算出每天的布林通道上轨(包括其他指标)
-                averages.push(average)
-            }
-            /* 单独处理加斜率 ratio ， 布林带宽 */
-            averages.forEach((item, index) => {
-                item.ratio = this.getRatio(item, averages[index + 1])
-                item.bollWidth = this.getBollWidth(item)
-            })
-            /* 单独处理带宽斜率 */
-            averages.forEach((item, index) => {
-                item.bollWidthRatio = this.getBollWidthRatio(item, averages[index + 1])
-            })
-            return averages
+        return averages
         },
         /* 组装渲染 rzrq*/
         rzrqInit(days = 20) {

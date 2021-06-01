@@ -15,7 +15,7 @@
            :limit="maxLen"
         >
         {{ title }}
-        </upload>
+        </el-upload>
         <el-image
           ref="prevImage"
           style="height: 0; width: 0;"
@@ -53,7 +53,7 @@
         },
         created() {
            this.loadImg()
-       }
+       },
         methods: {
            loadImg() {
              if(!this.value) { return }            

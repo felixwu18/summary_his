@@ -6,7 +6,7 @@
     :disabled="isDisabled"
     style="height: initial;"
   >
-  <div class="word-nowrap" @mouseenter="isShowToolTip">{{text}}</div>
+    <div class="word-nowrap" @mouseenter="isShowToolTip">{{text}}</div>
   </el-tooltip>
 </template>
 <script>
