@@ -73,9 +73,10 @@
              }
            },    
            beforeUpload(file) {
-             const isPic = ['.png', '.PNG', '.jpg', 'JPG'].includes(files.name.slice(-4))
+             const fileType = file.name.replace(/.+\./, '').toLowerCase();
+             const isPic = ['png', 'jpg'].includes(fileType)
              if(!isPic) {
-               this.$message.error('请上传.png, .jpg格式的图片')
+               this.$message.error('请上传png, jpg格式的图片')
              }
              return isPic
            },    
