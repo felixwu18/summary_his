@@ -332,7 +332,7 @@ export default {
             const temp = JSON.parse(JSON.stringify(this.option))
             /* 5-2 渲染融资融券画布 融资融券 */
             setTimeout(() => {
-                this.renderCanavas(this.myCharts[`myChart${32}`], temp)
+                this.renderCanavas(this.myCharts[`myChart${34}`], temp)
             }, 300)
         },
         /* 每天增加rzrq */
@@ -407,16 +407,25 @@ export default {
             const bankuai1_temp = JSON.parse(this.dataObj.historyCashFlowOFBanKuai[0])
             const bankuai2_temp = JSON.parse(this.dataObj.historyCashFlowOFBanKuai[1])
             const bankuai3_temp = JSON.parse(this.dataObj.historyCashFlowOFBanKuai[2])
+            const bankuai4_temp = JSON.parse(this.dataObj.historyCashFlowOFBanKuai[3])
+            const bankuai5_temp = JSON.parse(this.dataObj.historyCashFlowOFBanKuai[4])
+            console.log('this.dataObj.historyCashFlowOFBanKuai');
+            console.log(this.dataObj.historyCashFlowOFBanKuai);
+            // debugger
             // const data = this.dataObj.historyCashFlow.data;
             // const data = bankuai1.klines.reverse(); // 时间降序
             /* 进入处理板块历史资金流数据主流程 */
             const averages_bankuai1 = []
             const averages_bankuai2 = []
             const averages_bankuai3 = []
+            const averages_bankuai4 = []
+            const averages_bankuai5 = []
             try {
                 const bankuai1 = bankuai1_temp.klines.reverse(); // 时间降序
                 const bankuai2 = bankuai2_temp.klines.reverse(); // 时间降序
                 const bankuai3 = bankuai3_temp.klines.reverse(); // 时间降序
+                const bankuai4 = bankuai4_temp.klines.reverse(); // 时间降序
+                const bankuai5 = bankuai5_temp.klines.reverse(); // 时间降序
                 for (let i = 0; i < days; i++) {
                     // const every1 = bankuai1.slice(i, i + 20); // 动态获取每天前20天个股资金流
                     // const averages_bankuai1 = this.historyCashFlow20Days(every1) // 计算出每天的前20天主力净累计
@@ -426,8 +435,10 @@ export default {
                     this.handleEvery(bankuai1, averages_bankuai1, i)
                     this.handleEvery(bankuai2, averages_bankuai2, i)
                     this.handleEvery(bankuai3, averages_bankuai3, i)
+                    this.handleEvery(bankuai4, averages_bankuai4, i)
+                    this.handleEvery(bankuai5, averages_bankuai5, i)
                 }
-                console.log(averages_bankuai1, 'averages_bankuai1====');
+                console.log(bankuai4, 'averages_bankuai1====');
                 // debugger
             } catch (error) {
                 console.log(error);
@@ -465,13 +476,27 @@ export default {
                 { name: '13均', data: averages_bankuai3.map(obj => obj.cashFlowaverage13), type: 'line' },
                 { name: '20均', data: averages_bankuai3.map(obj => obj.cashFlowaverage20), type: 'line' },
             ] || []
+            const majorCashAverage_bankuai4_arr = [
+                { name: '5均', data: averages_bankuai4.map(obj => obj.cashFlowaverage5), type: 'line' },
+                { name: '13均', data: averages_bankuai4.map(obj => obj.cashFlowaverage13), type: 'line' },
+                { name: '20均', data: averages_bankuai4.map(obj => obj.cashFlowaverage20), type: 'line' },
+            ] || []
+            const majorCashAverage_bankuai5_arr = [
+                { name: '5均', data: averages_bankuai5.map(obj => obj.cashFlowaverage5), type: 'line' },
+                { name: '13均', data: averages_bankuai5.map(obj => obj.cashFlowaverage13), type: 'line' },
+                { name: '20均', data: averages_bankuai5.map(obj => obj.cashFlowaverage20), type: 'line' },
+            ] || []
 
             /* 2 板块 资金流画布 */
             const datas_bankuai = [
                 { date: date_arr, data: majorCashAverage_bankuai1_arr, name: bankuai1_temp.name },
                 { date: date_arr, data: majorCashAverage_bankuai2_arr, name: bankuai2_temp.name },
                 { date: date_arr, data: majorCashAverage_bankuai3_arr, name: bankuai3_temp.name },
+                { date: date_arr, data: majorCashAverage_bankuai4_arr, name: bankuai4_temp.name },
+                { date: date_arr, data: majorCashAverage_bankuai5_arr, name: bankuai5_temp.name },
             ]
+            console.log('majorCashAverage_bankuai5_arr');
+            console.log(datas_bankuai);
             /* 5-1 渲染板块资金流画布 板块资金流*/
             datas_bankuai.forEach((every, index) => {
                 const { date, data, name } = every

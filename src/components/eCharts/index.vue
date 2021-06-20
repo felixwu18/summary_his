@@ -100,6 +100,8 @@
         <div class="main" style="width: 1350px; height: 400px" />
         <div class="main" style="width: 1350px; height: 400px" />
         <div class="main" style="width: 1350px; height: 400px" />
+        <div class="main" style="width: 1350px; height: 400px" />
+        <div class="main" style="width: 1350px; height: 400px" />
         <!-- 版块涨跌情况 -->
         <iframePage
           :url="iframeUrl3"

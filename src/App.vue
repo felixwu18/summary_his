@@ -56,7 +56,8 @@
     @row-click="rowClick"-->
 
     <!-- 列标头 通过外层div样式控制布局-->
-    <div style="width:50%">
+    <div ref="fullScreenRef" style="width:50%; border: solid; padding-top: 20px; background: #fff">
+      <el-button type="primary" @click="changeFullScreen">{{ fullScreen ? '退出全屏' : '全屏' }}</el-button>
       <colHeadTable
         :tableData="tableData2"
         :rowHeadArr="rowHeadArr"
@@ -526,10 +527,31 @@ export default {
       tableData,
       tableData2,
       numberReg: /^[0-9]+.?[0-9]*$/, // 输入验证
-      show: false
+      show: false,
+      fullScreen: false,
     };
   },
   methods: {
+    changeFullScreen() {
+      // const el = document.querySelector(`XXXX`) // 可以通过ref拿
+      const el = this.$refs.fullScreenRef // 可以通过ref拿
+      console.log(el, 'el---')
+      this.fullScreen = !this.fullScreen
+      if(this.fullScreen) {
+        el.style.position = 'fixed'
+        el.style.top = '0'
+        el.style.left = '0'
+        el.style.width = '100%'
+        el.style.height = '100%'
+        el.style.zIndex = '1000' // 根据情况设定
+      } else {
+        el.style.position = 'static'
+      }
+      // iframe兼容
+      if(window.top !== window.self) {
+        window.parent.postMessage({type: this.isFullScreen ? 'max' : 'min'}, '*')
+      }
+    },
     handleMouseover() {
     console.log('Mouseover')
     },
