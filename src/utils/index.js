@@ -33,9 +33,10 @@ export function showSuccess(message) {
  * 类型判断
  *  @return {*} value
  */
-export function isType(value = null) {
-  if (!value) return false;
-  return value.constructor.name;
+export function isType(value) {
+  var defaultBack
+  String(value) === 'null' && (defaultBack = null)
+  return value?.constructor.name??defaultBack;
 }
 
 /**
@@ -181,6 +182,21 @@ export function removeClass(ele, cls) {
     ele.className = ele.className.replace(reg, replace);
   }
 }
+
+/**
+ * Dedupes array based on criterion returned from iteratee function
+ * Ex: uniqueBy([{id: 1}, {id: 1}, {id: 2}],
+ *     val => val.id
+ * ) = [{id: 1}, {id: 2}]
+ */
+ export function uniqueBy(arr, fun) {
+   const valHas = {}
+  return arr.filter(ele => {
+    const val = fun(ele)
+    return !(val in valHas) && (valHas[val] = 1);
+  })
+}
+
 
 /**
  * 对象数组去重(重复对象,可将指定字段值累加)

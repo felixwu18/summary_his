@@ -26,7 +26,7 @@ export default {
         domProps: {
           innerText: this.text || '默认',
           
-      //           v-on="$listeners"
+      // v-on="$listeners"
       // v-bind="$attrs"
 
         },

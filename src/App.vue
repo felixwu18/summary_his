@@ -80,13 +80,14 @@
       <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur',{min: 3, max: 9}]" v-model="search.name" clearable></el-input> -->
       <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur','email']" v-model="search.name" clearable></el-input> -->
       <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur',{rules:['repeat'],value1: '22'}]" v-model="search.name" clearable></el-input> -->
-      <el-input slot="name" title="名称椒盐" :options="[{rules:['posNumber']}]" v-model="search.name" clearable></el-input>
+      <el-input v-enter-next-input slot="name" title="名称椒盐" :options="[{rules:['posNumber']}]" v-model="search.name" clearable></el-input>
       <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur',{rules:['noChinese']}]" v-model="search.name" clearable></el-input> -->
-      <el-select slot="region" title="区域选择" :options="['required']" v-model="search.region" clearable placeholder="请选择活动区域">
+      <el-select  v-enter-next-input slot="region" title="区域选择" :options="['required']" v-model="search.region" clearable placeholder="请选择活动区域">
         <el-option label="区域一" value="shanghai"></el-option>
         <el-option label="区域二" value="beijing"></el-option>
       </el-select>
       <el-date-picker
+        v-enter-next-input
         slot="date1"
         title="时间选择器"
         :options="['date']"
@@ -244,6 +245,7 @@
         <legend>标题</legend>
         6666
      </fieldset>
+     <!-- <canvas /> -->
   </div>
 </template>
 <script>
@@ -274,6 +276,7 @@ import testComponent from "@/components/testComponent";
 import EditDiv from '@/components/newTest/edit'
 // import RZRJ from "@/components/vChart/index";
 import stock from "@/components/eCharts/index";
+// import canvas from "@/components/canvas/index";
 
 
 // import router from "./plugin/index"
@@ -441,6 +444,7 @@ export default {
     EditDiv,
     // RZRJ,
     stock,
+    // canvas,
   },
   provide: {
     house: "有房子",
@@ -449,6 +453,7 @@ export default {
   },
   data() {
     return {
+      testPage: 66,
       // ipReg: /^([1-9]\d{0, 1}|1\d\d|2[0, 4]\d|25[0, 5])\.([1, 9]\d{0, 1}|1\d\d|2[0,4]\d|25[0, 5])\.([1-9]\d{0, 1}|1\d\d|2[0, 4]\d|25[0, 5])\.([1, 9]\d{0, 1}|1\d\d|2[0, 4]\d|25[0, 5])$))/
       dataFromFather: [{title: '独孤九剑', children: [{title: '紫霞神功', children: [{title: '冲灵剑法'}]}]},
                        {title: '六脉神剑'},
@@ -989,7 +994,7 @@ export default {
   background: lightseagreen;
 }
 .skin3 {
-  background: lightsalmon;
+  background: #ddd;
 }
 
 .container {

@@ -72,7 +72,7 @@ export default {
   computed: {
     currentPage: {
       get() {
-        return this.page;
+        return this.page || 0;
       }
       // ,
       // set(val) {

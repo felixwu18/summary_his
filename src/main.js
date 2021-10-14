@@ -30,7 +30,28 @@ Vue.directive('display-key',{
     }
   }
 })
-
+// 自定义指令，实现按下enter后，光标自动跳转下一个输入框
+Vue.directive('enterNextInput', {
+  inserted: function (el) {
+    el.addEventListener("keypress",function(e){
+      e = e || window.event;
+      console.log(e, ' e = e || window.event');
+      // let charcode = typeof e.charCode == 'number' ? e.charCode : e.keyCode;
+      if(e.keyCode == 13){
+        var dom = document.getElementsByTagName("input")
+        for (var i = 0; i < dom.length; i++) {
+          if (dom[i] == document.activeElement) {
+            if (i==dom.length) {
+              return
+            }
+            dom[i+1].focus()
+            return
+          } 
+        }
+      }
+    });
+  }
+});
 Vue.use(ElementUI)
 // Vue.use(ComponentLib)
 
