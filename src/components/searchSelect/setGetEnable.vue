@@ -6,9 +6,11 @@
     clearable
     placeholder="请选择"
     size="medium"
+    v-on="$listeners"
+    v-bind="$attrs"
   >
     <el-option
-      v-for="(item,index) in options"
+      v-for="(item, index) in options"
       :key="index"
       :label="item[_fields.value]"
       :value="item[_fields.key]"
@@ -20,17 +22,17 @@ export default {
   name: "searchSelect",
   data() {
     return {
-      test:'test',
+      test: "test",
       // itemKey: "",
       // itemValue: "",
       // fieldsProp:
-      options: this.configure ? this.configure : [] // 初始化
+      options: this.configure ? this.configure : [], // 初始化
     };
   },
   props: {
-    configure: { type: Array, default: _ => [] },
-    syncObj: { type: Object, default: _ => {} },
-    fields: { type: Object, default: _ => {} }, // 动态属性配置
+    configure: { type: Array, default: (_) => [] },
+    syncObj: { type: Object, default: (_) => {} },
+    fields: { type: Object, default: (_) => {} }, // 动态属性配置
     insertValue: [Number, String],
     disabled: { type: Boolean, default: false },
   },
@@ -53,12 +55,12 @@ export default {
     // 列表获取配置信息
     confugureFormatter(configure, key) {
       if (configure) {
-        let matchObj = configure.filter(e => e[this._fields.key] == key);
+        let matchObj = configure.filter((e) => e[this._fields.key] == key);
         if (matchObj[0]) {
           return matchObj[0][this._fields.value];
         }
       }
-    }
+    },
   },
   computed: {
     value: {
@@ -66,19 +68,21 @@ export default {
         return this.insertValue;
       },
       set(key) {
-        if (typeof key === 'number') {key = String(key)}
+        if (typeof key === "number") {
+          key = String(key);
+        }
         const value = this.confugureFormatter(this.configure, key);
         // this.$emit(`change`, { key, value }); // 传编码及值
         this.$emit(`change`, {
           [this._fields.key]: key,
-          [this._fields.value]: value
+          [this._fields.value]: value,
         }); // 传编码及值
         this.$emit("update:syncObj", {
           [this._fields.key]: key,
-          [this._fields.value]: value
+          [this._fields.value]: value,
         }); // 同步对象
         this.$emit("update:insertValue", key); // 编码
-      }
+      },
     },
     _fields() {
       if (!this.fields || !Object.keys(this.fields).length) {
@@ -86,11 +90,9 @@ export default {
       } else {
         return this.fields;
       }
-    }
+    },
   },
-  created() {
-  }
+  created() {},
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>

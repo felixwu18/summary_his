@@ -3,14 +3,18 @@
     <stock />
     <!-- <RZRJ /> -->
     <div style="color: red">
-      <h1 :style="{'color': true ? 'blue' : ''}">异步组件测试</h1>点击按钮后
-      第一个延迟300毫秒，从服务器加载
-      第二个不延迟从服务器加载
+      <h1 :style="{ color: true ? 'blue' : '' }">异步组件测试</h1>
+      点击按钮后 第一个延迟300毫秒，从服务器加载 第二个不延迟从服务器加载
       <template v-if="show">
         <later></later>
         <later2></later2>
       </template>
-      <button @click="toggle" :class="{classSelectorA: show,classSelectorB: !show}">加载</button>
+      <button
+        @click="toggle"
+        :class="{ classSelectorA: show, classSelectorB: !show }"
+      >
+        加载
+      </button>
     </div>
     <collapse />
     <dynamicTable
@@ -18,11 +22,11 @@
       :data="tableData"
       :configureSet="selectConfigureSet"
       :btnConfigure="btnConfigure"
-      :editArr="['name','zip', 'province']"
+      :editArr="['name', 'zip', 'province']"
       :switchArr="['state1', 'state2']"
-      :selectArr="['name','zip']"
-      :RegObj="{zip:numberReg}"
-      :handleArr="['查看','新增','删除','审核','点我啊','果然']"
+      :selectArr="['name', 'zip']"
+      :RegObj="{ zip: numberReg }"
+      :handleArr="['查看', '新增', '删除', '审核', '点我啊', '果然']"
       :codeToLabel="codeToLabel"
       :fieldsWidth="fieldsWidth"
       :handle_width="240"
@@ -42,7 +46,7 @@
       @dynamicEvent="eventTrigger"
     />
     <el-button @click="setCurrent(tableData[1])">选中第二行</el-button>
-    <!-- 
+    <!--
       :formHead="formHead"
       :data="tableData"
       :editArr="['name','city']"
@@ -56,19 +60,24 @@
     @row-click="rowClick"-->
 
     <!-- 列标头 通过外层div样式控制布局-->
-    <div ref="fullScreenRef" style="width:50%; border: solid; padding-top: 20px; background: #fff">
-      <el-button type="primary" @click="changeFullScreen">{{ fullScreen ? '退出全屏' : '全屏' }}</el-button>
+    <div
+      ref="fullScreenRef"
+      style="width:50%; border: solid; padding-top: 20px; background: #fff"
+    >
+      <el-button type="primary" @click="changeFullScreen">{{
+        fullScreen ? "退出全屏" : "全屏"
+      }}</el-button>
       <colHeadTable
         :tableData="tableData2"
         :rowHeadArr="rowHeadArr"
-        :tableStyle="{ width:'80%',margin:'0 auto' }"
+        :tableStyle="{ width: '80%', margin: '0 auto' }"
       />
     </div>
     <!-- 验证组件 -->
     <searchInput />
 
     <!-- 封装验证组件(加布局) -->
-    <!-- 
+    <!--
        注意事项 :
             (1)验证的对象(如:search)传给组件内
             (2)slot值 与 检验值 相同
@@ -76,13 +85,33 @@
             (4)validate调用,验证结果
     -->
     <h1>封装验证组件</h1>
-    <searchInput2 :validateFields="search" ref="formCheck" :checkAdd="checkAdd" @validate="handleValidate">
+    <searchInput2
+      :validateFields="search"
+      ref="formCheck"
+      :checkAdd="checkAdd"
+      @validate="handleValidate"
+    >
       <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur',{min: 3, max: 9}]" v-model="search.name" clearable></el-input> -->
       <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur','email']" v-model="search.name" clearable></el-input> -->
       <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur',{rules:['repeat'],value1: '22'}]" v-model="search.name" clearable></el-input> -->
-      <el-input v-enter-next-input slot="name" title="名称椒盐" :options="[{rules:['posNumber']}]" v-model="search.name" clearable></el-input>
+      <el-input
+        v-enter-next-input
+        slot="name"
+        title="名称椒盐"
+        :options="[{ rules: ['posNumber'] }]"
+        v-model="search.name"
+        clearable
+      ></el-input>
       <!-- <el-input slot="name" title="名称椒盐" :options="['required','blur',{rules:['noChinese']}]" v-model="search.name" clearable></el-input> -->
-      <el-select  v-enter-next-input slot="region" title="区域选择" :options="['required']" v-model="search.region" clearable placeholder="请选择活动区域">
+      <el-select
+        v-enter-next-input
+        slot="region"
+        title="区域选择"
+        :options="['required']"
+        v-model="search.region"
+        clearable
+        placeholder="请选择活动区域"
+      >
         <el-option label="区域一" value="shanghai"></el-option>
         <el-option label="区域二" value="beijing"></el-option>
       </el-select>
@@ -112,11 +141,23 @@
     <!-- 分页器 -->
     <Pagination :total="35" @current-change="handleCurrentChange" />
     <!-- 选择器 -->
-    <searchSelect title="选择器" :insertValue.sync="selectVal" :configure="configue_level" />
+    <searchSelect
+      title="选择器"
+      :insertValue.sync="selectVal"
+      :configure="configue_level"
+    />
     <searchLayout title="选择器实现2" :width="350">
-      <setGetEnable @change="getObj" :syncObj.sync="syncObj" :insertValue.sync="selectVal" :configure="configue_level" />
+      <setGetEnable
+        @change="getObj"
+        :syncObj.sync="syncObj"
+        :insertValue.sync="selectVal"
+        :configure="configue_level"
+      />
     </searchLayout>
-    {{selectVal}}-------syncObj->----{{syncObj.value}}
+    <div>
+      <div>{{ selectVal }}-------syncObj->----{{ syncObj.value }}</div>
+    </div>
+    <!-- <div v-pre>{{ selectVal }}-------syncObj->----{{ syncObj.value }}</div> -->
     <button @click="ceshi">ceshi</button>
     <!-- 上传组件 -->
     <!-- <UploadExcel /> -->
@@ -126,21 +167,20 @@
     <button v-for="(item,index) in test.count" :key="index">{{item}}--{{index}}</button>
     <br />-->
     <label for>obj:</label>
-    <button v-for="(item,index) in test.obj" :key="index">{{item}}--{{index}}</button>
+    <button v-for="(item, index) in test.obj" :key="index">
+      {{ item }}--{{ index }}
+    </button>
     <br />
     <label for>arr:</label>
-    <button v-for="(item,index) in test.arr" :key="index">
-      [{{item}}-{{index}}]
-      <template v-for="(item, index) in [10,11]">
-        <span :key="index">{{item}}----{{index}}</span>
+    <button v-for="(item, index) in test.arr" :key="index">
+      [{{ item }}-{{ index }}]
+      <template v-for="(item, index) in [10, 11]">
+        <span :key="index">{{ item }}----{{ index }}</span>
       </template>
     </button>
     <br />
     <h1>一个对象从另一个对象中找属性值</h1>
-    <el-button 
-    @click="handleFind"
-    :loading="true"
-    >查找</el-button>
+    <el-button @click="handleFind" :loading="true">查找</el-button>
     <!-- 输入框带搜索 -->
     <inputSearch />
     <!-- 输入框带建议 -->
@@ -153,28 +193,40 @@
     <button @click="handleAsync">点击测试</button>
     <!-- 动态切换class ref实现-->
     <h1 ref="waitToggle" class="default toggleAdd">
-      动态切换class | isAdd:{{addClassflag}}
+      动态切换class | isAdd:{{ addClassflag }}
       <br />
-      skinColor is now: {{changColor}}
+      skinColor is now: {{ changColor }}
     </h1>
-    <button @click="switchSkin" class="marginLeft fontBold padding">切换皮肤</button>
-    <button @click="ToggleClass" class="marginLeft fontBold padding">切换class</button>
+    <button @click="switchSkin" class="marginLeft fontBold padding">
+      切换皮肤
+    </button>
+    <button @click="ToggleClass" class="marginLeft fontBold padding">
+      切换class
+    </button>
     <button @click="addClass" class="marginLeft">添加class</button>
     <button @click="removeClass" class="marginLeft">删除class</button>
     <!-- 动态切换class and style color  数据驱动实现-->
     <h1
       ref="waitStyleChange"
-      :style="{background: styleColor, padding: '1em 0'}"
+      :style="{ background: styleColor, padding: '1em 0' }"
       :class="[...className]"
-    >skinColor is now: {{styleColor}}</h1>
-    <button @click="changStyle" class="marginLeft fontBold padding">style切换</button>
-    <button @click="changClassVal" class="marginLeft fontBold padding">class 数据切换</button>
+    >
+      skinColor is now: {{ styleColor }}
+    </h1>
+    <button @click="changStyle" class="marginLeft fontBold padding">
+      style切换
+    </button>
+    <button @click="changClassVal" class="marginLeft fontBold padding">
+      class 数据切换
+    </button>
     <!-- 对象去重 -->
     <h1>测试v-for 和 v-if 对页面渲染的影响</h1>
-    <div v-for="(item, index) in configue_level" :key="index+6">
-      <span ref="vifInner" v-if="item.key === 1">{{item.key}}--outer--{{item.value}}</span>
-      <div v-for="(item_, index) in [11,22,33]" :key="index">
-          <button>--inner--{{index}}</button>
+    <div v-for="(item, index) in configue_level" :key="index + 6">
+      <span ref="vifInner" v-if="item.key === 1"
+        >{{ item.key }}--outer--{{ item.value }}</span
+      >
+      <div v-for="(item_, index) in [11, 22, 33]" :key="index">
+        <button>--inner--{{ index }}</button>
       </div>
     </div>
     <div>
@@ -182,16 +234,19 @@
       <span
         ref="VforInner"
         v-for="(item, index) in configue_level"
-        :key="index+6"
-      >{{item.key}}---{{item.value}}</span>
+        :key="index + 6"
+        >{{ item.key }}---{{ item.value }}</span
+      >
     </div>
     <button @click="tryVifAndVfor">测试渲染</button>
     <!-- 固定周期内不可触发事件 -->
     <h1>防抖debounce and 节流throttle</h1>
     <!-- 当前周期第一次触发才有效(周期内第一次触发记时开始) -->
-    <span class="fontBold red padding border">{{deSeconds}}</span>
+    <span class="fontBold red padding border">{{ deSeconds }}</span>
     <!-- <button @click="handleThrottle(startCouter,10)()">节流测试</button> -->
-    <button ref="testThrottle" @click="handleThrottle(startCouter,10)()">节流测试</button>
+    <button ref="testThrottle" @click="handleThrottle(startCouter, 10)()">
+      节流测试
+    </button>
     <!-- 事件触发间的时间间隔超过预设时间间隔delay, 方有事件触发(因每次触发,起始时间都会被初始当前时间,重新计算时间) -->
     <!-- <button @click="handleDebounce">防抖测试</button> -->
     <button @click="$message.success('暂未开放')">防抖测试</button>
@@ -209,43 +264,47 @@
     <Comp1 />
     <Comp2 />
     <!-- render函数 对template的弥补-->
-     <h1>render函数</h1>
+    <h1>render函数</h1>
     <Button :type="type" :text="text" @click="ceshiClick" />
     <!-- 精度权限控制 _自定义指令-->
-     <h1>权限控制</h1>
-     <div>
-        <button v-display-key="10">我是权限1</button>
-     </div>
-     <div>
-        <button v-display-key="'2'">我是权限2</button>
-     </div>
-     <!-- 测试编辑盒子 -->
-     <EditDiv v-model="inputVal">
-       <template v-slot:default="{ ceshiceshi }">
-         当前父组件：{{ceshiceshi}}
-       </template>
-     </EditDiv>
-     <!-- <EditDiv v-model="inputVal" v-slot:test="slotProps">
+    <h1>权限控制</h1>
+    <div>
+      <button v-display-key="10">我是权限1</button>
+    </div>
+    <div>
+      <button v-display-key="'2'">我是权限2</button>
+    </div>
+    <!-- 测试编辑盒子 -->
+    <EditDiv v-model="inputVal">
+      <template v-slot:default="{ ceshiceshi }">
+        当前父组件：{{ ceshiceshi }}
+      </template>
+    </EditDiv>
+    <!-- <EditDiv v-model="inputVal" v-slot:test="slotProps">
          {{slotProps}}
          <template v-slot:test="slotProps">
            {{ slotProps }}
          </template>
          <span slot="test" style="color: red">test</span>
      </EditDiv> -->
-     <div style="padding: 100px; border: 1px solid red">
-     outer
-      <div style="height: 300px; border: 1px solid green; padding: 50px" @mouseover="handleMouseover"  @mouseenter="handleMouseenter">
+    <div style="padding: 100px; border: 1px solid red">
+      outer
+      <div
+        style="height: 300px; border: 1px solid green; padding: 50px"
+        @mouseover="handleMouseover"
+        @mouseenter="handleMouseenter"
+      >
         inner
         <div style="height: 300px; border: 1px solid">
           innerinner
         </div>
       </div>
-     </div>
-     <fieldset style="text-align: left;">
-        <legend>标题</legend>
-        6666
-     </fieldset>
-     <!-- <canvas /> -->
+    </div>
+    <fieldset style="text-align: left;">
+      <legend>标题</legend>
+      6666
+    </fieldset>
+    <!-- <canvas /> -->
   </div>
 </template>
 <script>
@@ -264,20 +323,22 @@ import collapse from "@/components/collapse/index";
 import dynamicTable from "./components/table/index";
 import colHeadTable from "./components/table/colHeadTable";
 import dataSelector from "./components/DateSelector/index";
+// import Pagination from "./components/Pagination/pagination2.vue";
 import Pagination from "./components/Pagination/index";
-import searchSelect from "./components/searchSelect/index";
+import searchSelect from "./components/searchSelect/index.vue";
 import setGetEnable from "./components/searchSelect/setGetEnable";
+// import setGetEnableSecond from "./components/searchSelect/setGetEnableSecond.vue"; // 通过$attrs $listeners 多层级传送
+// import cccc from "./components/searchSelect";
 import inputSearch from "./components/inputSearch/index";
 import inputSuggestion from "./components/inputSuggestion/index";
 import searchLayout from "./components/layout/searchLayout";
 import searchInput from "@/components/searchInput/index";
 import searchInput2 from "@/components/searchInput/index2";
 import testComponent from "@/components/testComponent";
-import EditDiv from '@/components/newTest/edit'
+import EditDiv from "@/components/newTest/edit";
 // import RZRJ from "@/components/vChart/index";
 import stock from "@/components/eCharts/index";
 // import canvas from "@/components/canvas/index";
-
 
 // import router from "./plugin/index"
 // Vue.use(router)
@@ -317,15 +378,15 @@ const formHead = [
         label: "时间",
         children: [
           { prop: "hour", label: "小时" },
-          { prop: "minite", label: "分钟" }
-        ]
-      }
-    ]
+          { prop: "minite", label: "分钟" },
+        ],
+      },
+    ],
   },
   { prop: "province", label: "省份" },
   { prop: "city", label: "市区" },
   { prop: "address", label: "地址" },
-  { prop: "zip", label: "邮编" }
+  { prop: "zip", label: "邮编" },
 ];
 //测试select 配数据
 const selcet = [
@@ -334,7 +395,7 @@ const selcet = [
   { prop: "province", label: "省份-selcet6" },
   { prop: "city", label: "市区-selcet2" },
   { prop: "address", label: "地址-selcet1" },
-  { prop: "zip", label: "邮编-selcet9" }
+  { prop: "zip", label: "邮编-selcet9" },
 ];
 
 const tableData = [
@@ -350,7 +411,7 @@ const tableData = [
     province: "四川",
     city: "成都",
     address: "春熙路",
-    zip: 999
+    zip: 999,
   },
   {
     airQuality: 1,
@@ -364,7 +425,7 @@ const tableData = [
     province: "四川",
     city: "成都",
     address: "春熙路",
-    zip: 999
+    zip: 999,
   },
   {
     airQuality: 3,
@@ -378,20 +439,20 @@ const tableData = [
     province: "上海",
     city: "",
     address: "上海市普陀区金沙江路 1517 弄",
-    zip: 666
-  }
+    zip: 666,
+  },
 ];
 // 配置转换测试
 const configue_level = [
   { key: 1, value: "一级城市" },
   { key: 2, value: "二级城市" },
-  { key: 3, value: "三级城市" }
+  { key: 3, value: "三级城市" },
 ];
 
 const configue_airQuality = [
   { key: 1, value: "优" },
   { key: 2, value: "良" },
-  { key: 3, value: "差" }
+  { key: 3, value: "差" },
 ];
 
 // 第一列表头
@@ -401,7 +462,7 @@ const tableData2 = [
   { key: "价格", value: "120.00" },
   { key: "订单日期", value: "2017-03-01" },
   { key: "付款方式", value: "在线支付" },
-  { key: "收货地址", value: "北京市海淀区西北旺镇" }
+  { key: "收货地址", value: "北京市海淀区西北旺镇" },
 ];
 const rowHeadArr = ["rowHead1", "rowHead2"];
 // const AsyncComponent = () => ({
@@ -439,8 +500,8 @@ export default {
     searchInput2,
     testComponent,
     // UploadExcel,
-    later,
-    later2,
+    // later,
+    // later2,
     EditDiv,
     // RZRJ,
     stock,
@@ -449,38 +510,42 @@ export default {
   provide: {
     house: "有房子",
     car: "有车子",
-    money: "￥10000"
+    money: "￥10000",
   },
   data() {
     return {
       testPage: 66,
       // ipReg: /^([1-9]\d{0, 1}|1\d\d|2[0, 4]\d|25[0, 5])\.([1, 9]\d{0, 1}|1\d\d|2[0,4]\d|25[0, 5])\.([1-9]\d{0, 1}|1\d\d|2[0, 4]\d|25[0, 5])\.([1, 9]\d{0, 1}|1\d\d|2[0, 4]\d|25[0, 5])$))/
-      dataFromFather: [{title: '独孤九剑', children: [{title: '紫霞神功', children: [{title: '冲灵剑法'}]}]},
-                       {title: '六脉神剑'},
-                       {title: '一阳指', children: [{title: '玄铁重剑'}]}
-                       ],
+      dataFromFather: [
+        {
+          title: "独孤九剑",
+          children: [{ title: "紫霞神功", children: [{ title: "冲灵剑法" }] }],
+        },
+        { title: "六脉神剑" },
+        { title: "一阳指", children: [{ title: "玄铁重剑" }] },
+      ],
       table_top: 320,
-      type: 'success',
-      text: '成功',
+      type: "success",
+      text: "成功",
       updateFlag: true,
       loading: true,
       syncObj: {},
       checkAdd: [
         {
           type: "_length",
-          func: obj => {
+          func: (obj) => {
             if (!obj.value) return true;
             return (
               obj.conditions[0] <= obj.value.length &&
               obj.value.length <= obj.conditions[1]
             );
           },
-          falseMessage: "名称椒盐的长度在 2 到 10 个字符"
-        }
+          falseMessage: "名称椒盐的长度在 2 到 10 个字符",
+        },
       ],
       checkObj: {
         rules: ["_length"],
-        conditions: ["2", "10"]
+        conditions: ["2", "10"],
       },
       // that,
       pageSize: 10,
@@ -491,8 +556,8 @@ export default {
         btnStates: [
           { case: [1], btnArr: ["测试1"] },
           { case: [2, 3], btnArr: ["测试2", "测试3"] },
-          { case: [4], btnArr: ["测试2", "测试4"] }
-        ]
+          { case: [4], btnArr: ["测试2", "测试4"] },
+        ],
       },
       inputVal: "",
       deSeconds: 0, // 倒计时
@@ -501,7 +566,7 @@ export default {
       fieldsWidth: {
         address: 200,
         date: 100,
-        minite: 150
+        minite: 150,
       },
       className: [],
       styleColor: "switch not yet",
@@ -512,18 +577,18 @@ export default {
         end: "",
         name: "",
         region: "",
-        date1: ""
+        date1: "",
       },
       timeDefault: [],
       rowHeadArr,
       codeToLabel: [
         { prop: "level", configue: configue_level },
-        { prop: "airQuality", configue: configue_airQuality }
+        { prop: "airQuality", configue: configue_airQuality },
       ], // 转换的字段及配置对象数组
       test: {
         count: 3,
         arr: [2, 5, 9],
-        obj: { n: 11, age: 31, name: "felix" }
+        obj: { n: 11, age: 31, name: "felix" },
       },
       selectConfigureSet: { name: formHead, zip: selcet }, //测试selet
       selectVal: null,
@@ -539,57 +604,59 @@ export default {
   methods: {
     changeFullScreen() {
       // const el = document.querySelector(`XXXX`) // 可以通过ref拿
-      const el = this.$refs.fullScreenRef // 可以通过ref拿
-      console.log(el, 'el---')
-      this.fullScreen = !this.fullScreen
-      if(this.fullScreen) {
-        el.style.position = 'fixed'
-        el.style.top = '0'
-        el.style.left = '0'
-        el.style.width = '100%'
-        el.style.height = '100%'
-        el.style.zIndex = '1000' // 根据情况设定
+      const el = this.$refs.fullScreenRef; // 可以通过ref拿
+      console.log(el, "el---");
+      this.fullScreen = !this.fullScreen;
+      if (this.fullScreen) {
+        el.style.position = "fixed";
+        el.style.top = "0";
+        el.style.left = "0";
+        el.style.width = "100%";
+        el.style.height = "100%";
+        el.style.zIndex = "1000"; // 根据情况设定
       } else {
-        el.style.position = 'static'
+        el.style.position = "static";
       }
       // iframe兼容
-      if(window.top !== window.self) {
-        window.parent.postMessage({type: this.isFullScreen ? 'max' : 'min'}, '*')
+      if (window.top !== window.self) {
+        window.parent.postMessage(
+          { type: this.isFullScreen ? "max" : "min" },
+          "*"
+        );
       }
     },
     handleMouseover() {
-    console.log('Mouseover')
+      console.log("Mouseover");
     },
     handleMouseenter() {
-    console.log('Mouseenter')
+      console.log("Mouseenter");
     },
-  ceshiClick() {
-    console.log('ceshiClick')
-  },
-  testButton(){
-    console.log('1111')
-    // console.log()
+    ceshiClick() {
+      console.log("ceshiClick");
     },
-    testPlugin(){
+    testButton() {
+      console.log("1111");
+      // console.log()
+    },
+    testPlugin() {
       // this.use(router)
     },
-    handleCurrentChange(val){
+    handleCurrentChange(val) {
       // console.log('测试pagination--')
-      console.log('val===table')
-      console.log(val)
+      console.log("val===table");
+      console.log(val);
     },
     setCurrent(row) {
-        // this.$refs.singleTable
-
-        // .setCurrentRow(row);
-      },
-    testFn(){
+      // this.$refs.singleTable
+      // .setCurrentRow(row);
+    },
+    testFn() {
       // 按钮可灵活位置
       // this.$refs.formCheck
       // debugger
-      const valid = this.$refs.formCheck.validate()
+      const valid = this.$refs.formCheck.validate();
       // debugger
-      valid && console.log("it's ok---") 
+      valid && console.log("it's ok---");
     },
     handleValidate(valid) {
       // console.log("valid");
@@ -605,9 +672,10 @@ export default {
       const arr1 = [{ name: "felix", in: { age: 12 } }];
       const arr2 = [{ name: "felix", in: { age: 11 }, arr: [] }];
       console.log("before-lodash-after");
-      console.log(num_before);
+
       console.log(num);
       console.log((num - 1).toFixed(1));
+      console.log(num_before);
       // console.log(this.$lodash.isEmpty(obj));
       // console.log(this.$lodash.isEqual(arr1, arr2));
       // const tmp = this.$lodash.cloneDeep(arr1);
@@ -650,7 +718,7 @@ export default {
       // }
       // // this.$forceUpdate()
       // //  ----------------我是一条分割线[end]------------------------------------
-      this.inputVal
+      this.inputVal;
       this.timeDefault = ["2019-10-1", "2019-10-1"];
       // debugger
       // // this.selectVal = "三级城市";
@@ -661,7 +729,7 @@ export default {
       // }, 1000);
       // setTimeout(_ => {
       //   // this.selectVal = "一级城市";
-        // this.selectVal = 1;
+      // this.selectVal = 1;
       // }, 2000);
       // //测试封装的存储
       // this.$utils.handleSave.set("try", "this time may ok-session");
@@ -740,7 +808,7 @@ export default {
       const skinsMap = {
         skin1: "lawngreen",
         skin2: "lightseagreen",
-        skin3: "lightsalmon"
+        skin3: "lightsalmon",
       };
       const others = ["border"];
       if (!this.className.length) {
@@ -781,7 +849,7 @@ export default {
       const skinsMap = {
         skin1: "lawngreen",
         skin2: "lightseagreen",
-        skin3: "lightsalmon"
+        skin3: "lightsalmon",
       };
       // 检测元素添加的皮肤
       // const targetClassNames = this.$utils.cleanArray(this.$refs.waitToggle.className.trim().split(" "));
@@ -809,7 +877,7 @@ export default {
     },
     removeMiddleSkin(skins, targetClassNames) {
       // 删除元素中间含有skins里的的皮肤
-      skins.forEach(str => {
+      skins.forEach((str) => {
         if (
           targetClassNames.includes(str) &&
           targetClassNames[targetClassNames.length - 1] !== str
@@ -839,7 +907,7 @@ export default {
     },
     // 异步
     handleAsync() {
-      this.asyncFn().then(res => {
+      this.asyncFn().then((res) => {
         // 要有返回就得在 async function里 return
         console.log("res----");
         console.log(res);
@@ -860,49 +928,55 @@ export default {
         { id: 6, age: 19 },
         { id: 6, age: 66 },
         { id: 6, age: 15 },
-        {}
+        {},
       ];
       // const obj = {id: 1, age: 18}
       // objArr = this.noSame(objArr, "id");
       console.log("去重(合并)去空");
       console.log(objArr);
-      objArr = this.$utils.uniqueObjArr(this.$utils.deepClone(objArr), "id", 'age');
+      objArr = this.$utils.uniqueObjArr(
+        this.$utils.deepClone(objArr),
+        "id",
+        "age"
+      );
       objArr = this.$utils.removeUnexpectObj(objArr, "id");
       console.log(objArr);
     },
     handleFind() {
-      if(!this.updateFlag) { return }
-        this.updateFlag = false
-        setTimeout(_ => this.updateFlag = true, 3000)
+      if (!this.updateFlag) {
+        return;
+      }
+      this.updateFlag = false;
+      setTimeout((_) => (this.updateFlag = true), 3000);
       const toObj = {
         name: "",
         height: "",
-        sex: ""
+        sex: "",
       };
       const fromObj = {
         name: "auli",
         age: "18",
         hobby: "sing",
-        sex: "girl"
+        sex: "girl",
       };
       console.log("toObj");
       console.log(toObj);
       this.$utils.copyPropVal(fromObj, toObj);
       console.log(toObj);
       // 全局loading
-    //   const loadingObj = this.$loading({
-    //       lock: true,
-    //       text: '提交中...',
-    //       spinner: 'el-icon-loading',
-    //       background: 'rgba(0, 0, 0, 0.7)',
-    //       // target: document.querySelector('.submit-test-dialog')
-    // });
-    // //后端返回结果后，结束loadingObj，即loadingObj.close();
-    // loadingObj.close();
+      //   const loadingObj = this.$loading({
+      //       lock: true,
+      //       text: '提交中...',
+      //       spinner: 'el-icon-loading',
+      //       background: 'rgba(0, 0, 0, 0.7)',
+      //       // target: document.querySelector('.submit-test-dialog')
+      // });
+      // //后端返回结果后，结束loadingObj，即loadingObj.close();
+      // loadingObj.close();
     },
     // 赋值属性值
     findPropVal(fromObj, toObj) {
-      Object.keys(toObj).forEach(ele => {
+      Object.keys(toObj).forEach((ele) => {
         if (ele in fromObj && fromObj[ele]) {
           toObj[ele] = fromObj[ele];
         }
@@ -933,7 +1007,18 @@ export default {
     },
     toggle() {
       this.show = !this.show;
-    }
+      if (this.show) {
+        // Vue.component("later", function(resolve) {
+        //   setTimeout(function() {
+        //     require(["./later.vue"], resolve);
+        //   }, 3000);
+        // });
+        // 服务器异步组件2：
+        Vue.component("later2", function(resolve) {
+          require(["./later2.vue"], resolve);
+        });
+      }
+    },
   },
   watch: {
     // 有change事件就可不用监听数据
@@ -945,17 +1030,23 @@ export default {
     this.timeDefault = ["2019-6-8", "2019-7-8"];
     // window.that = this.timeDefault
     // __this = this
-    var a1 = function() { console.log('a1') }
-    var a2 = function() { console.log('a2') }
-    var a3 = function() { console.log('a3') }
-    const result  = await Promise.all([a1, a2, a3])
-    console.log('result', result)
+    var a1 = function() {
+      console.log("a1");
+    };
+    var a2 = function() {
+      console.log("a2");
+    };
+    var a3 = function() {
+      console.log("a3");
+    };
+    const result = await Promise.all([a1, a2, a3]);
+    console.log("result", result);
   },
   mounted() {
-    this.table_top = this.$refs.singleTable.$el.offsetTop
+    this.table_top = this.$refs.singleTable.$el.offsetTop;
     // debugger
   },
-  computed: {}
+  computed: {},
 };
 </script>
 <style lang="less" scoped>

@@ -191,10 +191,10 @@ export default {
 
             /* 每天的振幅 */
             const todayZF = data[0].split(',')[7]
-            
+
             /* 每天的涨跌幅 */
             const todayZDF = data[0].split(',')[8]
-            
+
             /* 计算累计收益 */
             const earlistKPJ = day21Data.slice(-1)[0].split(',')[2]
             const todaySPJ = data[0].split(',')[2]
@@ -236,7 +236,7 @@ export default {
         dynamicGet20Day(days) {
             const averages = [];
             if (!this.dataObj.byd) { return }
-            const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
+            const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines))?.reverse(); // 时间降序
             /* 准备工作 处理分时数据  */
             const trends = this.dataObj.FSP
             const formartTrends = []
@@ -323,7 +323,7 @@ export default {
             // const data = this.dataObj.historyCashFlow.data;
             const data = this.dataObj.historyCashFlow.klines.reverse(); // 时间降序
 
-            // const historyCashFlowArr = data.slice(0, days + 1); 
+            // const historyCashFlowArr = data.slice(0, days + 1);
             /* 进入处理历史资金流数据主流程 */
             const averages = []
             for (let i = 0; i < days; i++) {
@@ -366,7 +366,7 @@ export default {
         historyCashFlow20Days(historyCashFlowArr) {
             // 2020-12-31, 615996768.0, -255824464.0, -360172304.0, -119660544.0, 735657312.0, 6.37, -2.65, -3.73, -1.24, 7.61, 194.30, 4.46, 0.00,0.00
             // index 日期 0 主力净额 1 主力净占比 6 超大单净额 5 超大单净占比 10  大单净额 4 大单净占比 9 中单净额 3 中单净占比 8 小单净额 2 小单净占比 7 现股价 11 涨跌幅 12
-            
+
             /* 单位转化为亿 */
             const majorPureArr = historyCashFlowArr.map(cashFlowStr => cashFlowStr.split(',')[1] / 10000 / 10000)
             const majorPureRatioArr = historyCashFlowArr.map(cashFlowStr => cashFlowStr.split(',')[6])
@@ -390,8 +390,8 @@ export default {
         /* 判断个股强弱-1 大盘跌 个股表现 */
         judgeStrongWeekInit() {
             if(!this.dataObj.szzsP.klines || !this.dataObj.byd.klines) { return }
-            const dataStock = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
-            const dataSZZS = JSON.parse(JSON.stringify(this.dataObj.szzsP.klines)).reverse(); // 时间降序
+            const dataStock = JSON.parse(JSON.stringify(this.dataObj.byd.klines))?.reverse(); // 时间降序
+            const dataSZZS = JSON.parse(JSON.stringify(this.dataObj.szzsP.klines))?.reverse(); // 时间降序
             /* 处理数据 取20大盘天下跌 个股表现 */
             const formatData = this.handleStrong({dataStock, dataSZZS})
             /* 日期对应 */
@@ -415,8 +415,8 @@ export default {
         /* 判断个股强弱-2 大盘与个股走势比较 */
         judgeStrongZSAndStockInit(){
             if(!this.dataObj.szzsP.klines || !this.dataObj.byd.klines) { return }
-            const dataStock = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
-            const dataSZZS = JSON.parse(JSON.stringify(this.dataObj.szzsP.klines)).reverse(); // 时间降序
+            const dataStock = JSON.parse(JSON.stringify(this.dataObj.byd.klines))?.reverse(); // 时间降序
+            const dataSZZS = JSON.parse(JSON.stringify(this.dataObj.szzsP.klines))?.reverse(); // 时间降序
             const formatData = this.handleCompare({dataStock, dataSZZS})
             /* 日期对应 */
             const date_arr = formatData.date_arr || []
@@ -450,7 +450,7 @@ export default {
                         formatter: '{value}'
                     }
                   },
-              ]; 
+              ];
             this.updateConfig({ date: date_arr, data: stockStrongWeek_arr, colName: this.dataObj.byd.name, yAxis })
             const temp = JSON.parse(JSON.stringify(this.option))
             /* 4 渲染融资融券画布 */
@@ -465,7 +465,7 @@ export default {
             /* 20天跌幅 */
             const szzsDF20DaysArr = szzsDFArr.slice(0, 20).reverse() // 最近大盘下跌20天数据
             const szzsDFDateArr = szzsDF20DaysArr.map(DFStr => DFStr.split(',')[0]) // 上证跌幅对应日期数组 用于匹配个股用
-            const stockZDF20DaysArr = dataStock.filter(stockStr => szzsDFDateArr.includes(stockStr.split(',')[0])).reverse() 
+            const stockZDF20DaysArr = dataStock.filter(stockStr => szzsDFDateArr.includes(stockStr.split(',')[0])).reverse()
             /* 最终数据 */
             const date_arr = szzsDFDateArr
             const szzsDF20DaysDatas = szzsDF20DaysArr.map(DFStr => DFStr.split(',')[8])
@@ -484,7 +484,7 @@ export default {
             /* 20天跌幅 */
             const DateArr = dataSZZS.slice(0, 20).reverse().map(Str => Str.split(',')[0]) // 上证跌幅对应日期数组
             const szzsSPJ20DaysArr = dataSZZS.slice(0, 20).reverse() // 最近大盘下跌20天数据
-            const stockSPJ20DaysArr = dataStock.slice(0, 20).reverse() 
+            const stockSPJ20DaysArr = dataStock.slice(0, 20).reverse()
             /* 最终数据 */
             const date_arr = DateArr
             const szzsSPJ20DaysDatas = szzsSPJ20DaysArr.map(DFStr => DFStr.split(',')[2])
@@ -543,7 +543,7 @@ export default {
                     axisLabel: {
                         formatter: '{value}'
                     }
-                }; 
+                };
            }
             option.yAxis = yAxis
             console.log(yAxis, 'yAxis---');

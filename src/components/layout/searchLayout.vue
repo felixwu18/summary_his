@@ -1,6 +1,6 @@
 <template>
   <div class="layout" :style="`width: ${width}px;`">
-    <span v-if="title">{{title}}：</span>
+    <span v-if="title">{{ title }}：</span>
     <slot></slot>
   </div>
 </template>
@@ -9,11 +9,22 @@ export default {
   name: "searchLayout",
   props: { title: { type: String }, width: { type: Number, default: 295 } },
   data() {
-    return {};
-  }
+    return {
+      testParent: 1111,
+    };
+  },
+  methods: {
+    testGetParentMethod() {
+      console.log("测试this.$parent");
+    },
+  },
+  mounted() {
+    this.$nextTick(() => {
+      console.log(this.$children, "===>this.$children");
+    });
+  },
 };
 </script>
-
 
 <style scoped>
 .layout {

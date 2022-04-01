@@ -8,7 +8,9 @@
           @change="handleName(arguments, activeName)"
         />
         <div>
-          <el-button size="medium " @click="getSelectConfig">更新下拉</el-button>
+          <el-button size="medium " @click="getSelectConfig"
+            >更新下拉</el-button
+          >
         </div>
       </el-form-item>
       <el-form-item label="名称-all：" label-width="120px">
@@ -17,8 +19,8 @@
           :fetch-suggestions="handleSelectInput"
           placeholder="请输入内容"
           clearable
-          @select="val => handleNameVall(val, activeName)"
-        ></el-autocomplete>        
+          @select="(val) => handleNameVall(val, activeName)"
+        ></el-autocomplete>
       </el-form-item>
     </el-form>
     <el-tabs
@@ -95,7 +97,9 @@
       <el-tab-pane label="版块" name="forth">
         <!-- 版块资金流向 -->
         <div>
-          <el-button size="medium " @click="updateData" :loading="updateLoading">更新数据</el-button>
+          <el-button size="medium " @click="updateData" :loading="updateLoading"
+            >更新数据</el-button
+          >
         </div>
         <div class="main" style="width: 1350px; height: 400px" />
         <div class="main" style="width: 1350px; height: 400px" />
@@ -167,7 +171,13 @@
       <el-tab-pane label="条件选股" name="eighth">
         <el-button @click="handleOpen">open music</el-button>
         <el-button @click="handleOpen">ceshi</el-button>
-        <span><a href="myprotocol://H:\stock\myprotocol.reg" style="margin: 200px auto;">打开音乐</a></span>
+        <span
+          ><a
+            href="myprotocol://H:\stock\myprotocol.reg"
+            style="margin: 200px auto;"
+            >打开音乐</a
+          ></span
+        >
         <form-table @handle-detail="handleDetail" />
       </el-tab-pane>
     </el-tabs>
@@ -181,12 +191,20 @@ import searchSelect from "@/components/searchSelect/index";
 import iframePage from "@/components/iframePage/index";
 import FormTable from "./components/FormTable";
 
-import { 
-  // getbkLatestP, getImediateCashFlow, 
-  getLatestP, getFSP, getConfigsP, 
-  getRZRQ, pushLatestFSP, 
-  getCacheFSP, setCacheData, getHistoryCashFlow,  getHistoryCashFlowOFBanKuai,
-  yearROE, financeTableData, getLatestPAll
+import {
+  // getbkLatestP, getImediateCashFlow,
+  getLatestP,
+  getFSP,
+  getConfigsP,
+  getRZRQ,
+  pushLatestFSP,
+  getCacheFSP,
+  setCacheData,
+  getHistoryCashFlow,
+  getHistoryCashFlowOFBanKuai,
+  yearROE,
+  financeTableData,
+  getLatestPAll,
 } from "@/api/index";
 
 export default {
@@ -196,17 +214,15 @@ export default {
       selectVal: "0.002594",
       selectValAll: "",
       stcokCode: "sz002594",
-      iframeUrl: `http://quote.eastmoney.com/changes/stocks/${
-        this.stcokCode || "sz002594"
-      }.html`,
-      iframeUrl2: `http://quote.eastmoney.com/concept/${
-        this.stcokCode || "sz002594"
-      }.html`, // 筹码分布
+      iframeUrl: `http://quote.eastmoney.com/changes/stocks/${this.stcokCode ||
+        "sz002594"}.html`,
+      iframeUrl2: `http://quote.eastmoney.com/concept/${this.stcokCode ||
+        "sz002594"}.html`, // 筹码分布
       iframeUrl3: `http://quote.eastmoney.com/center/hsbk.html`,
       iframeUrl4: `http://data.eastmoney.com/bkzj/hy.html`,
-      iframeUrl5: 'http://data.eastmoney.com/rzrq/total.html',
-      iframeUrl6: 'http://data.eastmoney.com/hsgt/index.html',
-      iframeUrl7: 'http://data.eastmoney.com/zjlx/002594.html',
+      iframeUrl5: "http://data.eastmoney.com/rzrq/total.html",
+      iframeUrl6: "http://data.eastmoney.com/hsgt/index.html",
+      iframeUrl7: "http://data.eastmoney.com/zjlx/002594.html",
       tabs: {
         first: this.first,
         second: this.second,
@@ -223,7 +239,7 @@ export default {
       configsPAll: [], // 实时模糊查询匹配下拉
       myCharts: {},
       activeName: "first",
-      select_input_flag: 'select'
+      select_input_flag: "select",
     };
   },
   mixins: [std, priceData],
@@ -242,26 +258,27 @@ export default {
     this.selectObj = this.configsP.find((row) => row.key === this.selectVal); // 初始化对象
     this.init();
   },
-  mounted() {
-  },
+  mounted() {},
   methods: {
     /* 更新板块数据 */
-    async updateData(){
-        this.updateLoading = true;
-        let { data: historyCashFlowOFBanKuai } = await getHistoryCashFlowOFBanKuai();  // 时间降序 板块资金流历史
-        this.dataObj.historyCashFlowOFBanKuai = historyCashFlowOFBanKuai // 板块历史资金流
-        this.historyCashFlowOFBanKuaiInit(33) // 板块历史资金流
-        this.updateLoading = false;
+    async updateData() {
+      this.updateLoading = true;
+      let {
+        data: historyCashFlowOFBanKuai,
+      } = await getHistoryCashFlowOFBanKuai(); // 时间降序 板块资金流历史
+      this.dataObj.historyCashFlowOFBanKuai = historyCashFlowOFBanKuai; // 板块历史资金流 手动更新一个季度的
+      this.historyCashFlowOFBanKuaiInit(60); // 板块历史资金流
+      this.updateLoading = false;
     },
     /* 下拉配置 */
     async getSelectConfig() {
-    const configsP = (await getConfigsP()) || [];
-          // 加入拼音简写
-    configsP.forEach(ele => {
-      const pinYingCode = this.$utils.getPinyin(ele.value)
-      ele.value = `${ele.value} (${pinYingCode.replace(/\s/g, '')})`
-    })
-    this.configsP = configsP
+      const configsP = (await getConfigsP()) || [];
+      // 加入拼音简写
+      configsP.forEach((ele) => {
+        const pinYingCode = this.$utils.getPinyin(ele.value);
+        ele.value = `${ele.value} (${pinYingCode.replace(/\s/g, "")})`;
+      });
+      this.configsP = configsP;
     },
     async handleOpen() {
       // window.location.href='myprotocol://H:\\stock\\myprotocol.reg'
@@ -271,7 +288,7 @@ export default {
     async init() {
       /* 获取数据 */
       let { data: szzsP } = await getLatestP({ secid: 1.000001 });
-      this.dataObj.szzsP = szzsP;  // 上证指数
+      this.dataObj.szzsP = szzsP; // 上证指数
       await this.getData();
       this.mixinInit(20); // 默认20天
       var boxes = document.getElementsByClassName("main");
@@ -286,63 +303,83 @@ export default {
         /* 图表数据 */
         let res = await getLatestP({ secid: this.selectVal });
         let resFSP = await getFSP({ secid: this.selectVal, ndays: 5 }); // 时间降序
-        let cacheFSP = await getCacheFSP({"secid": this.selectVal,});  // 时间降序
-        let { data: { data: historyCashFlow } } = await getHistoryCashFlow({"secid": this.selectVal,});  // 时间降序
-        let { data: historyCashFlowOFBanKuai } = await getHistoryCashFlowOFBanKuai();  // 时间降序 板块资金流历史
-        let { data: financeReport } = await yearROE({"secid": this.selectVal,});  // 时间降序
-        let { data: financeTableDataYear } = await financeTableData({"secid": this.selectVal,});  // 时间降序
-        let { data: financeTableDataQuarter } = await financeTableData({"secid": this.selectVal, type: 0});  // 时间降序
+        let cacheFSP = await getCacheFSP({ secid: this.selectVal }); // 时间降序
+        let {
+          data: { data: historyCashFlow },
+        } = await getHistoryCashFlow({ secid: this.selectVal }); // 时间降序
+        let {
+          data: historyCashFlowOFBanKuai,
+        } = await getHistoryCashFlowOFBanKuai(); // 时间降序 板块资金流历史
+        let { data: financeReport } = await yearROE({ secid: this.selectVal }); // 时间降序
+        let { data: financeTableDataYear } = await financeTableData({
+          secid: this.selectVal,
+        }); // 时间降序
+        let { data: financeTableDataQuarter } = await financeTableData({
+          secid: this.selectVal,
+          type: 0,
+        }); // 时间降序
         // console.log(resFSP, 'cacheFSP=====')
         // console.log(cacheFSP, 'cacheFSP=====')
         // this.dataObj.byd = res.data;
         // this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
         // return
         /* latestP缓存后台 限制时间延时推送 */
-        if (this.isUpdate(Date.now()) && this.select_input_flag === 'select') {
+        if (this.isUpdate(Date.now()) && this.select_input_flag === "select") {
           setTimeout(() => {
             setCacheData({
               secid: this.selectVal,
-              data: res
-            })
-          }, 500)
+              data: res,
+            });
+          }, 500);
         }
         /* 将三方最新5天分时价同步并缓存 */
-        if ((cacheFSP == '文件读取失败' || cacheFSP === '')) {
+        if (cacheFSP == "文件读取失败" || cacheFSP === "") {
           /* 限制时间推送后台 */
-          if (this.isUpdate(Date.now())&&this.select_input_flag === 'select') {
+          if (
+            this.isUpdate(Date.now()) &&
+            this.select_input_flag === "select"
+          ) {
             pushLatestFSP({
               secid: this.selectVal,
-              data: resFSP
-            })
+              data: resFSP,
+            });
           }
         } else {
           /* 缓存数据已是最新，不处理 */
-          if (resFSP.slice(-1)[0].slice(0, 10) !== cacheFSP.slice(-1)[0].slice(0, 10)) { 
-            resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
-            if (!resFSP) { return }
+          if (
+            resFSP.slice(-1)[0].slice(0, 10) !==
+            cacheFSP.slice(-1)[0].slice(0, 10)
+          ) {
+            resFSP = this.mergeFSP({ resFSP, cacheFSP }); // 同步三方重写
+            if (!resFSP) {
+              return;
+            }
             /* 限制时间推送后台 */
-            if (this.isUpdate(Date.now()) && this.select_input_flag === 'select') {
+            if (
+              this.isUpdate(Date.now()) &&
+              this.select_input_flag === "select"
+            ) {
               /* 同步推送后台 */
               pushLatestFSP({
                 secid: this.selectVal,
-                data: resFSP
-              })
+                data: resFSP,
+              });
             }
           } else {
             // resFSP = this.mergeFSP({resFSP, cacheFSP}) // 同步三方重写
-            resFSP = cacheFSP // 同步三方重写
+            resFSP = cacheFSP; // 同步三方重写
           }
         }
 
         // console.log(resFSP, 'resFSP---')
         /* 数据入口 */
         this.dataObj.byd = res.data;
-        this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP))
-        this.dataObj.historyCashFlow = historyCashFlow
-        this.dataObj.historyCashFlowOFBanKuai = historyCashFlowOFBanKuai // 板块历史资金流
-        this.dataObj.financeReport = financeReport // 财务报表 年净资产收益率
-        this.dataObj.financeTableDataYear = financeTableDataYear // 财务分析数据 年数据， 
-        this.dataObj.financeTableDataQuarter = financeTableDataQuarter // 财务分析数据 年数据， 
+        this.dataObj.FSP = JSON.parse(JSON.stringify(resFSP));
+        this.dataObj.historyCashFlow = historyCashFlow;
+        this.dataObj.historyCashFlowOFBanKuai = historyCashFlowOFBanKuai; // 板块历史资金流
+        this.dataObj.financeReport = financeReport; // 财务报表 年净资产收益率
+        this.dataObj.financeTableDataYear = financeTableDataYear; // 财务分析数据 年数据，
+        this.dataObj.financeTableDataQuarter = financeTableDataQuarter; // 财务分析数据 年数据，
         // let bkLatestP = getbkLatestP({ secid: '90.BK0711' }).then(data => {
         //   console.log(data, '---------data');
         // });
@@ -352,40 +389,46 @@ export default {
     },
     /* 限制时间更新后台  当天09:15前 16:00 后更新(数据全) 或者星期六星期天 */
     isUpdate(nowTime) {
-      const year =new Date().getFullYear()
-      const mounth =new Date().getMonth() + 1
-      const day =new Date().getDate()
-      const noUpdateStartTime = `${year}-${mounth}-${day} 09:00`
-      const noUpdateEndTime = `${year}-${mounth}-${day} 15:10`
+      const year = new Date().getFullYear();
+      const mounth = new Date().getMonth() + 1;
+      const day = new Date().getDate();
+      const noUpdateStartTime = `${year}-${mounth}-${day} 09:00`;
+      const noUpdateEndTime = `${year}-${mounth}-${day} 15:10`;
       // console.log(nowTime, 'nowTime');
       // console.log(noUpdateStartTime, 'noUpdateStartTime');
       // console.log(noUpdateStartTime, 'noUpdateStartTime');
-      return (nowTime < new Date(noUpdateStartTime).getTime()) || (nowTime > new Date(noUpdateEndTime).getTime()) || [6, 0].includes(new Date().getDay())
+      return (
+        nowTime < new Date(noUpdateStartTime).getTime() ||
+        nowTime > new Date(noUpdateEndTime).getTime() ||
+        [6, 0].includes(new Date().getDay())
+      );
     },
     /* 同步三方分时价 */
-    mergeFSP({resFSP, cacheFSP}) {
-      const concatArr = cacheFSP.concat(resFSP)
-      const formartTrends = [] // 二维数组，分时数据一天为一个数组
-      const fsDaysCount = concatArr.length / 241
+    mergeFSP({ resFSP, cacheFSP }) {
+      const concatArr = cacheFSP.concat(resFSP);
+      const formartTrends = []; // 二维数组，分时数据一天为一个数组
+      const fsDaysCount = concatArr.length / 241;
       for (let index = 0; index < fsDaysCount; index++) {
-           formartTrends.push(concatArr.slice(index * 241, 241 * (index + 1)))
+        formartTrends.push(concatArr.slice(index * 241, 241 * (index + 1)));
       }
       // const resFSP_reverse = JSON.parse(JSON.stringify(resFSP)).reverse() // 三方
       // const cacheFSP_reverse = JSON.parse(JSON.stringify(cacheFSP)).reverse() // 后台
-      return this.unique(formartTrends)
+      return this.unique(formartTrends);
     },
     /* 去重 */
     unique(arr) {
-      if (!arr) { return }
-      const signObj = {}
-      const uniqueArr = []
-      arr.forEach(item => {
+      if (!arr) {
+        return;
+      }
+      const signObj = {};
+      const uniqueArr = [];
+      arr.forEach((item) => {
         if (!signObj[item[0].slice(0, 10)]) {
-          signObj[item[0].slice(0, 10)] = 1
-          uniqueArr.push(...item) // 二维数组打平
+          signObj[item[0].slice(0, 10)] = 1;
+          uniqueArr.push(...item); // 二维数组打平
         }
-      })
-      return uniqueArr
+      });
+      return uniqueArr;
     },
     /* 下拉切换 */
     handleName(val, activeName) {
@@ -394,7 +437,7 @@ export default {
       this.selectVal = val.key;
       this.tabs[activeName](val);
       /* 普通下拉组件路径 */
-      this.select_input_flag = 'select'
+      this.select_input_flag = "select";
     },
     /* 选中后处理 */
     handleNameVall(val, activeName) {
@@ -402,25 +445,24 @@ export default {
       this.selectVal = val.key;
       this.tabs[activeName](val);
       /* el-autocomplete 输入框下拉组件路径 */
-      this.select_input_flag = 'input'
+      this.select_input_flag = "input";
     },
     /* 远程模糊搜索所有最新 */
     async handleSelectInput(val, cb) {
-      const res = await getLatestPAll({ input: val })
-      const configsPAll = (res.Data || [])
-      .map(ele => {
-          const _boolean = ele.Code[0] === '6'
-          return {
-                  key: _boolean ? `1.${ele.Code}` : `0.${ele.Code}`, 
-                  value: ele.Name,
-                  marketT: _boolean ? 'sh' : 'sz'
-                }
-      })
-      cb(configsPAll)
+      const res = await getLatestPAll({ input: val });
+      const configsPAll = (res.Data || []).map((ele) => {
+        const _boolean = ele.Code[0] === "6";
+        return {
+          key: _boolean ? `1.${ele.Code}` : `0.${ele.Code}`,
+          value: ele.Name,
+          marketT: _boolean ? "sh" : "sz",
+        };
+      });
+      cb(configsPAll);
     },
     /* 选项卡切换 */
     handleClick(val, activeName) {
-      if (['first', 'second', 'third', 'seventh'].includes(activeName)) {
+      if (["first", "second", "third", "seventh"].includes(activeName)) {
         this.tabs[activeName](val);
       }
       activeName === "fifth" && this.triggerRZRQ();
@@ -428,9 +470,9 @@ export default {
     /* 融资融券触发 */
     async triggerRZRQ() {
       // if(this.dataObj.rzrq.data) { return }
-      const {data} = await getRZRQ();
-      this.dataObj.rzrq.data = data
-      this.rzrqInit(120)
+      const { data } = await getRZRQ();
+      this.dataObj.rzrq.data = data;
+      this.rzrqInit(120);
       // this.dataObj.rzrq
     },
     /* 即使价格，及boll技术指标 */
@@ -441,7 +483,7 @@ export default {
     },
     /* 个股异动情况 */
     second(val) {
-      console.log(val, 'val----')
+      console.log(val, "val----");
       // val = this.toArr(val);
       // this.selectVal = val.key;
       this.stcokCode = `${val.marketT}${val.key.slice(2)}`;
@@ -462,13 +504,13 @@ export default {
       return Array.from(val)[0];
     },
     handleDetail(row) {
-      console.log(row)
-    }
+      console.log(row);
+    },
   },
   components: {
     searchSelect,
     iframePage,
-    FormTable
+    FormTable,
   },
   computed: {
     // test() {
@@ -490,5 +532,4 @@ p {
 .DFS_warp {
   display: flex;
 }
-
 </style>

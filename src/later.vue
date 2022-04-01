@@ -10,7 +10,7 @@ export default {
   created: function() {},
   mounted: function() {},
   computed: {},
-  methods: {}
+  methods: {},
 };
 </script>
 <style>

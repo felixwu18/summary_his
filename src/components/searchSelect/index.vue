@@ -1,23 +1,23 @@
 <template>
   <div>
     <!-- <searchInput :title="title" :width="width"> -->
-      <el-select
-        v-model="value"
-        clearable
-        :disabled="disabled"
-        placeholder="请选择"
-        size="medium"
-        v-bind="$attrs"
-        filterable
-      >
-        <el-option
-          v-for="(item, index) in (options.length ? options : [])"
-          :key="index"
-          :label="item.value"
-          :value="item.key"
-        ></el-option>
-      </el-select>
-      <!--   :filter-method="selectFilterVal" -->
+    <el-select
+      v-model="value"
+      clearable
+      :disabled="disabled"
+      placeholder="请选择"
+      size="medium"
+      v-bind="$attrs"
+      filterable
+    >
+      <el-option
+        v-for="(item, index) in options.length ? options : []"
+        :key="index"
+        :label="item.value"
+        :value="item.key"
+      ></el-option>
+    </el-select>
+    <!--   :filter-method="selectFilterVal" -->
     <!-- </searchInput> -->
   </div>
 </template>
@@ -57,7 +57,7 @@ export default {
     // },
     /* 自定义搜索 */
     selectFilterVal(val) {
-      this.$emit('handleSearch', val)
+      this.$emit("handleSearch", val);
       // const configure = JSON.parse(JSON.stringify(this.configure));
       // if (val.trim()) {
       //   const fieldsArr = Object.keys(configure[0]);
@@ -66,7 +66,7 @@ export default {
       //     val,
       //     fieldsArr,
       //     );
-      //     // if (this.options) { this.$emit("update:insertValue", ''); } // 编码 
+      //     // if (this.options) { this.$emit("update:insertValue", ''); } // 编码
       // } else {
       //   // val 为空时， 还原数组
       //   this.options = JSON.parse(JSON.stringify(configure));
@@ -74,8 +74,8 @@ export default {
     },
     filterObjArray(ObjArr, valInput, keyMap) {
       const temp = ObjArr.filter(this.filterItem(valInput, keyMap));
-      console.log(temp, 'temp------------');
-      return temp
+      console.log(temp, "temp------------");
+      return temp;
     },
     /* 字段过滤 */
     filterItem(valInput, keyMap) {
@@ -96,18 +96,18 @@ export default {
   computed: {
     value: {
       get() {
-        console.log(this.insertValue, 'get--')
+        console.log(this.insertValue, "get--");
         return this.insertValue;
       },
       set(key) {
         !this.isNumber && typeof key === "number" ? (key = String(key)) : ""; // 默认字符串
         // const value = this.$utils.confugureFormatter(this.options, key);
-        const selectObj = this.options.find(every => every.key === key)
-        const { value, marketT } = selectObj
+        const selectObj = this.options.find((every) => every.key === key);
+        const { value, marketT } = selectObj;
         this.$emit("update:insertValue", key); // 编码
         this.$emit("change", { key, value, marketT }); // 传编码及值
-        console.log(key, 'set--key')
-        console.log(this.insertValue, 'set--insertValue')
+        console.log(key, "set--key");
+        console.log(this.insertValue, "set--insertValue");
       },
     },
   },
@@ -125,7 +125,7 @@ export default {
       deep: true,
     },
     // insertValue() {
-      //   this.value = this.insertValue;
+    //   this.value = this.insertValue;
     // }
   },
   created() {},
@@ -135,5 +135,4 @@ export default {
   },
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>

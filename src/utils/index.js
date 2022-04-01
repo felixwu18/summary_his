@@ -34,9 +34,12 @@ export function showSuccess(message) {
  *  @return {*} value
  */
 export function isType(value) {
-  var defaultBack
-  String(value) === 'null' && (defaultBack = null)
-  return value?.constructor.name??defaultBack;
+  // String(value) === 'null' && (defaultBack = null)
+  if (value!==null || value!=undefined) {
+    return value.constructor.name;
+  } else {
+    return value;
+  }
 }
 
 /**

@@ -98,13 +98,12 @@ export default {
             this.judgeStrongZSAndStockInit() // 判断个股强弱-2 大盘与个股走势比较
             this.financeReportYearInit() // 财务数据 年净资产收益率
             this.financeReportMonthInit() // 财务数据 季度净资产收益率
-            this.financeTableDataYearInit() // 财务数据 年营业收入增长率， 净利润增长率, 现金流等
-            this.financeTableDataQuarterInit() // 财务数据 季度 营业收入增长率， 净利润增长率, 现金流等
+            // this.financeTableDataYearInit() // 财务数据 年营业收入增长率， 净利润增长率, 现金流等
+            // this.financeTableDataQuarterInit() // 财务数据 季度 营业收入增长率， 净利润增长率, 现金流等
             this.financeYSZKYearInit() // 财务数据 年应收账款增长率 -- 产品订单情况 直接关系营业收入
-            this.financeKCYearInit() // 财务数据 年库存增长率  -- 产品交付能力
+            // this.financeKCYearInit() // 财务数据 年库存增长率  -- 产品交付能力
             this.financeYFZKYearInit() // 财务数据 年预付账款增长率 -- 生产的积极性 向上游采购原材料
             this.financeYSZKAndYYSRYearInit() // 财务数据 年应收账款占营业收入比率 -- 未来收益预期
-
             this.LJZFDayInit() // 累计每天涨幅度数量统计 半年 季度 月份 周情况
             this.LJDFDayInit() // 累计每天跌幅幅度数量统计 半年 季度 月份 周情况
             // this.profitIncomRateInit() // 每年 利润占总营业收入比率变化
@@ -265,7 +264,7 @@ export default {
             const averages = [];
             try {
                 if (!this.dataObj.byd) { return }
-                const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
+                const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines || [])).reverse(); // 时间降序
                 /* 准备工作 处理分时数据  */
                 const trends = this.dataObj.FSP
                 const formartTrends = []
@@ -311,9 +310,9 @@ export default {
                 averages.forEach((item, index) => {
                     item.bollWidthRatio = this.getBollWidthRatio(item, averages[index + 1])
                 })
-                
+
             } catch (error) {
-                console.log(error); 
+                console.log(error);
             }
         return averages
         },
@@ -359,7 +358,7 @@ export default {
             // const data = this.dataObj.historyCashFlow.data;
             const data = this.dataObj.historyCashFlow.klines.reverse(); // 时间降序
 
-            // const historyCashFlowArr = data.slice(0, days + 1); 
+            // const historyCashFlowArr = data.slice(0, days + 1);
             /* 进入处理历史资金流数据主流程 */
             const averages = []
             for (let i = 0; i < days; i++) {
@@ -377,7 +376,7 @@ export default {
             ] || []
             /* 净额累计均线 */
             const majorCashAverage_arr = [
-                { name: '5均', data: averages.map(obj => obj.cashFlowaverage5), type: 'line' },
+                { name: '个股历史资金5均', data: averages.map(obj => obj.cashFlowaverage5), type: 'line' },
                 { name: '13均', data: averages.map(obj => obj.cashFlowaverage13), type: 'line' },
                 { name: '20均', data: averages.map(obj => obj.cashFlowaverage20), type: 'line' },
             ] || []
@@ -540,8 +539,8 @@ export default {
         /* 判断个股强弱-1 大盘跌 个股表现 */
         judgeStrongWeekInit() {
             if (!this.dataObj.szzsP.klines || !this.dataObj.byd.klines) { return }
-            const dataStock = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
-            const dataSZZS = JSON.parse(JSON.stringify(this.dataObj.szzsP.klines)).reverse(); // 时间降序
+            const dataStock = JSON.parse(JSON.stringify(this.dataObj.byd.klines || [])).reverse(); // 时间降序
+            const dataSZZS = JSON.parse(JSON.stringify(this.dataObj.szzsP.klines || [])).reverse(); // 时间降序
             /* 处理数据 取20大盘天下跌 个股表现 */
             const formatData = this.handleStrong({ dataStock, dataSZZS })
             /* 日期对应 */
@@ -564,8 +563,8 @@ export default {
         /* 判断个股强弱-2 大盘与个股走势比较 */
         judgeStrongZSAndStockInit() {
             if (!this.dataObj.szzsP.klines || !this.dataObj.byd.klines) { return }
-            const dataStock = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
-            const dataSZZS = JSON.parse(JSON.stringify(this.dataObj.szzsP.klines)).reverse(); // 时间降序
+            const dataStock = JSON.parse(JSON.stringify(this.dataObj.byd.klines || [])).reverse(); // 时间降序
+            const dataSZZS = JSON.parse(JSON.stringify(this.dataObj.szzsP.klines || [])).reverse(); // 时间降序
             const formatData = this.handleCompare({ dataStock, dataSZZS })
             /* 日期对应 */
             const date_arr = formatData.date_arr || []
@@ -589,9 +588,9 @@ export default {
             if (!this.dataObj.financeReport.nd) { return }
             const data = this.dataObj.financeReport.nd || []
             /* 日期对应 */
-            const date_arr = data.map(item => item.date).reverse()
+            const date_arr = data.map(item => item.REPORT_DATE).reverse()
             /* 个股年净资产收益率变化 */
-            const formartROE_arr = data.map(item => item.jzcsyl.slice(0, -1)).reverse()
+            const formartROE_arr = data.map(item => item.ROE).reverse()
             const yearROE_arr = [
                 { name: '年净资产收益率(ROE)', data: formartROE_arr, type: 'bar' },
             ] || []
@@ -605,15 +604,15 @@ export default {
         /* 季度净资产收益率 杜邦分析 */
         financeReportMonthInit() {
             if (!this.dataObj.financeReport.bgq) { return }
-            // debugger
             const data = this.dataObj.financeReport.bgq || []
             /* 日期对应 */
-            const date_arr = data.map(item => item.date).reverse()
+            const date_arr = data.map(item => item.REPORT_DATE).reverse()
             /* 个股年净资产收益率变化 */
-            const formartROE_arr = data.map(item => item.jzcsyl.slice(0, -1)).reverse()
+            const formartROE_arr = data.map(item => item.ROE).reverse()
             const yearROE_arr = [
                 { name: '季度净资产收益率(ROE)', data: formartROE_arr, type: 'bar' },
             ] || []
+
             this.updateConfig({ date: date_arr, data: yearROE_arr, colName: this.dataObj.byd.name })
             const temp = JSON.parse(JSON.stringify(this.option))
             /* 7 渲染季度净资产收益率画布 季度净资产收益率*/
@@ -624,8 +623,8 @@ export default {
         /* 年度 --- 财务数据分析基本面， 年 营业收入增长率， 净利润增长率等 */
         financeTableDataYearInit() {
             if (!this.dataObj.financeTableDataYear) { return }
-
-            const data = JSON.parse(JSON.stringify(this.dataObj.financeTableDataYear)).reverse() || []
+            // debugger
+            const data = JSON.parse(JSON.stringify(this.dataObj.financeTableDataYear || [])).reverse() || []
             /* 日期对应 */
             const date_arr = data.map(item => item.date).slice(1)
             /* 年营业总收入 */
@@ -663,7 +662,7 @@ export default {
        /* 季度 --- 财务数据分析基本面， 季度 营业收入增长率， 净利润增长率等 */
         financeTableDataQuarterInit() {
             if (!this.dataObj.financeTableDataQuarter) { return }
-            const data = JSON.parse(JSON.stringify(this.dataObj.financeTableDataQuarter)).reverse() || []
+            const data = JSON.parse(JSON.stringify(this.dataObj.financeTableDataQuarter || [])).reverse() || []
             /* 日期对应 */
             const date_arr = data.map(item => item.date).slice(1)
             /* 季度营业总收入 亿为单位*/
@@ -703,13 +702,13 @@ export default {
             if (!this.dataObj.financeReport.nd) { return }
             const data = this.dataObj.financeReport.nd || []
             /* 日期对应 */
-            const date_arr = data.map(item => item.date).reverse().slice(1)
+            const date_arr = data.map(item => item.REPORT_DATE).reverse().slice(1)
             /* 个股年年应收账款数组 */
-            const formartYSZK_arr = data.map((item) => { 
-                let temp_YSZK = item.yszk.slice(0, -1)
-                if(item.ch.slice(-1) === '万') {
-                    temp_YSZK = temp_YSZK / 1000
-                }
+            const formartYSZK_arr = data.map((item) => {
+                let temp_YSZK = item.ACCOUNTS_RECE
+                // if(item.ch.slice(-1) === '万') {
+                //     temp_YSZK = temp_YSZK / 1000
+                // }
                 return temp_YSZK
             })
             /* 年应收账款增长率 */
@@ -729,9 +728,9 @@ export default {
             if (!this.dataObj.financeReport.nd) { return }
             const data = this.dataObj.financeReport.nd || []
             /* 日期对应 */
-            const date_arr = data.map(item => item.date).reverse().slice(1)
+            const date_arr = data.map(item => item.REPORT_DATE).reverse().slice(1)
             /* 个股年库存数组 */
-            const formartKC_arr = data.map((item) => { 
+            const formartKC_arr = data.map((item) => {
                 let temp_CK = item.ch.slice(0, -1)
                 if(item.ch.slice(-1) === '万') {
                     temp_CK = temp_CK / 1000
@@ -756,13 +755,13 @@ export default {
             if (!this.dataObj.financeReport.nd) { return }
             const data = this.dataObj.financeReport.nd || []
             /* 日期对应 */
-            const date_arr = data.map(item => item.date).reverse().slice(1)
+            const date_arr = data.map(item => item.REPORT_DATE).reverse().slice(1)
             /* 个股年年应收账款数组 */
-            const formartYFZK_arr = data.map((item) => { 
-                let temp_yfzk = item.yfzk.slice(0, -1)
-                if(item.yfzk.slice(-1) === '万') {
-                    temp_yfzk = temp_yfzk / 1000
-                }
+            const formartYFZK_arr = data.map((item) => {
+                let temp_yfzk = item.ACCOUNTS_RECE
+                // if(item.yfzk.slice(-1) === '万') {
+                //     temp_yfzk = temp_yfzk / 1000
+                // }
                 return temp_yfzk
             })
             /* 个股年年应收账款增长率变化 */
@@ -771,7 +770,7 @@ export default {
             //     const baseYFZK = formartYFZK_arr[index + 1]
             //    return ((ele - baseYFZK) / baseYFZK).toFixed(2)
             // })
-            
+
             const yearYSZK_arr = [
                 { name: '年预付账款增长率', data: formartYFZKRatio_arr, type: 'line' },
             ] || []
@@ -787,20 +786,20 @@ export default {
             if (!this.dataObj.financeReport.nd) { return }
             const data = this.dataObj.financeReport.nd || []
             /* 日期对应 */
-            const date_arr = data.map(item => item.date).reverse()
+            const date_arr = data.map(item => item.REPORT_DATE).reverse()
             /* 个股年年应收账款数组 */
-            const YSZKAndYYSRRatio_arr = data.map((item, i) => { 
-                let temp_yszk = item.yszk.slice(0, -1)
-                let temp_yysr = item.yysr.slice(0, -1)
-                if(item.yszk.slice(-1) === '万') {
-                    temp_yszk = temp_yszk / 1000
-                }
-                if(item.yysr.slice(-1) === '万') {
-                    temp_yysr = temp_yysr / 1000
-                }
+            const YSZKAndYYSRRatio_arr = data.map((item, i) => {
+                let temp_yszk = item.ACCOUNTS_RECE
+                let temp_yysr = item.ACCOUNTS_RECE
+                // if(item.yszk.slice(-1) === '万') {
+                //     temp_yszk = temp_yszk / 1000
+                // }
+                // if(item.yysr.slice(-1) === '万') {
+                //     temp_yysr = temp_yysr / 1000
+                // }
                 return (temp_yszk / temp_yysr * 100).toFixed(2)
             })
-            
+
             const yearYSZK_arr = [
                 { name: '年应收账款营业收入比', data: YSZKAndYYSRRatio_arr.reverse(), type: 'line' },
             ] || []
@@ -823,7 +822,7 @@ export default {
             // "2020-12-10, 168.00, 169.52, 171.66, 166.02, 370436, 6243808768.00, 3.26, -2.15, -3.72, 3.23"
             // index 开盘价 1 收盘价 2 最高价 3 最低价 4 成交量 5 成交额 6 振幅(当天最高最低差额/前一天收盘价) 7 涨跌幅 8 涨跌额 9 换手率 10
             if (!this.dataObj.byd) { return }
-            const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
+            const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines || [])).reverse(); // 时间降序
 
             /* 一年 */
             const yearStatistic3Percent = data.slice(0, 240).map(item => item.split(',')[8]).filter(zdf => zdf > 3 && zdf < 5).length
@@ -891,7 +890,7 @@ export default {
             // "2020-12-10, 168.00, 169.52, 171.66, 166.02, 370436, 6243808768.00, 3.26, -2.15, -3.72, 3.23"
             // index 开盘价 1 收盘价 2 最高价 3 最低价 4 成交量 5 成交额 6 振幅(当天最高最低差额/前一天收盘价) 7 涨跌幅 8 涨跌额 9 换手率 10
             if (!this.dataObj.byd) { return }
-            const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines)).reverse(); // 时间降序
+            const data = JSON.parse(JSON.stringify(this.dataObj.byd.klines || [])).reverse(); // 时间降序
 
             /* 一年 跌幅次数统计*/
             const yearStatistic3Percent = data.slice(0, 240).map(item => item.split(',')[8]).filter(zdf => zdf > -3 && zdf < 0).length

@@ -1,15 +1,15 @@
 <template>
   <div>
     <!-- <h1>分页器</h1> -->
-    <el-pagination
-      :background="background"
+    <!-- :background="background"
       :layout="layout"
       :hide-on-single-page="true"
       :page-size.sync="pageSize"
       :current-page="currentPage"
       v-on="$listeners"
-      v-bind="$attrs"
-    />
+      v-bind="$attrs"-->
+    <Pagination :total="35" @current-change="handleCurrentChange" />
+    9999
     <!--
         此两,封装的组件,外部一个继承原有事件,一个继承原有的属性
       v-on="$listeners"
@@ -33,7 +33,7 @@
 
 <script>
 // import { scrollTo } from '@/tools/scroll-to'
-
+import Pagination from "./index.vue";
 export default {
   name: "Pagination",
   props: {
@@ -69,6 +69,9 @@ export default {
     //   type: Boolean,
     //   default: true
     // }
+  },
+  components: {
+    Pagination,
   },
   computed: {
     currentPage: {
